@@ -1,4 +1,3 @@
-UNK
 map_larger
 map_smaller
 move_up

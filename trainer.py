@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from transformers import BertConfig, AdamW, get_linear_schedule_with_warmup
 
 from utils import MODEL_CLASSES, compute_metrics, get_intent_labels, get_slot_labels
+from data_loader import JointProcessor, convert_examples_to_features
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ class Trainer(object):
 
         self.intent_label_lst = get_intent_labels(args)
         self.slot_label_lst = get_slot_labels(args)
-        # Use cross entropy ignore index as padding label id so that only real label ids contribute to the loss later
+        # Use cross entropy ignore index as padding sentences.txt id so that only real sentences.txt ids contribute to the loss later
         self.pad_token_label_id = args.ignore_index
 
         self.config_class, self.model_class, _ = MODEL_CLASSES[args.model_type]
@@ -104,8 +105,8 @@ class Trainer(object):
                     if self.args.logging_steps > 0 and global_step % self.args.logging_steps == 0:
                         self.evaluate("dev")
 
-                    if self.args.save_steps > 0 and global_step % self.args.save_steps == 0:
-                        self.save_model()
+                    # if self.args.save_steps > 0 and global_step % self.args.save_steps == 0:
+                    self.save_model()
 
                 if 0 < self.args.max_steps < global_step:
                     epoch_iterator.close()
@@ -212,6 +213,50 @@ class Trainer(object):
 
         return results
 
+    def predict(self, sentences, tokenizer):
+        processor = JointProcessor(self.args)
+        examples = processor._create_examples(sentences)
+        features = convert_examples_to_features(examples, self.args.max_seq_len, tokenizer,
+                                                pad_token_label_id=self.args.ignore_index)
+
+        all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
+        all_attention_mask = torch.tensor([f.attention_mask for f in features], dtype=torch.long)
+        all_token_type_ids = torch.tensor([f.token_type_ids for f in features], dtype=torch.long)
+        all_intent_label_ids = torch.tensor([f.intent_label_id for f in features], dtype=torch.long)
+        all_slot_labels_ids = torch.tensor([f.slot_labels_ids for f in features], dtype=torch.long)
+
+        batch = [all_input_ids, all_attention_mask, all_token_type_ids, all_intent_label_ids, all_slot_labels_ids]
+        batch = tuple(t.to(self.device) for t in batch)
+        with torch.no_grad():
+            inputs = {'input_ids': batch[0],
+                      'attention_mask': batch[1],
+                      'intent_label_ids': batch[3],
+                      'slot_labels_ids': batch[4]}
+            if self.args.model_type != 'distilbert':
+                inputs['token_type_ids'] = batch[2]
+            outputs = self.model(**inputs)
+            tmp_eval_loss, (intent_logits, slot_logits) = outputs[:2]
+        intent_preds = intent_logits.detach().cpu().numpy()
+        intent_preds = np.argmax(intent_preds, axis=1)
+
+        if self.args.use_crf:
+            # decode() in `torchcrf` returns list with best index directly
+            slot_preds = np.array(self.model.crf.decode(slot_logits))
+        else:
+            slot_preds = slot_logits.detach().cpu().numpy()
+
+        slot_preds = np.argmax(slot_preds, axis=2)
+
+        out_slot_labels_ids = inputs["slot_labels_ids"].detach().cpu().numpy()
+        slot_preds_list = [[] for _ in range(out_slot_labels_ids.shape[0])]
+
+        slot_label_map = {i: label for i, label in enumerate(self.slot_label_lst)}
+        for i in range(out_slot_labels_ids.shape[0]):
+            for j in range(out_slot_labels_ids.shape[1]):
+                if out_slot_labels_ids[i, j] != self.pad_token_label_id:
+                    slot_preds_list[i].append(slot_label_map[slot_preds[i][j]])
+        return intent_preds, slot_preds_list
+
     def save_model(self):
         # Save model checkpoint (Overwrite)
         if not os.path.exists(self.args.model_dir):
@@ -226,7 +271,7 @@ class Trainer(object):
     def load_model(self):
         # Check whether model exists
         if not os.path.exists(self.args.model_dir):
-            raise Exception("Model doesn't exists! Train first!")
+            raise Exception("Model doesn't exists! Train first! model path: %s " % str(self.args.model_dir))
 
         try:
             self.model = self.model_class.from_pretrained(self.args.model_dir,

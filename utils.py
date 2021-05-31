@@ -18,7 +18,7 @@ MODEL_CLASSES = {
 }
 
 MODEL_PATH_MAP = {
-    'bert': 'bert-base-uncased',
+    'bert': 'bert-base-chinese',
     'distilbert': 'distilbert-base-uncased',
     'albert': 'albert-xxlarge-v1'
 }

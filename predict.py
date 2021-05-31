@@ -78,7 +78,7 @@ def convert_input_file_to_tensor_dataset(lines,
             if not word_tokens:
                 word_tokens = [unk_token]  # For handling the bad-encoded word
             tokens.extend(word_tokens)
-            # Use the real label id for the first token of the word, and padding ids for the remaining tokens
+            # Use the real sentences.txt id for the first token of the word, and padding ids for the remaining tokens
             slot_label_mask.extend([pad_token_label_id + 1] + [pad_token_label_id] * (len(word_tokens) - 1))
 
         # Account for [CLS] and [SEP]

@@ -7,7 +7,7 @@ def vocab_process(data_dir):
 
     train_dir = os.path.join(data_dir, 'train')
     # intent
-    with open(os.path.join(train_dir, 'label'), 'r', encoding='utf-8') as f_r, open(os.path.join(data_dir, intent_label_vocab), 'w',
+    with open(os.path.join(train_dir, 'sentences.txt'), 'r', encoding='utf-8') as f_r, open(os.path.join(data_dir, intent_label_vocab), 'w',
                                                                                     encoding='utf-8') as f_w:
         intent_vocab = set()
         for line in f_r:
@@ -23,7 +23,7 @@ def vocab_process(data_dir):
             f_w.write(intent + '\n')
 
     # slot
-    with open(os.path.join(train_dir, 'seq.out'), 'r', encoding='utf-8') as f_r, open(os.path.join(data_dir, slot_label_vocab), 'w',
+    with open(os.path.join(train_dir, 'slot_label.txt'), 'r', encoding='utf-8') as f_r, open(os.path.join(data_dir, slot_label_vocab), 'w',
                                                                                       encoding='utf-8') as f_w:
         slot_vocab = set()
         for line in f_r:

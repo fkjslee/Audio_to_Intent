@@ -4,6 +4,8 @@ import argparse
 from trainer import Trainer
 from utils import init_logger, load_tokenizer, read_prediction_text, set_seed, MODEL_CLASSES, MODEL_PATH_MAP
 from data_loader import load_and_cache_examples
+from transformers import BertTokenizer
+from utils import get_intent_labels, get_slot_labels
 
 
 def main(args):
@@ -16,9 +18,16 @@ def main(args):
     test_dataset = load_and_cache_examples(args, tokenizer, mode="test")
 
     trainer = Trainer(args, train_dataset, dev_dataset, test_dataset)
+    trainer.train()
 
-    if args.do_train:
-        trainer.train()
+    cmd = input('input cmd')
+    while not cmd == "退出":
+        intent_preds, slot_preds_list = trainer.predict([cmd], tokenizer)
+        print(intent_preds)
+        print(slot_preds_list)
+        print(get_intent_labels(args))
+        print(get_slot_labels(args))
+        cmd = input('input cmd')
 
     if args.do_eval:
         trainer.load_model()
@@ -40,7 +49,7 @@ if __name__ == '__main__':
     parser.add_argument("--train_batch_size", default=32, type=int, help="Batch size for training.")
     parser.add_argument("--eval_batch_size", default=64, type=int, help="Batch size for evaluation.")
     parser.add_argument("--max_seq_len", default=50, type=int, help="The maximum total input sequence length after tokenization.")
-    parser.add_argument("--learning_rate", default=5e-5, type=float, help="The initial learning rate for Adam.")
+    parser.add_argument("--learning_rate", default=1e-4, type=float, help="The initial learning rate for Adam.")
     parser.add_argument("--num_train_epochs", default=10.0, type=float, help="Total number of training epochs to perform.")
     parser.add_argument("--weight_decay", default=0.0, type=float, help="Weight decay if we apply some.")
     parser.add_argument('--gradient_accumulation_steps', type=int, default=1,
@@ -65,7 +74,7 @@ if __name__ == '__main__':
 
     # CRF option
     parser.add_argument("--use_crf", action="store_true", help="Whether to use CRF")
-    parser.add_argument("--slot_pad_label", default="PAD", type=str, help="Pad token for slot label pad (to be ignore when calculate loss)")
+    parser.add_argument("--slot_pad_label", default="PAD", type=str, help="Pad token for slot sentences.txt pad (to be ignore when calculate loss)")
 
     args = parser.parse_args()
 

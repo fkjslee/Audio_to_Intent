@@ -18,7 +18,7 @@ class InputExample(object):
     Args:
         guid: Unique id for the example.
         words: list. The words of the sequence.
-        intent_label: (Optional) string. The intent label of the example.
+        intent_label: (Optional) string. The intent sentences.txt of the example.
         slot_labels: (Optional) list. The slot labels of the example.
     """
 
@@ -72,9 +72,9 @@ class JointProcessor(object):
         self.intent_labels = get_intent_labels(args)
         self.slot_labels = get_slot_labels(args)
 
-        self.input_text_file = 'seq.in'
-        self.intent_label_file = 'label'
-        self.slot_labels_file = 'seq.out'
+        self.input_text_file = 'sentences.txt'
+        self.intent_label_file = 'intent_label.txt'
+        self.slot_labels_file = 'slot_label.txt'
 
     @classmethod
     def _read_file(cls, input_file, quotechar=None):
@@ -85,19 +85,27 @@ class JointProcessor(object):
                 lines.append(line.strip())
             return lines
 
-    def _create_examples(self, texts, intents, slots, set_type):
+    def _create_examples(self, texts, intents=None, slots=None, set_type='train'):
         """Creates examples for the training and dev sets."""
         examples = []
+        if intents is None:
+            intents = [None] * len(texts)
+            slots = [None] * len(texts)
         for i, (text, intent, slot) in enumerate(zip(texts, intents, slots)):
             guid = "%s-%s" % (set_type, i)
             # 1. input_text
             words = text.split()  # Some are spaced twice
             # 2. intent
-            intent_label = self.intent_labels.index(intent) if intent in self.intent_labels else self.intent_labels.index("UNK")
+            intent_label = None if intent is None else self.intent_labels.index(
+                intent) if intent in self.intent_labels else self.intent_labels.index("UNK")
             # 3. slot
             slot_labels = []
-            for s in slot.split():
-                slot_labels.append(self.slot_labels.index(s) if s in self.slot_labels else self.slot_labels.index("UNK"))
+            if slot is None:
+                slot_labels = [None] * len(words)
+            else:
+                for s in slot.split():
+                    slot_labels.append(
+                        self.slot_labels.index(s) if s in self.slot_labels else self.slot_labels.index("UNK"))
 
             assert len(words) == len(slot_labels)
             examples.append(InputExample(guid=guid, words=words, intent_label=intent_label, slot_labels=slot_labels))
@@ -147,8 +155,8 @@ def convert_examples_to_features(examples, max_seq_len, tokenizer,
             if not word_tokens:
                 word_tokens = [unk_token]  # For handling the bad-encoded word
             tokens.extend(word_tokens)
-            # Use the real label id for the first token of the word, and padding ids for the remaining tokens
-            slot_labels_ids.extend([int(slot_label)] + [pad_token_label_id] * (len(word_tokens) - 1))
+            # Use the real sentences.txt id for the first token of the word, and padding ids for the remaining tokens
+            slot_labels_ids.extend([-1 if slot_label is None else int(slot_label)] + [pad_token_label_id] * (len(word_tokens) - 1))
 
         # Account for [CLS] and [SEP]
         special_tokens_count = 2
@@ -180,11 +188,15 @@ def convert_examples_to_features(examples, max_seq_len, tokenizer,
         slot_labels_ids = slot_labels_ids + ([pad_token_label_id] * padding_length)
 
         assert len(input_ids) == max_seq_len, "Error with input length {} vs {}".format(len(input_ids), max_seq_len)
-        assert len(attention_mask) == max_seq_len, "Error with attention mask length {} vs {}".format(len(attention_mask), max_seq_len)
-        assert len(token_type_ids) == max_seq_len, "Error with token type length {} vs {}".format(len(token_type_ids), max_seq_len)
-        assert len(slot_labels_ids) == max_seq_len, "Error with slot labels length {} vs {}".format(len(slot_labels_ids), max_seq_len)
+        assert len(attention_mask) == max_seq_len, "Error with attention mask length {} vs {}".format(
+            len(attention_mask), max_seq_len)
+        assert len(token_type_ids) == max_seq_len, "Error with token type length {} vs {}".format(len(token_type_ids),
+                                                                                                  max_seq_len)
+        assert len(
+            slot_labels_ids) == max_seq_len, "Error with slot labels length {} vs {}".format(
+            len(slot_labels_ids), max_seq_len)
 
-        intent_label_id = int(example.intent_label)
+        intent_label_id = -1 if example.intent_label is None else int(example.intent_label)
 
         if ex_index < 5:
             logger.info("*** Example ***")
@@ -193,7 +205,8 @@ def convert_examples_to_features(examples, max_seq_len, tokenizer,
             logger.info("input_ids: %s" % " ".join([str(x) for x in input_ids]))
             logger.info("attention_mask: %s" % " ".join([str(x) for x in attention_mask]))
             logger.info("token_type_ids: %s" % " ".join([str(x) for x in token_type_ids]))
-            logger.info("intent_label: %s (id = %d)" % (example.intent_label, intent_label_id))
+            logger.info(
+                "intent_label: %s (id = %s)" % (example.intent_label, intent_label_id))
             logger.info("slot_labels: %s" % " ".join([str(x) for x in slot_labels_ids]))
 
         features.append(
@@ -236,12 +249,12 @@ def load_and_cache_examples(args, tokenizer, mode):
         else:
             raise Exception("For mode, Only train, dev, test is available")
 
-        # Use cross entropy ignore index as padding label id so that only real label ids contribute to the loss later
+        # Use cross entropy ignore index as padding sentences.txt id so that only real sentences.txt ids contribute to the loss later
         pad_token_label_id = args.ignore_index
         features = convert_examples_to_features(examples, args.max_seq_len, tokenizer,
                                                 pad_token_label_id=pad_token_label_id)
         logger.info("Saving features into cached file %s", cached_features_file)
-        torch.save(features, cached_features_file)
+        # torch.save(features, cached_features_file)
 
     # Convert to Tensors and build dataset
     all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)

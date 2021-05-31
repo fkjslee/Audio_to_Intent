@@ -1,5 +1,7 @@
-UNK
 map_larger
 map_smaller
 move_up
 move_down
+map_larger
+map_smaller
+map_smaller

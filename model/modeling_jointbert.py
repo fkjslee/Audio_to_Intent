@@ -30,7 +30,7 @@ class JointBERT(BertPreTrainedModel):
 
         total_loss = 0
         # 1. Intent Softmax
-        if intent_label_ids is not None:
+        if intent_label_ids is not None and not torch.any(intent_label_ids == -1):
             if self.num_intent_labels == 1:
                 intent_loss_fct = nn.MSELoss()
                 intent_loss = intent_loss_fct(intent_logits.view(-1), intent_label_ids.view(-1))
@@ -40,7 +40,7 @@ class JointBERT(BertPreTrainedModel):
             total_loss += intent_loss
 
         # 2. Slot Softmax
-        if slot_labels_ids is not None:
+        if slot_labels_ids is not None and not torch.any(slot_labels_ids == -1):
             if self.args.use_crf:
                 slot_loss = self.crf(slot_logits, slot_labels_ids, mask=attention_mask.byte(), reduction='mean')
                 slot_loss = -1 * slot_loss  # negative log-likelihood
