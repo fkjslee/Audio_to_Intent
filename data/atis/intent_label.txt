@@ -1,5 +1,0 @@
-UNK
-map_larger
-map_smaller
-move_up
-move_down

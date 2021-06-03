@@ -112,3 +112,8 @@ atis_model/
 .DS_Store
 cached*
 sample_pred_out.txt
+
+# project
+qiyuan_model
+testFun*
+asrConfig.yml

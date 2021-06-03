@@ -1,0 +1,8 @@
+# 意图集合
+IntentSet:
+  UNK: # unknown
+  map_larger: # 放大地图
+  map_smaller: # 缩小地图
+  move_up: # 向上移动
+  move_down: # 向下移动
+  move_object: # 移动物体

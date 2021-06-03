@@ -2,7 +2,7 @@ import os
 import copy
 import json
 import logging
-
+import yaml
 import torch
 from torch.utils.data import TensorDataset
 
@@ -72,19 +72,6 @@ class JointProcessor(object):
         self.intent_labels = get_intent_labels(args)
         self.slot_labels = get_slot_labels(args)
 
-        self.input_text_file = 'sentences.txt'
-        self.intent_label_file = 'intent_label.txt'
-        self.slot_labels_file = 'slot_label.txt'
-
-    @classmethod
-    def _read_file(cls, input_file, quotechar=None):
-        """Reads a tab separated value file."""
-        with open(input_file, "r", encoding="utf-8") as f:
-            lines = []
-            for line in f:
-                lines.append(line.strip())
-            return lines
-
     def _create_examples(self, texts, intents=None, slots=None, set_type='train'):
         """Creates examples for the training and dev sets."""
         examples = []
@@ -118,14 +105,20 @@ class JointProcessor(object):
         """
         data_path = os.path.join(self.args.data_dir, self.args.task, mode)
         logger.info("LOOKING AT {}".format(data_path))
-        return self._create_examples(texts=self._read_file(os.path.join(data_path, self.input_text_file)),
-                                     intents=self._read_file(os.path.join(data_path, self.intent_label_file)),
-                                     slots=self._read_file(os.path.join(data_path, self.slot_labels_file)),
-                                     set_type=mode)
+        f = open(os.path.join(data_path, "labeled_sentences.yml"), 'r', encoding='utf-8')
+        d = yaml.load(f.read(), yaml.FullLoader)
+        texts = []
+        intents = []
+        slots = []
+        for key in d.keys():
+            texts.append(d[key]['sentence'])
+            intents.append(d[key]['intent'])
+            slots.append(d[key]['slot'])
+        return self._create_examples(texts=texts, intents=intents, slots=slots, set_type=mode)
 
 
 processors = {
-    "atis": JointProcessor,
+    "qiyuan": JointProcessor,
     "snips": JointProcessor
 }
 

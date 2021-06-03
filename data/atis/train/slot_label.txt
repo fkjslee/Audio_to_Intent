@@ -1,7 +1,0 @@
-larger o
-smaller o
-up digit
-down digit
-larger o
-smaller o
-smaller o

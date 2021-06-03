@@ -1,8 +1,0 @@
-PAD
-UNK
-O
-larger
-smaller
-up
-down
-digit
