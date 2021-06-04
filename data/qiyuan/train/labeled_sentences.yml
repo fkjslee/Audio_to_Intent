@@ -21,3 +21,8 @@
   sentence: 下移 百分之十
   intent: move_down
   slot: down digit
+
+移动_1:
+  sentence: 把 飞行一大队 移动到 莆田机场
+  intent: move_object
+  slot: o moved_object o moved_position

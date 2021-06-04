@@ -32,6 +32,22 @@ ENGINE_MODEL_TYPE = d['ENGINE_MODEL_TYPE']
 SLICE_SIZE = d['SLICE_SIZE']
 
 
+def add_jieba_word(d):
+    for key in d.keys():
+        jieba.add_word(key)
+        if not d[key] is None:
+            add_jieba_word(d[key])
+
+
+def init_jieba():
+    args = get_args()
+    f = open(os.path.join(args.data_dir, args.task, args.slot_label_file), 'r', encoding='utf-8')
+    d = yaml.load(f.read(), yaml.FullLoader)
+    add_jieba_word(d)
+
+init_jieba()
+
+
 class MySpeechRecognitionListener(speech_recognizer.SpeechRecognitionListener):
     def __init__(self, id, predictor):
         self.id = id
