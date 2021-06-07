@@ -118,7 +118,7 @@ def get_args():
 
     parser.add_argument("--task", default="qiyuan", type=str, help="The name of the task to train")
     parser.add_argument("--model_dir", default="qiyuan_model", type=str, help="Path to save, load model")
-    parser.add_argument("--data_dir", default="../data", type=str, help="The input data dir")
+    parser.add_argument("--data_dir", default="data", type=str, help="The input data dir")
     parser.add_argument("--intent_label_file", default="intent_label.yml", type=str, help="Intent Label file")
     parser.add_argument("--slot_label_file", default="slot_label.yml", type=str, help="Slot Label file")
 

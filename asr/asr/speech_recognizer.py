@@ -9,7 +9,7 @@ import threading
 import websocket
 import uuid
 import urllib
-from common.log import logger
+from asr.common.log import logger
 
 
 def is_python3():

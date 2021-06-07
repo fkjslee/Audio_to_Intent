@@ -16,7 +16,7 @@ import numpy as np
 import wave
 import base64
 import jieba
-from predictor import Predictor
+from intentpredictor import IntentPredictor
 import os
 from utils import get_args
 import yaml
@@ -30,22 +30,6 @@ SECRET_ID = d['SECRET_ID']
 SECRET_KEY = d['SECRET_KEY']
 ENGINE_MODEL_TYPE = d['ENGINE_MODEL_TYPE']
 SLICE_SIZE = d['SLICE_SIZE']
-
-
-def add_jieba_word(d):
-    for key in d.keys():
-        jieba.add_word(key)
-        if not d[key] is None:
-            add_jieba_word(d[key])
-
-
-def init_jieba():
-    args = get_args()
-    f = open(os.path.join(args.data_dir, args.task, args.slot_label_file), 'r', encoding='utf-8')
-    d = yaml.load(f.read(), yaml.FullLoader)
-    add_jieba_word(d)
-
-init_jieba()
 
 
 class MySpeechRecognitionListener(speech_recognizer.SpeechRecognitionListener):
@@ -91,7 +75,7 @@ def callback(indata, frames, time, status):
 
 
 if __name__ == "__main__":
-    listener = MySpeechRecognitionListener(0, Predictor())
+    listener = MySpeechRecognitionListener(0, IntentPredictor())
     credential_var = credential.Credential(SECRET_ID, SECRET_KEY)
     recognizer = speech_recognizer.SpeechRecognizer(
         APPID, credential_var, ENGINE_MODEL_TYPE, listener)

@@ -9,7 +9,7 @@ from utils import get_intent_labels, get_slot_labels
 import jieba
 
 
-class Predictor:
+class IntentPredictor:
     def __init__(self):
         init_logger()
         args = get_args()
