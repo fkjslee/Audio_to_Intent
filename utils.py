@@ -9,14 +9,12 @@ from seqeval.metrics import precision_score, recall_score, f1_score
 from transformers import BertConfig, DistilBertConfig, AlbertConfig
 from transformers import BertTokenizer, DistilBertTokenizer, AlbertTokenizer
 
-from model import JointBERT, JointDistilBERT, JointAlbert
+from model import JointBERT
 import argparse
 import yaml
 
 MODEL_CLASSES = {
     'bert': (BertConfig, JointBERT, BertTokenizer),
-    'distilbert': (DistilBertConfig, JointDistilBERT, DistilBertTokenizer),
-    'albert': (AlbertConfig, JointAlbert, AlbertTokenizer)
 }
 
 MODEL_PATH_MAP = {
