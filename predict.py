@@ -7,7 +7,7 @@ import numpy as np
 import torch
 from torch.utils.data import TensorDataset, DataLoader, SequentialSampler
 
-from utils import init_logger, load_tokenizer, get_intent_labels, get_slot_labels, MODEL_CLASSES
+from utils import init_logger, load_tokenizer, get_intent_labels, get_slot_labels
 
 logger = logging.getLogger(__name__)
 
@@ -26,10 +26,10 @@ def load_model(pred_config, args, device):
         raise Exception("Model doesn't exists! Train first!")
 
     try:
-        model = MODEL_CLASSES[args.model_type][1].from_pretrained(args.model_dir,
-                                                                  args=args,
-                                                                  intent_label_lst=get_intent_labels(args),
-                                                                  slot_label_lst=get_slot_labels(args))
+        model = JointBERT.from_pretrained(args.model_dir,
+                                          args=args,
+                                          intent_label_lst=get_intent_labels(args),
+                                          slot_label_lst=get_slot_labels(args))
         model.to(device)
         model.eval()
         logger.info("***** Model Loaded *****")

@@ -1,7 +1,7 @@
 import jieba
 import yaml
-from utils import get_args
 import os
+from utils import get_args
 
 
 def add_jieba_word(d):

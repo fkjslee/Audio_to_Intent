@@ -1,10 +1,11 @@
 import jieba
-from utils import get_args
 import yaml
 from preprocess.preprocessor import init_jieba, init_asr
 from AudioProcessor import AudioRecognizer
 import sounddevice as sd
 import time
+import argparse
+from utils import init_logger
 
 
 def callback(indata, frames, time, status):
@@ -15,6 +16,7 @@ def callback(indata, frames, time, status):
 
 if __name__ == "__main__":
     init_jieba()
+    init_logger()
     recognizer = AudioRecognizer()
     try:
         recognizer.start()

@@ -104,7 +104,7 @@ class JointProcessor(object):
             mode: train, dev, test
         """
         data_path = os.path.join(self.args.data_dir, self.args.task, mode)
-        logger.info("LOOKING AT {}".format(data_path))
+        logger.debug("LOOKING AT {}".format(data_path))
         f = open(os.path.join(data_path, "labeled_sentences.yml"), 'r', encoding='utf-8')
         d = yaml.load(f.read(), yaml.FullLoader)
         texts = []
@@ -136,9 +136,10 @@ def convert_examples_to_features(examples, max_seq_len, tokenizer,
     pad_token_id = tokenizer.pad_token_id
 
     features = []
+    logger = logging.getLogger(__name__)
     for (ex_index, example) in enumerate(examples):
         if ex_index % 5000 == 0:
-            logger.info("Writing example %d of %d" % (ex_index, len(examples)))
+            logger.debug("Writing example %d of %d" % (ex_index, len(examples)))
 
         # Tokenize word by word (for NER)
         tokens = []
@@ -192,15 +193,15 @@ def convert_examples_to_features(examples, max_seq_len, tokenizer,
         intent_label_id = -1 if example.intent_label is None else int(example.intent_label)
 
         if ex_index < 5:
-            logger.info("*** Example ***")
-            logger.info("guid: %s" % example.guid)
-            logger.info("tokens: %s" % " ".join([str(x) for x in tokens]))
-            logger.info("input_ids: %s" % " ".join([str(x) for x in input_ids]))
-            logger.info("attention_mask: %s" % " ".join([str(x) for x in attention_mask]))
-            logger.info("token_type_ids: %s" % " ".join([str(x) for x in token_type_ids]))
-            logger.info(
+            logger.debug("*** Example ***")
+            logger.debug("guid: %s" % example.guid)
+            logger.debug("tokens: %s" % " ".join([str(x) for x in tokens]))
+            logger.debug("input_ids: %s" % " ".join([str(x) for x in input_ids]))
+            logger.debug("attention_mask: %s" % " ".join([str(x) for x in attention_mask]))
+            logger.debug("token_type_ids: %s" % " ".join([str(x) for x in token_type_ids]))
+            logger.debug(
                 "intent_label: %s (id = %s)" % (example.intent_label, intent_label_id))
-            logger.info("slot_labels: %s" % " ".join([str(x) for x in slot_labels_ids]))
+            logger.debug("slot_labels: %s" % " ".join([str(x) for x in slot_labels_ids]))
 
         features.append(
             InputFeatures(input_ids=input_ids,
@@ -228,11 +229,11 @@ def load_and_cache_examples(args, tokenizer, mode):
     )
 
     if os.path.exists(cached_features_file):
-        logger.info("Loading features from cached file %s", cached_features_file)
+        logger.debug("Loading features from cached file %s", cached_features_file)
         features = torch.load(cached_features_file)
     else:
         # Load data features from dataset file
-        logger.info("Creating features from dataset file at %s", args.data_dir)
+        logger.debug("Creating features from dataset file at %s", os.path.join(args.data_dir, args.task))
         if mode == "train":
             examples = processor.get_examples("train")
         elif mode == "dev":
@@ -246,7 +247,7 @@ def load_and_cache_examples(args, tokenizer, mode):
         pad_token_label_id = args.ignore_index
         features = convert_examples_to_features(examples, args.max_seq_len, tokenizer,
                                                 pad_token_label_id=pad_token_label_id)
-        logger.info("Saving features into cached file %s", cached_features_file)
+        logger.debug("Saving features into cached file %s", cached_features_file)
         # torch.save(features, cached_features_file)
 
     # Convert to Tensors and build dataset

@@ -7,9 +7,11 @@ import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from transformers import BertConfig, AdamW, get_linear_schedule_with_warmup
 
-from utils import MODEL_CLASSES, compute_metrics, get_intent_labels, get_slot_labels
+from utils import compute_metrics, get_intent_labels, get_slot_labels
 from data_loader import JointProcessor, convert_examples_to_features
+from transformers import BertTokenizer
 
+from model import JointBERT
 logger = logging.getLogger(__name__)
 
 
@@ -25,7 +27,7 @@ class Trainer(object):
         # Use cross entropy ignore index as padding sentences.txt id so that only real sentences.txt ids contribute to the loss later
         self.pad_token_label_id = args.ignore_index
 
-        self.config_class, self.model_class, _ = MODEL_CLASSES[args.model_type]
+        self.config_class, self.model_class, _ = BertConfig, JointBERT, BertTokenizer
         self.config = self.config_class.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
         self.model = self.model_class.from_pretrained(args.model_name_or_path,
                                                       config=self.config,
@@ -58,33 +60,29 @@ class Trainer(object):
         scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=self.args.warmup_steps, num_training_steps=t_total)
 
         # Train!
-        logger.info("***** Running training *****")
-        logger.info("  Num examples = %d", len(self.train_dataset))
-        logger.info("  Num Epochs = %d", self.args.num_train_epochs)
-        logger.info("  Total train batch size = %d", self.args.train_batch_size)
-        logger.info("  Gradient Accumulation steps = %d", self.args.gradient_accumulation_steps)
-        logger.info("  Total optimization steps = %d", t_total)
-        logger.info("  Logging steps = %d", self.args.logging_steps)
-        logger.info("  Save steps = %d", self.args.save_steps)
+        logger.debug("***** Running training *****")
+        logger.debug("  Num examples = %d", len(self.train_dataset))
+        logger.debug("  Num Epochs = %d", self.args.num_train_epochs)
+        logger.debug("  Total train batch size = %d", self.args.train_batch_size)
+        logger.debug("  Gradient Accumulation steps = %d", self.args.gradient_accumulation_steps)
+        logger.debug("  Total optimization steps = %d", t_total)
+        logger.debug("  Logging steps = %d", self.args.logging_steps)
+        logger.debug("  Save steps = %d", self.args.save_steps)
 
         global_step = 0
         tr_loss = 0.0
         self.model.zero_grad()
 
-        train_iterator = trange(int(self.args.num_train_epochs), desc="Epoch")
+        train_iterator = trange(int(self.args.num_train_epochs), desc="Epoch", position=0)
 
         for _ in train_iterator:
-            epoch_iterator = tqdm(train_dataloader, desc="Iteration")
+            epoch_iterator = tqdm(train_dataloader, desc="Iteration", position=0)
             for step, batch in enumerate(epoch_iterator):
                 self.model.train()
                 batch = tuple(t.to(self.device) for t in batch)  # GPU or CPU
 
-                inputs = {'input_ids': batch[0],
-                          'attention_mask': batch[1],
-                          'intent_label_ids': batch[3],
-                          'slot_labels_ids': batch[4]}
-                if self.args.model_type != 'distilbert':
-                    inputs['token_type_ids'] = batch[2]
+                inputs = {'input_ids': batch[0], 'attention_mask': batch[1], 'intent_label_ids': batch[3],
+                          'slot_labels_ids': batch[4], 'token_type_ids': batch[2]}
                 outputs = self.model(**inputs)
                 loss = outputs[0]
 
@@ -130,9 +128,9 @@ class Trainer(object):
         eval_dataloader = DataLoader(dataset, sampler=eval_sampler, batch_size=self.args.eval_batch_size)
 
         # Eval!
-        logger.info("***** Running evaluation on %s dataset *****", mode)
-        logger.info("  Num examples = %d", len(dataset))
-        logger.info("  Batch size = %d", self.args.eval_batch_size)
+        logger.debug("***** Running evaluation on %s dataset *****", mode)
+        logger.debug("  Num examples = %d", len(dataset))
+        logger.debug("  Batch size = %d", self.args.eval_batch_size)
         eval_loss = 0.0
         nb_eval_steps = 0
         intent_preds = None
@@ -145,12 +143,8 @@ class Trainer(object):
         for batch in tqdm(eval_dataloader, desc="Evaluating"):
             batch = tuple(t.to(self.device) for t in batch)
             with torch.no_grad():
-                inputs = {'input_ids': batch[0],
-                          'attention_mask': batch[1],
-                          'intent_label_ids': batch[3],
-                          'slot_labels_ids': batch[4]}
-                if self.args.model_type != 'distilbert':
-                    inputs['token_type_ids'] = batch[2]
+                inputs = {'input_ids': batch[0], 'attention_mask': batch[1], 'intent_label_ids': batch[3],
+                          'slot_labels_ids': batch[4], 'token_type_ids': batch[2]}
                 outputs = self.model(**inputs)
                 tmp_eval_loss, (intent_logits, slot_logits) = outputs[:2]
 
@@ -207,9 +201,9 @@ class Trainer(object):
         total_result = compute_metrics(intent_preds, out_intent_label_ids, slot_preds_list, out_slot_label_list)
         results.update(total_result)
 
-        logger.info("***** Eval results *****")
+        logger.debug("***** Eval results *****")
         for key in sorted(results.keys()):
-            logger.info("  %s = %s", key, str(results[key]))
+            logger.debug("  %s = %s", key, str(results[key]))
 
         return results
 
@@ -228,12 +222,8 @@ class Trainer(object):
         batch = [all_input_ids, all_attention_mask, all_token_type_ids, all_intent_label_ids, all_slot_labels_ids]
         batch = tuple(t.to(self.device) for t in batch)
         with torch.no_grad():
-            inputs = {'input_ids': batch[0],
-                      'attention_mask': batch[1],
-                      'intent_label_ids': batch[3],
-                      'slot_labels_ids': batch[4]}
-            if self.args.model_type != 'distilbert':
-                inputs['token_type_ids'] = batch[2]
+            inputs = {'input_ids': batch[0], 'attention_mask': batch[1], 'intent_label_ids': batch[3],
+                      'slot_labels_ids': batch[4], 'token_type_ids': batch[2]}
             outputs = self.model(**inputs)
             tmp_eval_loss, (intent_logits, slot_logits) = outputs[:2]
         intent_preds = intent_logits.detach().cpu().numpy()
@@ -266,7 +256,7 @@ class Trainer(object):
 
         # Save training arguments together with the trained model
         torch.save(self.args, os.path.join(self.args.model_dir, 'training_args.bin'))
-        logger.info("Saving model checkpoint to %s", self.args.model_dir)
+        logger.debug("Saving model checkpoint to %s", self.args.model_dir)
 
     def load_model(self):
         # Check whether model exists

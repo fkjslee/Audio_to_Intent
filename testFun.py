@@ -1,12 +1,12 @@
 import yaml
 import torch
 import random
+from tqdm import tqdm, trange
+import time
 
-
-x = torch.arange(50, 100).reshape(-1)
-y = [i for i in range(0, 50)]
-
-random.shuffle(y)
-print(y)
-print(x)
-print(x[y])
+epochs = 5
+for _ in trange(epochs, desc="out", position=0):
+    x = [1, 2, 3]
+    tq = tqdm(x, desc="in", position=0)
+    for i, j in enumerate(tq):
+        time.sleep(0.5)

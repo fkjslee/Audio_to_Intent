@@ -1,3 +1,4 @@
+# coding: utf-8
 from asr.asr import speech_recognizer
 from preprocess.preprocessor import init_jieba, init_asr
 from asr.common.credential import Credential
@@ -5,6 +6,9 @@ from intentpredictor import IntentPredictor
 from datetime import datetime
 import json
 import jieba
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class AudioListener(speech_recognizer.SpeechRecognitionListener):
@@ -13,41 +17,39 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
         self.predictor = predictor
 
     def on_recognition_start(self, response):
-        print("%s|%s|OnRecognitionStart\n" % (
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"), response['voice_id']))
+        logger.info("%s|OnRecognitionStart\n" % (
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
     def on_sentence_begin(self, response):
-        rsp_str = json.dumps(response, ensure_ascii=False)
-        print("%s|%s|OnRecognitionSentenceBegin, rsp %s\n" % (
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"), response['voice_id'], rsp_str))
+        logger.info("%s|OnRecognitionSentenceBegin" % (
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
     def on_recognition_result_change(self, response):
         # print(response['result']['voice_text_str'])
         ...
 
     def on_sentence_end(self, response):
-        # rsp_str = json.dumps(response, ensure_ascii=False)
         text = response['result']['voice_text_str']
-        print(" ".join(jieba.lcut(text)))
-        print(self.predictor.predict(text))
-        # print("%s|%s|OnSentenceEnd, rsp %s\n" % (datetime.now().strftime(
-        #     "%Y-%m-%d %H:%M:%S"), response['voice_id'], rsp_str))
+        logger.info("asr msg: %s" % text)
+        logger.info("msg been cut: %s", " ".join(jieba.lcut(text)))
+        logger.info("predict intent: %s", self.predictor.predict(text))
 
     def on_recognition_complete(self, response):
-        print("%s|%s|OnRecognitionComplete\n" % (
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"), response['voice_id']))
+        logger.info("%s|OnRecognitionComplete\n" % (
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
     def on_fail(self, response):
         rsp_str = json.dumps(response, ensure_ascii=False)
-        print("%s|%s|OnFail,message %s\n" % (datetime.now().strftime(
-            "%Y-%m-%d %H:%M:%S"), response['voice_id'], rsp_str))
+        logger.info("%s|OnFail,message %s\n" % (datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"), rsp_str))
 
 
 class AudioRecognizer(speech_recognizer.SpeechRecognizer):
     def __init__(self):
         asrMsg = init_asr()
         listener = AudioListener(0, IntentPredictor())
-        super().__init__(asrMsg['APPID'], Credential(asrMsg['SECRET_ID'], asrMsg['SECRET_KEY']), asrMsg['ENGINE_MODEL_TYPE'], listener)
+        super().__init__(asrMsg['APPID'], Credential(asrMsg['SECRET_ID'], asrMsg['SECRET_KEY']),
+                         asrMsg['ENGINE_MODEL_TYPE'], listener)
         self.set_filter_modal(1)
         self.set_filter_punc(1)
         self.set_filter_dirty(1)
