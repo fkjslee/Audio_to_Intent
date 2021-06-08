@@ -32,11 +32,13 @@ def load_tokenizer(args):
 
 def init_logger():
     log_levels = {"debug": logging.DEBUG, "info": logging.INFO, "warning": logging.WARNING, "error": logging.ERROR, "critical": logging.CRITICAL}
+    if not os.path.exists("./log"):
+        os.mkdir("./log")
     logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                         datefmt='%m/%d/%Y %H:%M:%S',
-                        level=log_levels[get_args().log_level], filename="./log/log_file.txt")
+                        level=logging.DEBUG, filename="./log/log_file.txt")
     console = logging.StreamHandler()
-    console.setLevel(logging.DEBUG)
+    console.setLevel(log_levels[get_args().log_level])
     console.stream = sys.stdout
     logging.getLogger('').addHandler(console)
     logger.info("args: %s" % str(get_args()))

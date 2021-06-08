@@ -7,6 +7,7 @@ from datetime import datetime
 import json
 import jieba
 import logging
+from utils import get_intent_labels, get_slot_labels, get_args
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,9 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
         text = response['result']['voice_text_str']
         logger.info("asr msg: %s" % text)
         logger.info("msg been cut: %s", " ".join(jieba.lcut(text)))
-        logger.info("predict intent: %s", self.predictor.predict(text))
+        intent_preds, slot_preds_list = self.predictor.predict(text)
+        logger.info("predict intent: %s", str(get_intent_labels(get_args())[intent_preds[0]]))
+        logger.info("predict slot: %s", str(slot_preds_list[0]))
 
     def on_recognition_complete(self, response):
         logger.info("%s|OnRecognitionComplete\n" % (

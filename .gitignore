@@ -115,5 +115,6 @@ sample_pred_out.txt
 
 # project
 qiyuan_model
-testFun*
+test/testFun.py
 log
+test
