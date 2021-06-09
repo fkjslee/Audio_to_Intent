@@ -1,28 +1,28 @@
 # 第一行句子 第二行意图 第三行槽 意图和槽应该是"..//intent_label.yml"中的IntentSet 和"..//slot_label.yml"中的SlotSet的词
 
 
-放大地图1:
+-
   sentence: 放大 地图
   intent: map_larger
   slot: larger o
 
-缩小地图1:
+-
   sentence: 缩小 地图
   intent: map_smaller
   slot: smaller o
 
 
-上移1:
+-
   sentence: 上移 百分之十
   intent: move_up
   slot: up digit
 
-下移1:
+-
   sentence: 下移 百分之十
   intent: move_down
   slot: down digit
 
-移动_1:
+-
   sentence: 把 飞行一大队 移动到 莆田机场
   intent: move_object
   slot: o moved_object o moved_position

@@ -17,13 +17,13 @@ logger = logging.getLogger(__name__)
 def get_intent_labels(args):
     f = open(os.path.join(args.data_dir, args.task, args.intent_label_file), 'r', encoding='utf-8')
     d = yaml.load(f.read(), yaml.FullLoader)
-    return list(d['IntentSet'])
+    return list(d.keys())
 
 
 def get_slot_labels(args):
     f = open(os.path.join(args.data_dir, args.task, args.slot_label_file), 'r', encoding='utf-8')
     d = yaml.load(f.read(), yaml.FullLoader)
-    return list(d['SlotSet'])
+    return list(d.keys())
 
 
 def load_tokenizer(args):

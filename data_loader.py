@@ -5,6 +5,7 @@ import logging
 import yaml
 import torch
 from torch.utils.data import TensorDataset
+from preprocess.dataaugment import augmentTrainData
 
 from utils import get_intent_labels, get_slot_labels
 
@@ -110,10 +111,12 @@ class JointProcessor(object):
         texts = []
         intents = []
         slots = []
-        for key in d.keys():
-            texts.append(d[key]['sentence'])
-            intents.append(d[key]['intent'])
-            slots.append(d[key]['slot'])
+        for key in d:
+            texts.append(key['sentence'])
+            intents.append(key['intent'])
+            slots.append(key['slot'])
+        if mode == "train":
+            texts, intents, slots = augmentTrainData(texts, intents, slots)
         return self._create_examples(texts=texts, intents=intents, slots=slots, set_type=mode)
 
 

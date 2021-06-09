@@ -5,10 +5,15 @@ from utils import get_args
 
 
 def add_jieba_word(d):
-    for key in d.keys():
-        jieba.add_word(key)
-        if not d[key] is None:
+    if d is None:
+        return
+    if isinstance(d, dict):
+        for key in d.keys():
+            jieba.add_word(key)
             add_jieba_word(d[key])
+    else:
+        for val in d:
+            jieba.add_word(val)
 
 
 def init_jieba():
