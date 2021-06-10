@@ -24,7 +24,5 @@ class IntentPredictor:
 
 
     def predict(self, text):
-        text = " ".join(jieba.lcut(text))
-        print('start to predict', text)
         intent_preds, slot_preds_list = self.trainer.predict([text], self.tokenizer)
         return intent_preds, slot_preds_list

@@ -6,6 +6,7 @@ import sounddevice as sd
 import time
 import argparse
 from utils import init_logger
+from network.msgsender import MsgSender
 
 
 def callback(indata, frames, time, status):

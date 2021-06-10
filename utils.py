@@ -148,6 +148,8 @@ def get_args():
                         help='Specifies a target value that is ignored and does not contribute to the input gradient')
 
     parser.add_argument('--slot_loss_coef', type=float, default=1.0, help='Coefficient for the slot loss.')
+    parser.add_argument('--command_server_addr', default=None, help='Address of server which receive intent')
+    parser.add_argument('--command_server_port', type=int, default=None, help='Port of Server which receive intent')
 
     # CRF option
     parser.add_argument("--use_crf", action="store_true", help="Whether to use CRF")

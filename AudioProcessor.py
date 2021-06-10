@@ -8,14 +8,16 @@ import json
 import jieba
 import logging
 from utils import get_intent_labels, get_slot_labels, get_args
+from network.msgsender import MsgSender
 
 logger = logging.getLogger(__name__)
 
 
 class AudioListener(speech_recognizer.SpeechRecognitionListener):
-    def __init__(self, id, predictor):
+    def __init__(self, id, predictor, msg_sender: MsgSender):
         self.id = id
         self.predictor = predictor
+        self.msg_sender = msg_sender
 
     def on_recognition_start(self, response):
         logger.info("%s|OnRecognitionStart\n" % (
@@ -31,11 +33,17 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
 
     def on_sentence_end(self, response):
         text = response['result']['voice_text_str']
-        logger.info("asr msg: %s" % text)
-        logger.info("msg been cut: %s", " ".join(jieba.lcut(text)))
-        intent_preds, slot_preds_list = self.predictor.predict(text)
-        logger.info("predict intent: %s", str(get_intent_labels(get_args())[intent_preds[0]]))
-        logger.info("predict slot: %s", str(slot_preds_list[0]))
+        logger.info("asr result: %s" % text)
+        cut_text = jieba.lcut(text)
+        space_cut_text = " ".join(cut_text)
+        logger.info("jieba cut message: %s", space_cut_text)
+        intent_pred, slot_pred_list = self.predictor.predict(space_cut_text)
+        intent_pred, slot_pred_list = intent_pred[0], slot_pred_list[0]
+        logger.info("predict intent: %s\n predict slot: %s", str(get_intent_labels(get_args())[intent_pred]), str(slot_pred_list))
+        slot_map = {}
+        for word, entity in zip(cut_text, slot_pred_list):
+            slot_map[entity] = word
+        self.msg_sender.send_msg(str(get_intent_labels(get_args())[intent_pred]), slot_map)
 
     def on_recognition_complete(self, response):
         logger.info("%s|OnRecognitionComplete\n" % (
@@ -50,7 +58,9 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
 class AudioRecognizer(speech_recognizer.SpeechRecognizer):
     def __init__(self):
         asrMsg = init_asr()
-        listener = AudioListener(0, IntentPredictor())
+        args = get_args()
+        msg_sender = MsgSender(addr=args.command_server_addr, port=args.command_server_port)
+        listener = AudioListener(0, IntentPredictor(), msg_sender)
         super().__init__(asrMsg['APPID'], Credential(asrMsg['SECRET_ID'], asrMsg['SECRET_KEY']),
                          asrMsg['ENGINE_MODEL_TYPE'], listener)
         self.set_filter_modal(1)

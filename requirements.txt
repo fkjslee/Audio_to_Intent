@@ -5,3 +5,4 @@ pytorch-crf==0.7.2
 PyYAML==5.4.1
 websocket-client2==1.0
 sounddevice==0.4.1
+flatbuffers==2.0

@@ -35,3 +35,11 @@ SLICE_SIZE: 111
 ```
 #### 不想要asr
 可以直接运行根目录下的test_nlu.py, 输入命令后测试
+
+## 结果说明
+```
+asr result: 语音转文字的识别结果
+jieba cut: 使用jieba分词后的结果
+predict intent: 预测的意图
+predict slot: 预测的实体，和分词的顺序对应，表示每个词属于哪一类
+```
