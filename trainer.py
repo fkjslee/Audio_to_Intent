@@ -36,85 +36,42 @@ class Trainer(object):
                                                       slot_label_lst=self.slot_label_lst)
 
         # GPU or CPU
-        self.device = "cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu"
+        self.device = args.device
         self.model.to(self.device)
 
     def train(self):
         train_sampler = RandomSampler(self.train_dataset)
         train_dataloader = DataLoader(self.train_dataset, sampler=train_sampler, batch_size=self.args.train_batch_size)
 
-        if self.args.max_steps > 0:
-            t_total = self.args.max_steps
-            self.args.num_train_epochs = self.args.max_steps // (len(train_dataloader) // self.args.gradient_accumulation_steps) + 1
-        else:
-            t_total = len(train_dataloader) // self.args.gradient_accumulation_steps * self.args.num_train_epochs
-
         # Prepare optimizer and schedule (linear warmup and decay)
         no_decay = ['bias', 'LayerNorm.weight']
         optimizer_grouped_parameters = [
             {'params': [p for n, p in self.model.named_parameters() if not any(nd in n for nd in no_decay)],
-             'weight_decay': self.args.weight_decay},
+             'weight_decay': 0.0},
             {'params': [p for n, p in self.model.named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
         ]
-        optimizer = AdamW(optimizer_grouped_parameters, lr=self.args.learning_rate, eps=self.args.adam_epsilon)
-        scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=self.args.warmup_steps, num_training_steps=t_total)
-
-        # Train!
-        logger.debug("***** Running training *****")
-        logger.debug("  Num examples = %d", len(self.train_dataset))
-        logger.debug("  Num Epochs = %d", self.args.num_train_epochs)
-        logger.debug("  Total train batch size = %d", self.args.train_batch_size)
-        logger.debug("  Gradient Accumulation steps = %d", self.args.gradient_accumulation_steps)
-        logger.debug("  Total optimization steps = %d", t_total)
-        logger.debug("  Logging steps = %d", self.args.logging_steps)
-        logger.debug("  Save steps = %d", self.args.save_steps)
+        optimizer = AdamW(optimizer_grouped_parameters, lr=1e-4)
+        scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=self.args.warmup_steps, num_training_steps=len(train_dataloader) * self.args.num_train_epochs)
 
         global_step = 0
-        tr_loss = 0.0
         self.model.zero_grad()
 
-        train_iterator = trange(int(self.args.num_train_epochs), desc="Epoch", position=0)
-
-        for _ in train_iterator:
+        for _ in trange(int(self.args.num_train_epochs), desc="Epoch", position=0):
             epoch_iterator = tqdm(train_dataloader, desc="Iteration", position=0)
             for step, batch in enumerate(epoch_iterator):
                 self.model.train()
-                batch = tuple(t.to(self.device) for t in batch)  # GPU or CPU
-
+                batch = tuple(t.to(self.device) for t in batch)
                 inputs = {'input_ids': batch[0], 'attention_mask': batch[1], 'intent_label_ids': batch[3],
                           'slot_labels_ids': batch[4], 'token_type_ids': batch[2]}
                 outputs = self.model(**inputs)
                 loss = outputs[0]
-
-                if self.args.gradient_accumulation_steps > 1:
-                    loss = loss / self.args.gradient_accumulation_steps
-
                 loss.backward()
-
-                tr_loss += loss.item()
-                if (step + 1) % self.args.gradient_accumulation_steps == 0:
-                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.args.max_grad_norm)
-
-                    optimizer.step()
-                    scheduler.step()  # Update learning rate schedule
-                    self.model.zero_grad()
-                    global_step += 1
-
-                    if self.args.logging_steps > 0 and global_step % self.args.logging_steps == 0:
-                        self.evaluate("dev")
-
-                    # if self.args.save_steps > 0 and global_step % self.args.save_steps == 0:
-                    self.save_model()
-
-                if 0 < self.args.max_steps < global_step:
-                    epoch_iterator.close()
-                    break
-
-            if 0 < self.args.max_steps < global_step:
-                train_iterator.close()
-                break
-
-        return global_step, tr_loss / global_step
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.args.max_grad_norm)
+                optimizer.step()
+                scheduler.step()  # Update learning rate schedule
+                self.model.zero_grad()
+                global_step += 1
+                self.save_model()
 
     def evaluate(self, mode):
         if mode == 'test':
@@ -201,9 +158,9 @@ class Trainer(object):
         total_result = compute_metrics(intent_preds, out_intent_label_ids, slot_preds_list, out_slot_label_list)
         results.update(total_result)
 
-        logger.debug("***** Eval results *****")
+        logger.info("***** Eval results *****")
         for key in sorted(results.keys()):
-            logger.debug("  %s = %s", key, str(results[key]))
+            logger.info("  %s = %s", key, str(results[key]))
 
         return results
 

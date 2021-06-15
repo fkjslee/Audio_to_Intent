@@ -48,7 +48,7 @@ def set_seed(args):
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
-    if not args.no_cuda and torch.cuda.is_available():
+    if args.device != "cpu" and torch.cuda.is_available():
         torch.cuda.manual_seed_all(args.seed)
 
 
@@ -124,25 +124,15 @@ def get_args():
     parser.add_argument("--eval_batch_size", default=64, type=int, help="Batch size for evaluation.")
     parser.add_argument("--max_seq_len", default=50, type=int,
                         help="The maximum total input sequence length after tokenization.")
-    parser.add_argument("--learning_rate", default=1e-4, type=float, help="The initial learning rate for Adam.")
     parser.add_argument("--num_train_epochs", default=10.0, type=float,
                         help="Total number of training epochs to perform.")
-    parser.add_argument("--weight_decay", default=0.0, type=float, help="Weight decay if we apply some.")
-    parser.add_argument('--gradient_accumulation_steps', type=int, default=1,
-                        help="Number of updates steps to accumulate before performing a backward/update pass.")
-    parser.add_argument("--adam_epsilon", default=1e-8, type=float, help="Epsilon for Adam optimizer.")
     parser.add_argument("--max_grad_norm", default=1.0, type=float, help="Max gradient norm.")
-    parser.add_argument("--max_steps", default=-1, type=int,
-                        help="If > 0: set total number of training steps to perform. Override num_train_epochs.")
     parser.add_argument("--warmup_steps", default=0, type=int, help="Linear warmup over warmup_steps.")
     parser.add_argument("--dropout_rate", default=0.1, type=float, help="Dropout for fully-connected layers")
 
-    parser.add_argument('--logging_steps', type=int, default=200, help="Log every X updates steps.")
-    parser.add_argument('--save_steps', type=int, default=200, help="Save checkpoint every X updates steps.")
 
-    parser.add_argument("--do_train", action="store_true", help="Whether to run training.")
-    parser.add_argument("--do_eval", action="store_true", help="Whether to run eval on the test set.")
-    parser.add_argument("--no_cuda", action="store_true", help="Avoid using CUDA when available")
+    parser.add_argument("--load_mode", action="store_false", help="Whether to load model.")
+    parser.add_argument("--device", default="cuda:0", help="run device, default is cuda:0")
 
     parser.add_argument("--ignore_index", default=0, type=int,
                         help='Specifies a target value that is ignored and does not contribute to the input gradient')
