@@ -23,7 +23,7 @@ def augmentTrainData(texts, intents, slots):
     been_augment_entity = []
     for text, intent, slot in zip(texts, intents, slots):
         for i, (word, entity) in enumerate(zip(text.split(" "), slot.split(" "))):
-            if isinstance(d[entity], list) and entity in been_augment_entity == False:
+            if isinstance(d[entity], list) and entity not in been_augment_entity:
                 been_augment_entity.append(entity)
                 for example in d[entity]:
                     new_text = text.split(" ")
