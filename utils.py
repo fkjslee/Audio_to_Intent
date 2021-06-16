@@ -15,13 +15,13 @@ logger = logging.getLogger(__name__)
 
 
 def get_intent_labels(args):
-    f = open(os.path.join(args.data_dir, args.task, args.intent_label_file), 'r', encoding='utf-8')
+    f = open(os.path.join(args.data_dir, args.task, "intent_label.yml"), 'r', encoding='utf-8')
     d = yaml.load(f.read(), yaml.FullLoader)
     return list(d.keys())
 
 
 def get_slot_labels(args):
-    f = open(os.path.join(args.data_dir, args.task, args.slot_label_file), 'r', encoding='utf-8')
+    f = open(os.path.join(args.data_dir, args.task, "slot_label.yml"), 'r', encoding='utf-8')
     d = yaml.load(f.read(), yaml.FullLoader)
     return list(d.keys())
 
@@ -114,10 +114,7 @@ def get_args():
 
     parser.add_argument("--log_level", default="info", type=str, help="The name of the task to train")
     parser.add_argument("--task", default="qiyuan", type=str, help="The name of the task to train")
-    parser.add_argument("--model_dir", default="qiyuan_model", type=str, help="Path to save, load model")
     parser.add_argument("--data_dir", default="data", type=str, help="The input data dir")
-    parser.add_argument("--intent_label_file", default="intent_label.yml", type=str, help="Intent Label file")
-    parser.add_argument("--slot_label_file", default="slot_label.yml", type=str, help="Slot Label file")
 
     parser.add_argument('--seed', type=int, default=1234, help="random seed for initialization")
     parser.add_argument("--train_batch_size", default=32, type=int, help="Batch size for training.")
@@ -132,7 +129,8 @@ def get_args():
 
 
     parser.add_argument("--load_mode", action="store_false", help="Whether to load model.")
-    parser.add_argument("--device", default="cuda:0", help="run device, default is cuda:0")
+    parser.add_argument("--do_valid", action="store_true", help="Whether to validate model.")
+    parser.add_argument("--device", default="cuda:0", help="Run device, default is cuda:0")
 
     parser.add_argument("--ignore_index", default=0, type=int,
                         help='Specifies a target value that is ignored and does not contribute to the input gradient')
@@ -147,6 +145,12 @@ def get_args():
                         help="Pad token for slot sentences.txt pad (to be ignore when calculate loss)")
 
     args = parser.parse_args()
+    args.model_dir = args.task + "_model"
 
-    args.model_name_or_path = 'bert-base-chinese'
+    if args.task in ["qiyuan"]:
+        args.model_name_or_path = 'bert-base-chinese'
+    elif args.task in ["atis", "snip"]:
+        args.model_name_or_path = 'bert-base-uncased'
+    else:
+        raise NotImplementedError("Not implement")
     return args

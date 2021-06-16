@@ -1,0 +1,2000 @@
+-
+  sentence: i want to fly from boston at 838 am and arrive in denver at 1110 in the morning
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-depart_time.time I-depart_time.time O O O B-toloc.city_name O B-arrive_time.time O O B-arrive_time.period_of_day
+-
+  sentence: show me all round trip flights between houston and las vegas
+  intent: atis_flight
+  slot: O O O B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: i would like some information on a flight from denver to san francisco on united airlines
+  intent: atis_flight
+  slot: O O O O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-airline_name I-airline_name
+-
+  sentence: what are the coach flights between dallas and baltimore leaving august tenth and returning august twelve
+  intent: atis_flight
+  slot: O O O B-class_type O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name B-depart_date.day_number O O B-return_date.month_name B-return_date.day_number
+-
+  sentence: i'm flying from boston to the bay area
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O O B-toloc.city_name I-toloc.city_name
+-
+  sentence: okay can you tell me the flight cost between denver and atlanta
+  intent: atis_flight
+  slot: O O O O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: from montreal to las vegas
+  intent: atis_flight
+  slot: O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: what is the earliest breakfast flight from philadelphia to fort worth
+  intent: atis_flight
+  slot: O O O B-flight_mod B-meal_description O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: flights from pittsburgh to baltimore between 10 am and 2 pm
+  intent: atis_flight
+  slot: O O B-fromloc.city_name O B-toloc.city_name O B-depart_time.start_time I-depart_time.start_time O B-depart_time.end_time I-depart_time.end_time
+-
+  sentence: what is the latest flight departing from boston to san francisco
+  intent: atis_flight
+  slot: O O O B-flight_mod O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: flights from ontario to florida
+  intent: atis_flight
+  slot: O O B-fromloc.city_name O B-toloc.state_name
+-
+  sentence: i would like to know the first class fare on a flight from baltimore to denver
+  intent: atis_airfare
+  slot: O O O O O O B-class_type I-class_type O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: okay that sounds great let's go from atlanta on april twenty one in the morning to dallas least expensive fare one way
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name O B-depart_date.month_name B-depart_date.day_number I-depart_date.day_number O O B-depart_time.period_of_day O B-toloc.city_name B-cost_relative I-cost_relative O B-round_trip I-round_trip
+-
+  sentence: show me the prices of all flights from atlanta to washington dc
+  intent: atis_airfare
+  slot: O O O O O O O O B-fromloc.city_name O B-toloc.city_name B-toloc.state_code
+-
+  sentence: flights from cincinnati to o'hare departing after 718 am american
+  intent: atis_flight
+  slot: O O B-fromloc.city_name O B-toloc.airport_name O B-depart_time.time_relative B-depart_time.time I-depart_time.time B-airline_name
+-
+  sentence: i'm interested in a flight from pittsburgh to atlanta
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i am interested in booking an early morning flight from dallas into houston on february twenty second and returning late in the evening of february twenty second
+  intent: atis_flight
+  slot: O B-depart_time.period_of_day O O O O B-depart_time.period_of_day B-depart_time.period_of_day O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name B-depart_date.day_number I-depart_date.day_number O O O O O B-return_time.period_of_day O B-return_date.month_name B-return_date.day_number I-return_date.day_number
+-
+  sentence: i'm looking for a flight from oakland to denver with a stopover in dallas fort worth
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name O O O O B-stoploc.city_name I-stoploc.city_name I-stoploc.city_name
+-
+  sentence: what's restriction ap68
+  intent: atis_restriction
+  slot: O O B-restriction_code
+-
+  sentence: what types of ground transportation are available in philadelphia
+  intent: atis_ground_service
+  slot: O O O O O O O O B-city_name
+-
+  sentence: what does the abbreviation co mean
+  intent: atis_abbreviation
+  slot: O O O O B-airline_code O
+-
+  sentence: a first class flight on american to san francisco on the coming tuesday
+  intent: atis_flight
+  slot: O B-class_type I-class_type O O B-airline_name O B-toloc.city_name I-toloc.city_name O O B-depart_date.date_relative B-depart_date.day_name
+-
+  sentence: please list the flights from baltimore to san francisco on fridays
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-depart_date.day_name
+-
+  sentence: what flights return from denver to philadelphia on a saturday
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name O O B-depart_date.day_name
+-
+  sentence: on united airlines flying from denver to san francisco before 10 am what type of aircraft is used
+  intent: atis_flight
+  slot: O B-airline_name I-airline_name O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O O O O O O
+-
+  sentence: i need a flight from atlanta to baltimore nonstop arriving at 7 pm please
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name B-flight_stop O O B-arrive_time.time I-arrive_time.time O
+-
+  sentence: what are the cheapest round trip flights from denver to atlanta
+  intent: atis_flight
+  slot: O O O B-cost_relative B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: does continental fly from denver to san francisco
+  intent: atis_flight
+  slot: O B-airline_name O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: i would like a nonstop flight from st. petersburg to charlotte leaving in the afternoon
+  intent: atis_flight
+  slot: O O O O B-flight_stop O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O O O B-arrive_time.period_of_day
+-
+  sentence: on continental airlines any class service from san francisco to pittsburgh
+  intent: atis_flight
+  slot: O B-airline_name I-airline_name O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name
+-
+  sentence: find me the cheapest flight from boston to washington
+  intent: atis_flight
+  slot: O O O B-cost_relative O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: well i'll try last time tell me the kind of aircraft united airlines flies from denver to san francisco before 10 o'clock in the morning
+  intent: atis_aircraft
+  slot: O O O O O O O O O O O B-airline_name I-airline_name O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O O B-depart_time.period_of_day
+-
+  sentence: show me the northwest flights from detroit to st. petersburg
+  intent: atis_flight
+  slot: O O O B-airline_name O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: morning flights from pittsburgh to atlanta on wednesday
+  intent: atis_flight
+  slot: B-depart_time.period_of_day O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: show me flights first class from san francisco to pittsburgh leaving on tuesday after 8 o'clock in the morning and before 12 noon
+  intent: atis_flight
+  slot: O O O B-class_type I-class_type O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O O B-depart_date.day_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O O B-depart_time.period_of_day O B-depart_time.time_relative B-depart_time.time I-depart_time.time
+-
+  sentence: what's the most expensive way i can fly to washington
+  intent: atis_flight
+  slot: O O B-cost_relative I-cost_relative O O O O O B-toloc.city_name
+-
+  sentence: show me the cheapest one way fare from baltimore to dallas
+  intent: atis_airfare
+  slot: O O O B-cost_relative B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: flights from boston flights from philadelphia to boston on monday
+  intent: atis_flight
+  slot: O O B-fromloc.city_name O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: list nonstop flights from houston to dallas which arrive before midnight
+  intent: atis_flight
+  slot: O B-flight_stop O O B-fromloc.city_name O B-toloc.city_name O O B-arrive_time.time_relative B-arrive_time.period_of_day
+-
+  sentence: i need a flight to seattle leaving from baltimore making a stop in minneapolis
+  intent: atis_flight
+  slot: O O O O O B-toloc.city_name O O B-fromloc.city_name O O O O B-stoploc.city_name
+-
+  sentence: philadelphia to san francisco please
+  intent: atis_flight
+  slot: B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O
+-
+  sentence: airline that stands for dl
+  intent: atis_airline
+  slot: O O O O B-airline_code
+-
+  sentence: i'd like a cheap flight from dallas to baltimore on january first
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: what flights are available friday from san francisco to boston
+  intent: atis_flight
+  slot: O O O O B-depart_date.day_name O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me saturday and sunday's flights from milwaukee to phoenix on american airlines
+  intent: atis_flight
+  slot: O O B-depart_date.day_name O B-depart_date.day_name O O B-fromloc.city_name O B-toloc.city_name O B-airline_name I-airline_name
+-
+  sentence: what flights from st. paul to kansas city on friday with lunch served
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-depart_date.day_name O B-meal_description O
+-
+  sentence: what flights from toronto to philadelphia
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what flights leave from atlanta to boston on june twenty ninth in the afternoon
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name B-depart_date.day_number I-depart_date.day_number O O B-depart_time.period_of_day
+-
+  sentence: what flights leave la guardia for san jose and arrive 10 pm
+  intent: atis_flight
+  slot: O O O B-fromloc.airport_name I-fromloc.airport_name O B-toloc.city_name I-toloc.city_name O O B-arrive_time.time I-arrive_time.time
+-
+  sentence: list the total number of flights to all airports by delta
+  intent: atis_quantity
+  slot: O O O O O O O O O O B-airline_name
+-
+  sentence: can you tell me the time a flight would leave from atlanta to boston in the afternoon
+  intent: atis_flight_time
+  slot: O O O O O B-flight_time O O O O O B-fromloc.city_name O B-toloc.city_name O O B-depart_time.period_of_day
+-
+  sentence: show me the united airlines flights from denver to baltimore leaving on june fourteenth
+  intent: atis_flight
+  slot: O O O B-airline_name I-airline_name O O B-fromloc.city_name O B-toloc.city_name O O B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: please list all flights from dallas to philadelphia on monday
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: show me the flights from cleveland to memphis
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: please give me flights from atlanta to boston on wednesday and thursday
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name O B-depart_date.day_name
+-
+  sentence: show me ground transportation in philadelphia on monday morning
+  intent: atis_ground_service
+  slot: O O O O O B-city_name O B-day_name B-period_of_day
+-
+  sentence: what delta leaves boston for atlanta
+  intent: atis_flight
+  slot: O B-airline_name O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: find me the earliest boston departure and the latest atlanta return trip so that i can be on the ground the maximum amount of time in atlanta and return to boston on the same day
+  intent: atis_flight
+  slot: O O O B-flight_mod B-fromloc.city_name O O O B-flight_mod B-fromloc.city_name O O O O O O O O O O O O O O O O B-toloc.city_name O O O B-toloc.city_name O O O B-return_date.date_relative
+-
+  sentence: show me flights from boston to washington leaving july fifteen
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: i would like the time of your earliest flight in the morning from philadelphia to washington on american airlines
+  intent: atis_flight_time
+  slot: O O O O B-flight_time O O B-flight_mod O O O B-depart_time.period_of_day O B-fromloc.city_name O B-toloc.city_name O B-airline_name I-airline_name
+-
+  sentence: show me the flights from baltimore to boston
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: please list the flight schedule from baltimore to san francisco on friday nights
+  intent: atis_flight_time
+  slot: O O O B-flight_time I-flight_time O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-depart_date.day_name B-depart_time.period_of_day
+-
+  sentence: how long is a trip from philadelphia airport to downtown philadelphia
+  intent: atis_distance
+  slot: O O O O O O B-fromloc.airport_name I-fromloc.airport_name O O B-toloc.city_name
+-
+  sentence: sure i'd like to determine what aircraft are use on july seventh leaving from boston and arriving in atlanta on july seventh
+  intent: atis_aircraft
+  slot: O O O O O O O O O O B-depart_date.month_name B-depart_date.day_number O O B-fromloc.city_name O O O B-toloc.city_name O B-arrive_date.month_name B-arrive_date.day_number
+-
+  sentence: baltimore to philadelphia
+  intent: atis_flight
+  slot: B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what are the flights and fares from atlanta to philadelphia
+  intent: atis_flight#atis_airfare
+  slot: O O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: united airlines flights stopping in denver
+  intent: atis_flight
+  slot: B-airline_name I-airline_name O O O B-stoploc.city_name
+-
+  sentence: what flights are available wednesday afternoon from denver to san francisco
+  intent: atis_flight
+  slot: O O O O B-depart_date.day_name B-depart_time.period_of_day O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: round trip fares from denver to philadelphia less than 1000 dollars
+  intent: atis_airfare
+  slot: B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name B-cost_relative O B-fare_amount I-fare_amount
+-
+  sentence: list the first class flights from baltimore to denver
+  intent: atis_flight
+  slot: O O B-class_type I-class_type O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what are the fares from newark to la monday and wednesday
+  intent: atis_airfare
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_date.day_name O B-depart_date.day_name
+-
+  sentence: what flights from chicago to kansas city
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: please show me flights from dallas to atlanta on monday
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: flights to baltimore
+  intent: atis_flight
+  slot: O O B-toloc.city_name
+-
+  sentence: show me the latest flight to love field
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-toloc.airport_name I-toloc.airport_name
+-
+  sentence: how many of delta's night flights are first class
+  intent: atis_quantity
+  slot: O O O B-airline_name B-depart_time.period_of_day O O B-class_type I-class_type
+-
+  sentence: on united airlines give me the flight times from boston to dallas
+  intent: atis_flight_time
+  slot: O B-airline_name I-airline_name O O O B-flight_time I-flight_time O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me the ground transportation schedule in philadelphia in the morning on wednesday
+  intent: atis_ground_service
+  slot: O O O O O O O B-city_name O O B-period_of_day O B-day_name
+-
+  sentence: what is the last flight from boston to atlanta
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what flights fly from denver to san francisco on monday tuesday wednesday thursday and friday
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-depart_date.day_name B-depart_date.day_name B-depart_date.day_name B-depart_date.day_name O B-depart_date.day_name
+-
+  sentence: show me the flights from boston to philadelphia
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i also need to go to san francisco on wednesday evening from dallas
+  intent: atis_flight
+  slot: O O O O O O B-toloc.city_name I-toloc.city_name O B-depart_date.day_name B-depart_time.period_of_day O B-fromloc.city_name
+-
+  sentence: from kansas city to salt lake city on delta arrive around 8 pm tomorrow
+  intent: atis_flight
+  slot: O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name I-toloc.city_name I-toloc.city_name O B-airline_name O B-arrive_time.time_relative B-arrive_time.time I-arrive_time.time B-arrive_date.today_relative
+-
+  sentence: in new york i'll need to rent a car
+  intent: atis_ground_service
+  slot: O B-city_name I-city_name O O O O O B-transport_type
+-
+  sentence: show me flights from denver to boston on thursday
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: i would like to book a flight from charlotte to baltimore on april eighth
+  intent: atis_flight
+  slot: O O O O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: flights from oakland to san francisco on january twenty first 1992
+  intent: atis_flight
+  slot: O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-depart_date.month_name B-depart_date.day_number I-depart_date.day_number B-depart_date.year
+-
+  sentence: how much is a limousine between dallas fort worth international airport and dallas
+  intent: atis_ground_fare
+  slot: O O O O B-transport_type O B-fromloc.airport_name I-fromloc.airport_name I-fromloc.airport_name I-fromloc.airport_name I-fromloc.airport_name O B-toloc.city_name
+-
+  sentence: is there a flight from boston to san francisco making a stopover in dallas fort worth
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O O O O B-stoploc.city_name I-stoploc.city_name I-stoploc.city_name
+-
+  sentence: what time are the flights from baltimore to san francisco
+  intent: atis_flight_time
+  slot: O B-flight_time O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: from las vegas to phoenix departing in the morning
+  intent: atis_flight
+  slot: O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O O O B-depart_time.period_of_day
+-
+  sentence: how many passengers can a boeing 737 hold
+  intent: atis_capacity
+  slot: O O O O O O B-aircraft_code O
+-
+  sentence: i would like a flight that leaves on friday from philadelphia to dallas that makes a stop in atlanta
+  intent: atis_flight
+  slot: O O O O O O O O B-depart_date.day_name O B-fromloc.city_name O B-toloc.city_name O O O O O B-stoploc.city_name
+-
+  sentence: thank you for that information now i would like information on a flight on april sixteen from atlanta to philadelphia early in the morning
+  intent: atis_flight
+  slot: O O O O O O O O O O O O O O B-depart_date.month_name B-depart_date.day_number O B-fromloc.city_name O B-toloc.city_name B-depart_time.period_mod O O B-depart_time.period_of_day
+-
+  sentence: what time is the last flight from washington to san francisco
+  intent: atis_flight_time
+  slot: O B-flight_time O O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: show me the least expensive flight leaving miami on sunday after 12 o'clock noon and arriving cleveland
+  intent: atis_flight
+  slot: O O O B-cost_relative I-cost_relative O O B-fromloc.city_name O B-depart_date.day_name B-depart_time.time_relative B-depart_time.time I-depart_time.time I-depart_time.time O O B-toloc.city_name
+-
+  sentence: what do you have tomorrow morning from pittsburgh to atlanta
+  intent: atis_flight
+  slot: O O O O B-depart_date.today_relative B-depart_time.period_of_day O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: how much is the cheapest flight from denver to pittsburgh
+  intent: atis_airfare
+  slot: O O O O B-cost_relative O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what is the cheapest one way fare from pittsburgh to atlanta traveling on tuesday august twentieth
+  intent: atis_airfare
+  slot: O O O B-cost_relative B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name O O B-depart_date.day_name B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: show me the flights from denver to san diego leaving after 5 pm
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-depart_time.time_relative B-depart_time.time I-depart_time.time
+-
+  sentence: what is the latest first class flight of the day leaving dallas for san francisco
+  intent: atis_flight
+  slot: O O O B-flight_mod B-class_type I-class_type O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: show me a list of flights from pittsburgh to baltimore on august third
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: show morning flights from san francisco to pittsburgh
+  intent: atis_flight
+  slot: O B-depart_time.period_of_day O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what are the flights from memphis to tacoma
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: can you list all nonstop flights between st. petersburg and charlotte that leave in the afternoon and arrive soon after 5 pm
+  intent: atis_flight
+  slot: O O O O B-flight_stop O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O O O O B-arrive_time.period_of_day O O O B-arrive_time.time_relative B-arrive_time.time I-arrive_time.time
+-
+  sentence: show me all united flights from denver to san francisco for september first 1991
+  intent: atis_flight
+  slot: O O O B-airline_name O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-depart_date.month_name B-depart_date.day_number B-depart_date.year
+-
+  sentence: are there wednesday morning flights between pittsburgh and boston
+  intent: atis_flight
+  slot: O O B-depart_date.day_name B-depart_time.period_of_day O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: list all american airlines from milwaukee to phoenix on saturday
+  intent: atis_flight
+  slot: O O B-airline_name I-airline_name O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: give me the flights on december twenty seventh with the fares from indianapolis to orlando
+  intent: atis_flight
+  slot: O O O O O B-depart_date.month_name B-depart_date.day_number I-depart_date.day_number O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: okay all right do you have a flight on united airlines from atlanta to washington
+  intent: atis_flight
+  slot: O O O O O O O O O B-airline_name I-airline_name O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show flights from denver to oakland arriving between 12 and 1 o'clock
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name O O B-arrive_time.start_time O B-arrive_time.end_time I-arrive_time.end_time
+-
+  sentence: list all nonstop flights on sunday from tampa to charlotte
+  intent: atis_flight
+  slot: O O B-flight_stop O O B-arrive_date.day_name O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i would like to make a one way flight from boston to atlanta
+  intent: atis_flight
+  slot: O O O O O O B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: is there a flight in the afternoon from philadelphia that arrives in the evening in denver
+  intent: atis_flight
+  slot: O O O O O O B-depart_time.period_of_day O B-fromloc.city_name O O O O B-arrive_time.period_of_day O B-toloc.city_name
+-
+  sentence: what is the first flight from atlanta to baltimore that serves lunch
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name O O B-meal_description
+-
+  sentence: list list flights between oakland and denver
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: please give me a flight from boston to atlanta before 10 am in the morning
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O O B-depart_time.period_of_day
+-
+  sentence: list the nonstop flights early tuesday morning from dallas to atlanta
+  intent: atis_flight
+  slot: O O B-flight_stop O B-arrive_time.period_mod B-arrive_date.day_name B-arrive_time.period_of_day O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what's the lowest round trip fare from denver to pittsburgh
+  intent: atis_airfare
+  slot: O O B-cost_relative B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: please arrange a flight for me from denver to san francisco on us air
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-airline_name I-airline_name
+-
+  sentence: i would like to see information for flights from san francisco leaving after 12 pm to pittsburgh on monday
+  intent: atis_flight
+  slot: O O O O O O O O O B-fromloc.city_name I-fromloc.city_name O B-depart_time.time_relative B-depart_time.time I-depart_time.time O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: show me the cheapest flight from pittsburgh to atlanta on wednesday which leaves before noon and serves breakfast
+  intent: atis_flight
+  slot: O O O B-cost_relative O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name O O B-depart_time.time_relative B-depart_time.time O O B-meal_description
+-
+  sentence: what is the earliest flight from washington to san francisco
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: list flights from pittsburgh to los angeles which leave on thursday after 5 pm
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O O O B-depart_date.day_name B-depart_time.time_relative B-depart_time.time I-depart_time.time
+-
+  sentence: list the flights from new york to miami on a tuesday which are nonstop and cost less than 466 dollars
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O O B-depart_date.day_name O O B-flight_stop O O B-cost_relative O B-fare_amount I-fare_amount
+-
+  sentence: list flights from denver to san francisco no denver to philadelphia
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i need to find a plane from boston to san francisco on friday
+  intent: atis_aircraft
+  slot: O O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-depart_date.day_name
+-
+  sentence: what does lax stand for
+  intent: atis_abbreviation
+  slot: O O B-airport_code O O
+-
+  sentence: show prices for all flights from baltimore to dallas on july twenty ninth
+  intent: atis_airfare
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name B-depart_date.day_number I-depart_date.day_number
+-
+  sentence: what flights are available from boston to washington late monday evening or early tuesday morning
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.period_mod B-depart_date.day_name B-depart_time.period_of_day B-or B-depart_time.period_mod B-depart_date.day_name B-depart_time.period_of_day
+-
+  sentence: what flights from washington dc to toronto
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name B-fromloc.state_code O B-toloc.city_name
+-
+  sentence: all flights from boston to washington dc on november eleventh before 10 am
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name B-toloc.state_code O B-depart_date.month_name B-depart_date.day_number B-depart_time.time_relative B-depart_time.time I-depart_time.time
+-
+  sentence: list all flights from denver to philadelphia
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i need a list of late afternoon flights from st. louis to chicago
+  intent: atis_flight
+  slot: O O O O O B-depart_time.period_of_day I-depart_time.period_of_day O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me the airlines for flights to or from love field
+  intent: atis_airline
+  slot: O O O O O O O O O B-fromloc.airport_name I-fromloc.airport_name
+-
+  sentence: do you have any flights from chicago to indianapolis
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what does yn stand for
+  intent: atis_abbreviation
+  slot: O O B-fare_basis_code O O
+-
+  sentence: shortest flights from nashville to st. petersburg
+  intent: atis_flight
+  slot: B-flight_mod O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: what are the fares for flights between atlanta and dfw
+  intent: atis_airfare
+  slot: O O O O O O O B-fromloc.city_name O B-toloc.airport_code
+-
+  sentence: list the fares of midway airlines flights from boston to philadelphia
+  intent: atis_airfare
+  slot: O O O O B-airline_name I-airline_name O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: round trip fares from denver to philadelphia less than 1000 dollars
+  intent: atis_airfare
+  slot: B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name B-cost_relative O B-fare_amount I-fare_amount
+-
+  sentence: is there a continental flight leaving from las vegas to new york nonstop
+  intent: atis_flight
+  slot: O O O B-airline_name O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name I-toloc.city_name B-flight_stop
+-
+  sentence: i need the cost of a ticket going from denver to baltimore a first class ticket on united airlines
+  intent: atis_airfare
+  slot: O O O O O O O O O B-fromloc.city_name O B-toloc.city_name O B-class_type I-class_type O O B-airline_name I-airline_name
+-
+  sentence: show me fares from philadelphia to san francisco on thursday morning
+  intent: atis_airfare
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-depart_date.day_name B-depart_time.period_of_day
+-
+  sentence: show me the round trip flights between phoenix and salt lake city
+  intent: atis_flight
+  slot: O O O B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name I-toloc.city_name
+-
+  sentence: show me all the flights from denver to baltimore arriving may tenth
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name O B-arrive_date.month_name B-arrive_date.day_number
+-
+  sentence: find the cheapest one way fare from boston to san francisco
+  intent: atis_airfare
+  slot: O O B-cost_relative B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: show me the flights from boston to san francisco
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: please show me the flights from boston to san francisco
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: show me the airlines from love field
+  intent: atis_airline
+  slot: O O O O O B-fromloc.airport_name I-fromloc.airport_name
+-
+  sentence: show business class fares on us air from boston to toronto
+  intent: atis_airfare
+  slot: O B-class_type I-class_type O O B-airline_name I-airline_name O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what is the latest flight leaving las vegas for ontario
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name
+-
+  sentence: flights from las vegas to phoenix
+  intent: atis_flight
+  slot: O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name
+-
+  sentence: does flight ua 270 from denver to philadelphia have a meal
+  intent: atis_flight
+  slot: O O B-airline_code B-flight_number O B-fromloc.city_name O B-toloc.city_name O O B-meal
+-
+  sentence: what nonstop flights are available from oakland to philadelphia arriving between 5 and 6 pm
+  intent: atis_flight
+  slot: O B-flight_stop O O O O B-fromloc.city_name O B-toloc.city_name O O B-arrive_time.start_time O B-arrive_time.end_time I-arrive_time.end_time
+-
+  sentence: give me the flights for american airline from philadelphia to dallas
+  intent: atis_flight
+  slot: O O O O O B-airline_name I-airline_name O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me the evening flights from atlanta to washington on wednesdays
+  intent: atis_flight
+  slot: O O O B-depart_time.period_of_day O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: i would like a coach class seat on a flight leaving denver arriving atlanta
+  intent: atis_flight
+  slot: O O O O B-class_type I-class_type O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: can you list all the flights between phoenix and las vegas
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: show me the qx fare flights between atlanta and oakland on delta airlines
+  intent: atis_flight
+  slot: O O O B-fare_basis_code I-fare_basis_code O O B-fromloc.city_name O B-toloc.city_name O B-airline_name I-airline_name
+-
+  sentence: what afternoon flights are available between denver and dallas fort worth
+  intent: atis_flight
+  slot: O B-depart_time.period_of_day O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name I-toloc.city_name
+-
+  sentence: fares and flights from pittsburgh to philadelphia
+  intent: atis_airfare
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: can you tell me what airline flies between denver and san francisco
+  intent: atis_airline
+  slot: O O O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: how many flights does each airline have with booking class k
+  intent: atis_quantity
+  slot: O O O O O O O O O O B-fare_basis_code
+-
+  sentence: great now what i want to find out is on april twentieth from washington to denver do you have a flight least expensive fare around 5 o'clock in the morning
+  intent: atis_flight
+  slot: O O O O O O O O O O B-depart_date.month_name B-depart_date.day_number O B-fromloc.city_name O B-toloc.city_name O O O O O B-cost_relative I-cost_relative O B-depart_time.time_relative B-depart_time.time I-depart_time.time O O B-depart_time.period_of_day
+-
+  sentence: show me all direct flights from san francisco to boston departing before noon
+  intent: atis_flight
+  slot: O O O B-connect O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O B-depart_time.time_relative B-depart_time.time
+-
+  sentence: i need a flight on thursday before 8 am from oakland to salt lake city
+  intent: atis_flight
+  slot: O O O O O B-depart_date.day_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name I-toloc.city_name
+-
+  sentence: show me all the types of aircraft
+  intent: atis_aircraft
+  slot: O O O O O O O
+-
+  sentence: i want a flight on continental from boston to san francisco
+  intent: atis_flight
+  slot: O O O O O B-airline_name O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: show flights from pittsburgh into san francisco
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: what city is mco
+  intent: atis_city
+  slot: O O O B-airport_code
+-
+  sentence: how many cities are served by american airline with first class flights
+  intent: atis_quantity
+  slot: O O O O O O B-airline_name I-airline_name O B-class_type I-class_type O
+-
+  sentence: could you please show me all flights from charlotte to milwaukee
+  intent: atis_flight
+  slot: O O O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what flights depart san francisco after 4 pm and fly to washington via indianapolis
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name I-fromloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O O O B-toloc.city_name O B-stoploc.city_name
+-
+  sentence: i would like to see the flights from denver to philadelphia
+  intent: atis_flight
+  slot: O O O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me the flights that go from san diego to newark new jersey by way of houston
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name B-toloc.state_name I-toloc.state_name O O O B-stoploc.city_name
+-
+  sentence: i would like information on flights from denver to san francisco after noon on wednesday
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name B-depart_time.time_relative B-depart_time.time O B-depart_date.day_name
+-
+  sentence: show me the flights from boston to pittsburgh
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me all flights from san diego to new york nonstop
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name I-toloc.city_name B-flight_stop
+-
+  sentence: show me the round trip tickets from baltimore to atlanta
+  intent: atis_airfare
+  slot: O O O B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me the cheapest one way fares from san diego to miami
+  intent: atis_airfare
+  slot: O O O B-cost_relative B-round_trip I-round_trip O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name
+-
+  sentence: could you show me all weekday flights from phoenix to denver
+  intent: atis_flight
+  slot: O O O O O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i would like to fly from boston to philadelphia next thursday
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_date.date_relative B-depart_date.day_name
+-
+  sentence: i'm planning a trip to pittsburgh and i live in denver can you help me
+  intent: atis_flight
+  slot: O O O O O B-toloc.city_name O O O O B-fromloc.city_name O O O O
+-
+  sentence: i would like to find the least expensive flight from boston to denver
+  intent: atis_flight
+  slot: O O O O O O B-cost_relative I-cost_relative O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i would like to go from atlanta to denver on tuesday
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: atlanta to pittsburgh july twenty third
+  intent: atis_flight
+  slot: B-fromloc.city_name O B-toloc.city_name B-depart_date.month_name B-depart_date.day_number I-depart_date.day_number
+-
+  sentence: show me the flights from boston to atlanta
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what airlines fly from burbank to denver
+  intent: atis_airline
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: okay we're going from washington to denver first class ticket i'd like to know the cost of a first class ticket
+  intent: atis_airfare
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name B-class_type I-class_type O O O O O O O O O B-class_type I-class_type O
+-
+  sentence: i wish to book a flight from pittsburgh to atlanta coach discount fare
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name O B-toloc.city_name B-class_type O O
+-
+  sentence: is it possible for me to fly from baltimore to san francisco
+  intent: atis_flight
+  slot: O O O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: i want to fly from denver to san francisco with at least one stop
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O O O B-flight_stop I-flight_stop
+-
+  sentence: how many us air flights leave from washington
+  intent: atis_quantity
+  slot: O O B-airline_name I-airline_name O O O B-fromloc.city_name
+-
+  sentence: please list any flight available leaving oakland california tuesday arriving philadelphia wednesday
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name B-fromloc.state_name B-depart_date.day_name O B-toloc.city_name B-arrive_date.day_name
+-
+  sentence: i'd like to find a flight from las vegas to detroit michigan that leaves in the afternoon on monday
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name B-toloc.state_name O O O O B-depart_time.period_of_day O B-depart_date.day_name
+-
+  sentence: are there any flights from denver to pittsburgh with stops in atlanta
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O O O B-stoploc.city_name
+-
+  sentence: i'd like to know the information from boston to philadelphia nonstop
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name O B-toloc.city_name B-flight_stop
+-
+  sentence: show me all flights from denver to philadelphia on saturday after sunday which leave after noon
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name B-depart_date.date_relative B-depart_date.day_name O O B-depart_time.time_relative B-depart_time.time
+-
+  sentence: what are the flights from dallas to baltimore
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: do you have a flight from san francisco to atlanta around 8 am
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time
+-
+  sentence: what flights from seattle to salt lake city
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name I-toloc.city_name
+-
+  sentence: what is the cheapest flight from boston to bwi
+  intent: atis_flight
+  slot: O O O B-cost_relative O O B-fromloc.city_name O B-toloc.airport_code
+-
+  sentence: are there any flights from new york to los angeles which stop over in milwaukee
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name I-toloc.city_name O O O O B-stoploc.city_name
+-
+  sentence: what is the earliest flight from oakland to washington dc on sunday
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name B-toloc.state_code O B-depart_date.day_name
+-
+  sentence: are there any turboprop flights from pittsburgh to baltimore on december seventeenth
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: show me the morning flights from boston to philadelphia
+  intent: atis_flight
+  slot: O O O B-depart_time.period_of_day O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: newark to cleveland daily
+  intent: atis_flight
+  slot: B-fromloc.city_name O B-toloc.city_name B-flight_days
+-
+  sentence: evening flights from philadelphia to oakland
+  intent: atis_flight
+  slot: B-depart_time.period_of_day O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me prices and times for first class travel from baltimore to dallas next summer
+  intent: atis_airfare
+  slot: O O O O B-flight_time O B-class_type I-class_type O O B-fromloc.city_name O B-toloc.city_name O O
+-
+  sentence: what kind of plane flies from boston to pittsburgh after noon
+  intent: atis_aircraft
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time
+-
+  sentence: i'd like to know what flights united airline has from dallas to san francisco
+  intent: atis_flight
+  slot: O O O O O O B-airline_name I-airline_name O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: show me morning flights from toronto
+  intent: atis_flight
+  slot: O O B-depart_time.period_of_day O O B-fromloc.city_name
+-
+  sentence: what ground transportation is available at the boston airport
+  intent: atis_ground_service
+  slot: O O O O O O O B-airport_name I-airport_name
+-
+  sentence: where do the flights from boston to oakland stop
+  intent: atis_airport
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name B-flight_stop
+-
+  sentence: show me the earliest flight from boston to san francisco
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: flights from la guardia or jfk to cleveland
+  intent: atis_flight
+  slot: O O B-fromloc.airport_name I-fromloc.airport_name B-or B-fromloc.airport_code O B-toloc.city_name
+-
+  sentence: find the cheapest one way fare from boston to san francisco
+  intent: atis_airfare
+  slot: O O B-cost_relative B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: what are the flights from washington dc to denver
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name B-fromloc.state_code O B-toloc.city_name
+-
+  sentence: give me information on flights from atlanta to washington dc on wednesday after 4 pm and thursday before 9 am
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name B-toloc.state_code O B-depart_date.day_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O B-depart_date.day_name B-depart_time.time_relative B-depart_time.time I-depart_time.time
+-
+  sentence: flights between baltimore and washington dc
+  intent: atis_flight
+  slot: O O B-fromloc.city_name O B-toloc.city_name B-toloc.state_code
+-
+  sentence: what fare codes cover flights from philadelphia to san francisco
+  intent: atis_abbreviation
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: are there any flights from boston to oakland that stop
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-flight_stop
+-
+  sentence: list departure times from denver to philadelphia which are later than 10 o'clock and earlier than 2 pm
+  intent: atis_flight_time
+  slot: O B-flight_time I-flight_time O B-fromloc.city_name O B-toloc.city_name O O B-depart_time.time_relative O B-depart_time.time I-depart_time.time O B-depart_time.time_relative O B-depart_time.time I-depart_time.time
+-
+  sentence: are there any airlines that have flights from boston to philadelphia that leave before 630 am
+  intent: atis_airline
+  slot: O O O O O O O O B-fromloc.city_name O B-toloc.city_name O O B-depart_time.time_relative B-depart_time.time I-depart_time.time
+-
+  sentence: how many first class flights does united have today
+  intent: atis_quantity
+  slot: O O B-class_type I-class_type O O B-airline_name O B-depart_date.today_relative
+-
+  sentence: please show me the flights available from san francisco to pittsburgh on tuesday
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: i'm in miami and i'd like to travel to las vegas on sunday
+  intent: atis_flight
+  slot: O O B-fromloc.city_name O O O O O O B-toloc.city_name I-toloc.city_name O B-depart_date.day_name
+-
+  sentence: show me flights from denver to philadelphia
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i would like to fly from pittsburgh to atlanta on us air at the latest time possible in the evening
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name O B-airline_name I-airline_name O O B-flight_mod I-flight_mod I-flight_mod O O B-depart_time.period_of_day
+-
+  sentence: show me all flights from dallas to pittsburgh which leave on monday after 8 o'clock am
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O O O B-depart_date.day_name B-depart_time.time_relative B-depart_time.time I-depart_time.time I-depart_time.time
+-
+  sentence: are there any nonstop flights leaving from denver arriving in baltimore on july seventh
+  intent: atis_flight
+  slot: O O O B-flight_stop O O O B-fromloc.city_name O O B-toloc.city_name O B-arrive_date.month_name B-arrive_date.day_number
+-
+  sentence: list round trip flights between boston and oakland using twa
+  intent: atis_flight
+  slot: O B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name O B-airline_code
+-
+  sentence: what are the sunday flights from oakland to washington dc
+  intent: atis_flight
+  slot: O O O B-depart_date.day_name O O B-fromloc.city_name O B-toloc.city_name B-toloc.state_code
+-
+  sentence: what flights are there on sunday from seattle to minneapolis
+  intent: atis_flight
+  slot: O O O O O B-depart_date.day_name O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what flights from las vegas to montreal on saturday
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: what is the fare on continental 271 from dallas to san francisco
+  intent: atis_airfare
+  slot: O O O O O B-airline_name B-flight_number O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: show me flights denver to washington dc on thursday
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name B-toloc.state_code O B-depart_date.day_name
+-
+  sentence: what type of ground transportation is available at philadelphia airport
+  intent: atis_ground_service
+  slot: O O O O O O O O B-airport_name I-airport_name
+-
+  sentence: flights from phoenix to milwaukee on wednesday evening
+  intent: atis_flight
+  slot: O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name B-depart_time.period_of_day
+-
+  sentence: show me the last flight from love field
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.airport_name I-fromloc.airport_name
+-
+  sentence: can you list all flights that depart from orlando to kansas city
+  intent: atis_flight
+  slot: O O O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: i want to fly from kansas city to chicago next wednesday arriving in the evening and returning the next day
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name B-depart_date.date_relative B-depart_date.day_name O O O B-arrive_time.period_of_day O O O B-return_date.date_relative O
+-
+  sentence: what is the ground transportation available in the city of fort worth
+  intent: atis_ground_service
+  slot: O O O O O O O O O O B-city_name I-city_name
+-
+  sentence: i need a flight from baltimore to seattle that stops in minneapolis
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O O O B-stoploc.city_name
+-
+  sentence: what is the latest flight you have departing dallas to philadelphia
+  intent: atis_flight
+  slot: O O O B-flight_mod O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me the flights from atlanta to philadelphia
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me the flights arriving at love field from other airports
+  intent: atis_flight
+  slot: O O O O O O B-toloc.airport_name I-toloc.airport_name O O O
+-
+  sentence: what does ewr stand for
+  intent: atis_abbreviation
+  slot: O O B-airport_code O O
+-
+  sentence: what flights from denver to salt lake city
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name I-toloc.city_name
+-
+  sentence: please give me the flight times the morning on united airlines for september twentieth from philadelphia to san francisco
+  intent: atis_flight_time
+  slot: O O O O B-flight_time I-flight_time O B-depart_time.period_of_day O B-airline_name I-airline_name O B-depart_date.month_name B-depart_date.day_number O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: what is the earliest arrival in salt lake city of a flight from toronto
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-toloc.city_name I-toloc.city_name I-toloc.city_name O O O O B-fromloc.city_name
+-
+  sentence: i'd like to see all the flights from boston to philadelphia
+  intent: atis_flight
+  slot: O O O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what is fare code c
+  intent: atis_abbreviation
+  slot: O O O O B-fare_basis_code
+-
+  sentence: what kind of aircraft does delta fly before 8 am on august second from boston to denver
+  intent: atis_aircraft
+  slot: O O O O O B-airline_name O B-depart_time.time_relative B-depart_time.time I-depart_time.time O B-depart_date.month_name B-depart_date.day_number O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: flight from denver to san francisco in the afternoon
+  intent: atis_flight
+  slot: O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O O B-depart_time.period_of_day
+-
+  sentence: what is the first flight from boston to stapleton airport for tomorrow
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.city_name O B-toloc.airport_name I-toloc.airport_name O B-depart_date.today_relative
+-
+  sentence: i need to know what flights leave atlanta on sunday evening and arrive in baltimore
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name O B-depart_date.day_name B-depart_time.period_of_day O O O B-toloc.city_name
+-
+  sentence: what are the flights from milwaukee to orlando on wednesday
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: what is the cheapest fare between denver and boston
+  intent: atis_airfare
+  slot: O O O B-cost_relative O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what airlines have business class
+  intent: atis_airline
+  slot: O O O B-class_type I-class_type
+-
+  sentence: i need a flight from san francisco to pittsburgh and then pittsburgh to new york and new york to san francisco
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: what flights are there between washington dc and san francisco leaving washington after 6 pm on wednesday
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name B-fromloc.state_code O B-toloc.city_name I-toloc.city_name O B-fromloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time O B-depart_date.day_name
+-
+  sentence: what type of aircraft does eastern fly from atlanta to denver before 6 pm
+  intent: atis_aircraft
+  slot: O O O O O B-airline_name O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time
+-
+  sentence: i would like the flights available from boston to denver arriving in denver on 9 o'clock wednesday morning on or by 9 o'clock wednesday morning
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name O B-toloc.city_name O O B-toloc.city_name O B-arrive_time.time I-arrive_time.time B-arrive_date.day_name B-arrive_time.period_of_day O B-or B-arrive_time.time_relative B-arrive_time.time I-arrive_time.time B-arrive_date.day_name B-arrive_time.period_of_day
+-
+  sentence: what ground transportation is available at the baltimore airport
+  intent: atis_ground_service
+  slot: O O O O O O O B-airport_name I-airport_name
+-
+  sentence: show me flights from atlanta to baltimore denver and dallas
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name B-toloc.city_name O B-toloc.city_name
+-
+  sentence: what flights are there from minneapolis to chicago
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: flights from denver to pittsburgh on thursday
+  intent: atis_flight
+  slot: O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: may i have a list of flights going from boston to denver on the twenty ninth of july
+  intent: atis_flight
+  slot: O O O O O O O O O B-fromloc.city_name O B-toloc.city_name O O B-depart_date.day_number I-depart_date.day_number O B-depart_date.month_name
+-
+  sentence: what flights are there between nashville and st. louis which are nonstop and arrive after noon and before 8 pm
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O O B-flight_stop O O B-arrive_time.time_relative B-arrive_time.time O B-arrive_time.time_relative B-arrive_time.time I-arrive_time.time
+-
+  sentence: please list the flight times for boston to pittsburgh
+  intent: atis_flight_time
+  slot: O O O B-flight_time I-flight_time O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: flight leaving from oakland to salt lake city
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name I-toloc.city_name
+-
+  sentence: what are the different classes that an airline offers
+  intent: atis_flight
+  slot: O O O O O O O O O
+-
+  sentence: could you tell me if there is ground transportation between the boston airport and boston downtown
+  intent: atis_ground_service
+  slot: O O O O O O O O O O O B-fromloc.airport_name I-fromloc.airport_name O B-toloc.city_name O
+-
+  sentence: ground transportation denver
+  intent: atis_ground_service
+  slot: O O B-city_name
+-
+  sentence: what are the prices of the flights from atlanta to dallas in the morning
+  intent: atis_airfare
+  slot: O O O O O O O O B-fromloc.city_name O B-toloc.city_name O O B-depart_time.period_of_day
+-
+  sentence: how long does it take to fly from boston to atlanta
+  intent: atis_distance
+  slot: O O O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: please list the friday afternoon flights from san jose to dallas on american airlines
+  intent: atis_flight
+  slot: O O O B-depart_date.day_name B-depart_time.period_of_day O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O B-airline_name I-airline_name
+-
+  sentence: is there an american airlines flight in the evening from dallas to san francisco
+  intent: atis_flight
+  slot: O O O B-airline_name I-airline_name O O O B-depart_time.period_of_day O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: what ground transportation is available in denver
+  intent: atis_ground_service
+  slot: O O O O O O B-city_name
+-
+  sentence: show me the fares from dallas to san francisco
+  intent: atis_airfare
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: in pittsburgh i'd like to rent a car
+  intent: atis_ground_service
+  slot: O B-city_name O O O O O B-transport_type
+-
+  sentence: i would like to find a flight that goes from tampa to montreal making a stop in new york and a flight that serves lunch
+  intent: atis_flight
+  slot: O O O O O O O O O O B-fromloc.city_name O B-toloc.city_name O O O O B-stoploc.city_name I-stoploc.city_name O O O O O B-meal_description
+-
+  sentence: please give me flights from atlanta to boston on wednesday afternoon and thursday morning
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name B-depart_time.period_of_day O B-depart_date.day_name B-depart_time.period_of_day
+-
+  sentence: can you list all flights leaving from st. louis and arriving in milwaukee
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name I-fromloc.city_name O O O B-toloc.city_name
+-
+  sentence: flights from montreal to las vegas
+  intent: atis_flight
+  slot: O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: give me the flights from chicago to seattle on saturday morning
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name B-depart_time.period_of_day
+-
+  sentence: what is airline nw
+  intent: atis_airline
+  slot: O O O B-airline_code
+-
+  sentence: i need a flight tonight from charlotte to las vegas with a stop in st. louis and i want dinner
+  intent: atis_flight
+  slot: O O O O B-depart_date.today_relative O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O O O O B-stoploc.city_name I-stoploc.city_name O O O B-meal_description
+-
+  sentence: what's the latest flight out of denver that arrives in pittsburgh next monday
+  intent: atis_flight
+  slot: O O B-flight_mod O O O B-fromloc.city_name O O O B-toloc.city_name B-arrive_date.date_relative B-arrive_date.day_name
+-
+  sentence: please list the flights taking off and landing on general mitchell international airport
+  intent: atis_flight
+  slot: O O O O O O O O O B-fromloc.airport_name I-fromloc.airport_name I-fromloc.airport_name I-fromloc.airport_name
+-
+  sentence: what limousine service is in boston
+  intent: atis_ground_service
+  slot: O B-transport_type O O O B-city_name
+-
+  sentence: what is fare code y mean
+  intent: atis_abbreviation
+  slot: O O O O B-fare_basis_code O
+-
+  sentence: are there delta flights leaving denver
+  intent: atis_flight
+  slot: O O B-airline_name O O B-fromloc.city_name
+-
+  sentence: on thursday i'd like a flight from st. petersburg to miami
+  intent: atis_flight
+  slot: O B-depart_date.day_name O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name
+-
+  sentence: when do planes leave boston for
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O
+-
+  sentence: what flights are there wednesday morning from atlanta to philadelphia
+  intent: atis_flight
+  slot: O O O O B-depart_date.day_name B-depart_time.period_of_day O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me all flights from san francisco to boston philadelphia or baltimore
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name B-toloc.city_name O B-toloc.city_name
+-
+  sentence: what type of aircraft is used on the first flight from philadelphia to dallas in the morning
+  intent: atis_aircraft
+  slot: O O O O O O O O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name O O B-depart_time.period_of_day
+-
+  sentence: what are the flights from pittsburgh to oakland
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: list the morning flights at a 124 dollars from atlanta to boston
+  intent: atis_flight
+  slot: O O B-depart_time.period_of_day O O O B-fare_amount I-fare_amount O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: all flights from miami to new york
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: show flights from denver to oakland
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show flights from philadelphia to san francisco
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: i'd like a flight tomorrow late from nashville to houston with dinner please
+  intent: atis_flight
+  slot: O O O O B-depart_date.today_relative B-depart_time.period_mod O B-fromloc.city_name O B-toloc.city_name O B-meal_description O
+-
+  sentence: show me all prices of economy from baltimore to dallas
+  intent: atis_airfare
+  slot: O O O O O B-economy O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i need a flight from montreal quebec to san diego california leaving this sunday
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name B-fromloc.state_name O B-toloc.city_name I-toloc.city_name B-toloc.state_name O B-depart_date.date_relative B-depart_date.day_name
+-
+  sentence: show me the cheapest one way flight from san francisco to boston leaving san francisco after 9 pm
+  intent: atis_flight
+  slot: O O O B-cost_relative B-round_trip I-round_trip O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O B-fromloc.city_name I-fromloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time
+-
+  sentence: does united airlines have flights between boston and denver
+  intent: atis_flight
+  slot: O B-airline_name I-airline_name O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i would like to fly us air from orlando to cleveland in the late evening what do you have available
+  intent: atis_flight
+  slot: O O O O O B-airline_name I-airline_name O B-fromloc.city_name O B-toloc.city_name O O B-depart_time.period_mod B-depart_time.period_of_day O O O O O
+-
+  sentence: what are the flights from milwaukee to orlando on wednesday night
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name B-depart_time.period_of_day
+-
+  sentence: show me the flights from newark to los angeles
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: can you give me the evening flight on wednesday from washington to atlanta again
+  intent: atis_flight
+  slot: O O O O O B-depart_time.period_of_day O O B-depart_date.day_name O B-fromloc.city_name O B-toloc.city_name O
+-
+  sentence: what are the flights and prices from la to charlotte for monday morning
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name B-depart_time.period_of_day
+-
+  sentence: what first class flights are available on july twenty fifth 1991 from denver to baltimore
+  intent: atis_flight
+  slot: O B-class_type I-class_type O O O O B-depart_date.month_name B-depart_date.day_number I-depart_date.day_number B-depart_date.year O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me all flights from pittsburgh to baltimore tomorrow which serve a meal
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_date.today_relative O O O B-meal
+-
+  sentence: show me all the flights between philadelphia and denver
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: flights from phoenix to newark
+  intent: atis_flight
+  slot: O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: all flights from pittsburgh to dallas round trip after 12 pm less than 100
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name B-round_trip I-round_trip B-depart_time.time_relative B-depart_time.time I-depart_time.time B-cost_relative O B-fare_amount
+-
+  sentence: thanks and what's the last flight back from washington to boston
+  intent: atis_flight
+  slot: O O O O B-flight_mod O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me the flights from boston to baltimore
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what does fare code q mean
+  intent: atis_abbreviation
+  slot: O O O O B-fare_basis_code O
+-
+  sentence: show me the flights arriving in baltimore from philadelphia at about 4 o'clock
+  intent: atis_flight
+  slot: O O O O O O B-toloc.city_name O B-fromloc.city_name O B-arrive_time.time_relative B-arrive_time.time I-arrive_time.time
+-
+  sentence: what is the cheapest fare from baltimore to dallas in any class
+  intent: atis_airfare
+  slot: O O O B-cost_relative O O B-fromloc.city_name O B-toloc.city_name O O O
+-
+  sentence: give me all nonstops from new york to vegas that arrive on a sunday
+  intent: atis_flight
+  slot: O O O B-flight_stop O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O O O O B-arrive_date.day_name
+-
+  sentence: what is sa
+  intent: atis_abbreviation
+  slot: O O B-days_code
+-
+  sentence: show me the flights from boston to san francisco
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: what does fare code qo mean
+  intent: atis_abbreviation
+  slot: O O O O B-fare_basis_code O
+-
+  sentence: i need information on flights leaving dallas arriving in boston leaving dallas early in the morning
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O O B-toloc.city_name O B-fromloc.city_name B-depart_time.period_mod O O B-depart_time.period_of_day
+-
+  sentence: what is the earliest flight on thursday from atlanta to washington dc
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-depart_date.day_name O B-fromloc.city_name O B-toloc.city_name B-toloc.state_code
+-
+  sentence: what flights are available saturday to san francisco from dallas
+  intent: atis_flight
+  slot: O O O O B-depart_date.day_name O B-toloc.city_name I-toloc.city_name O B-fromloc.city_name
+-
+  sentence: i'd like to fly from boston to san francisco
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: how many flights does american airlines have from boston to atlanta
+  intent: atis_quantity
+  slot: O O O O B-airline_name I-airline_name O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: does midwest express have any flights from montreal to nashville
+  intent: atis_flight
+  slot: O B-airline_name O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me all economy prices from dallas to baltimore
+  intent: atis_airfare
+  slot: O O O B-economy O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: and how much does it cost to travel from boston airport to downtown
+  intent: atis_airfare
+  slot: O O O O O O O O O B-fromloc.airport_name I-fromloc.airport_name O O
+-
+  sentence: all flights before 10 am boston denver
+  intent: atis_flight
+  slot: O O B-depart_time.time_relative B-depart_time.time I-depart_time.time B-fromloc.city_name B-fromloc.city_name
+-
+  sentence: show me the flights that go from san diego to newark with one stop in houston
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O B-flight_stop I-flight_stop O B-stoploc.city_name
+-
+  sentence: show me the earliest flight on wednesday from baltimore to newark
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-depart_date.day_name O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i'd like to book the cheapest one way flight from pittsburgh to atlanta on july twentieth
+  intent: atis_flight
+  slot: O O O O O B-cost_relative B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: what does mco mean
+  intent: atis_abbreviation
+  slot: O O B-airport_code O
+-
+  sentence: show me all the flights from charlotte to cleveland
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: do you have a flight from salt lake city to st. petersburg
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name I-fromloc.city_name I-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: what is the earliest flight from boston to atlanta
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i'd like a flight tomorrow from kansas city to newark in the morning
+  intent: atis_flight
+  slot: O O O O B-depart_date.today_relative O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O O B-depart_time.period_of_day
+-
+  sentence: show me all flights from boston to detroit
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me the flights arriving in baltimore on june fifteenth leaving either from denver or dallas
+  intent: atis_flight
+  slot: O O O O O O B-toloc.city_name O B-arrive_date.month_name B-arrive_date.day_number O O O B-fromloc.city_name B-or B-fromloc.city_name
+-
+  sentence: show me the flights from love field to other airports
+  intent: atis_flight
+  slot: O O O O O B-fromloc.airport_name I-fromloc.airport_name O O O
+-
+  sentence: what is the earliest flight i can get from baltimore to boston
+  intent: atis_flight
+  slot: O O O B-flight_mod O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what is the round trip thrift fare on us air from boston to san francisco
+  intent: atis_airfare
+  slot: O O O B-round_trip I-round_trip B-class_type O O B-airline_name I-airline_name O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: show me flights from los angeles to pittsburgh on monday evening
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name B-depart_time.period_of_day
+-
+  sentence: i would like a flight from atlanta to denver
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: give me all the flights from memphis to charlotte
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: from philadelphia to toronto
+  intent: atis_flight
+  slot: O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: newark to cleveland
+  intent: atis_flight
+  slot: B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: list all american airline flights which leave phoenix on wednesday and stop at milwaukee
+  intent: atis_flight
+  slot: O O B-airline_name I-airline_name O O O B-fromloc.city_name O B-depart_date.day_name O O O B-stoploc.city_name
+-
+  sentence: show me all flights from pittsburgh to baltimore tomorrow
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_date.today_relative
+-
+  sentence: is there a direct flight from denver to pittsburgh in the morning of august thirty first that is nonstop
+  intent: atis_flight
+  slot: O O O B-connect O O B-fromloc.city_name O B-toloc.city_name O O B-depart_time.period_of_day O B-depart_date.month_name B-depart_date.day_number I-depart_date.day_number O O B-flight_stop
+-
+  sentence: which airline offers the cheapest rate going from dallas to baltimore on july fourth
+  intent: atis_airline
+  slot: O O O O B-cost_relative O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: does midwest express serve charlotte
+  intent: atis_flight
+  slot: O B-airline_name O O B-city_name
+-
+  sentence: show me all the flights from philadelphia to san francisco
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: ground transportation in denver
+  intent: atis_ground_service
+  slot: O O O B-city_name
+-
+  sentence: show me all flights from boston to dallas fort worth both direct and connecting that arrive before noon
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name I-toloc.city_name O O O O O O B-arrive_time.time_relative B-arrive_time.time
+-
+  sentence: show flights from philadelphia to dallas on saturday
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: and flights leaving from atlanta to oakland leaving after 5 pm
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_time.time_relative B-depart_time.time I-depart_time.time
+-
+  sentence: okay and on may four i would like to go from atlanta to denver leaving early in the morning around 8
+  intent: atis_flight
+  slot: O O O B-depart_date.month_name B-depart_date.day_number O O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_time.period_mod O O B-depart_time.period_of_day B-depart_time.time_relative B-depart_time.time
+-
+  sentence: all flights from boston to washington dc on november eleventh
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name B-toloc.state_code O B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: what are the early morning flights from boston to denver
+  intent: atis_flight
+  slot: O O O B-depart_time.period_of_day B-depart_time.period_of_day O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what is the cheapest flight from denver to pittsburgh leaving on september twenty eighth
+  intent: atis_flight
+  slot: O O O B-cost_relative O O B-fromloc.city_name O B-toloc.city_name O O B-depart_date.month_name B-depart_date.day_number I-depart_date.day_number
+-
+  sentence: flight from dallas to oakland california on monday
+  intent: atis_flight
+  slot: O O B-fromloc.city_name O B-toloc.city_name B-toloc.state_name O B-depart_date.day_name
+-
+  sentence: i would like to fly from dallas to san francisco on saturday and arrive in san francisco before 4 pm
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-depart_date.day_name O O O B-toloc.city_name I-toloc.city_name B-arrive_time.time_relative B-arrive_time.time I-arrive_time.time
+-
+  sentence: morning flights out of san francisco arriving boston afternoon
+  intent: atis_flight
+  slot: B-depart_time.period_of_day O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name B-arrive_time.period_of_day
+-
+  sentence: i'd like to see flights from baltimore to atlanta that arrive before noon
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name O O B-arrive_time.time_relative B-arrive_time.time
+-
+  sentence: find me the earliest boston departure for atlanta and the lastest return trip from atlanta so that i can be in atlanta the longest amount of time but return to boston the same day
+  intent: atis_flight
+  slot: O O O B-flight_mod B-fromloc.city_name O O B-toloc.city_name O O B-flight_mod O O O B-fromloc.city_name O O O O O O B-toloc.city_name O O O O O O O O B-toloc.city_name O O B-return_date.date_relative
+-
+  sentence: please give me the cheapest round trip airfare from atlanta to philadelphia on august the first
+  intent: atis_airfare
+  slot: O O O O B-cost_relative B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name O B-depart_date.day_number
+-
+  sentence: i would like information on flights from philadelphia to oakland california on friday afternoon
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name O B-toloc.city_name B-toloc.state_name O B-depart_date.day_name B-depart_time.period_of_day
+-
+  sentence: what afternoon flights are available from pittsburgh to atlanta on a weekday
+  intent: atis_flight
+  slot: O B-depart_time.period_of_day O O O O B-fromloc.city_name O B-toloc.city_name O O B-flight_mod
+-
+  sentence: show ground transportation in denver
+  intent: atis_ground_service
+  slot: O O O O B-city_name
+-
+  sentence: please show me airlines with flights from denver to boston with stop in philadelphia
+  intent: atis_airline
+  slot: O O O O O O O B-fromloc.city_name O B-toloc.city_name O O O B-stoploc.city_name
+-
+  sentence: dallas to baltimore
+  intent: atis_flight
+  slot: B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: rental cars in washington dc
+  intent: atis_ground_service
+  slot: B-transport_type I-transport_type O B-city_name B-state_code
+-
+  sentence: does american airlines fly to san francisco from atlanta
+  intent: atis_flight
+  slot: O B-airline_name I-airline_name O O B-toloc.city_name I-toloc.city_name O B-fromloc.city_name
+-
+  sentence: kindly give me the type of aircraft used to fly from atlanta to denver
+  intent: atis_aircraft
+  slot: O O O O O O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: give me flights from denver to baltimore
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what is fare class h
+  intent: atis_abbreviation
+  slot: O O O O B-fare_basis_code
+-
+  sentence: what is the earliest flight from washington to san francisco on friday that serves breakfast
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-depart_date.day_name O O B-meal_description
+-
+  sentence: what flights are there from atlanta to washington early on thursday mornings
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.period_mod O B-depart_date.day_name B-depart_time.period_of_day
+-
+  sentence: what kind of ground transportation is there in dallas
+  intent: atis_ground_service
+  slot: O O O O O O O O B-city_name
+-
+  sentence: could i have a list of flights in first class on monday from san francisco to pittsburgh starting at noon and afterwards
+  intent: atis_flight
+  slot: O O O O O O O O B-class_type I-class_type O B-depart_date.day_name O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O O B-depart_time.time O B-depart_time.time_relative
+-
+  sentence: how much is a us air boston to pittsburgh daily nonstop flight
+  intent: atis_airfare
+  slot: O O O O B-airline_name I-airline_name B-fromloc.city_name O B-toloc.city_name B-flight_days B-flight_stop O
+-
+  sentence: i'd like to go from boston to atlanta sometime after 5 pm can you tell me the flights that could do that for me
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_time.time_relative B-depart_time.time I-depart_time.time O O O O O O O O O O O O
+-
+  sentence: what's fare code yn
+  intent: atis_abbreviation
+  slot: O O O B-fare_basis_code
+-
+  sentence: airports in new york
+  intent: atis_airport
+  slot: O O B-city_name I-city_name
+-
+  sentence: i'd like to arrange for two friends to fly into los angeles next saturday evening one of the people is coming from kansas city and the other is coming from las vegas
+  intent: atis_flight
+  slot: O O O O O O O O O O B-toloc.city_name I-toloc.city_name B-arrive_date.date_relative B-arrive_date.day_name B-arrive_time.period_of_day O O O O O O O B-fromloc.city_name I-fromloc.city_name O O O O O O B-fromloc.city_name I-fromloc.city_name
+-
+  sentence: show me all overnight flights from washington dc to san francisco and list their fares
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.city_name B-fromloc.state_code O B-toloc.city_name I-toloc.city_name O O O O
+-
+  sentence: what ground transportation is there in atlanta
+  intent: atis_ground_service
+  slot: O O O O O O B-city_name
+-
+  sentence: flights from pittsburgh to baltimore arriving between 4 and 5 pm
+  intent: atis_flight
+  slot: O O B-fromloc.city_name O B-toloc.city_name O O B-arrive_time.start_time O B-arrive_time.end_time I-arrive_time.end_time
+-
+  sentence: what does fare code qw mean
+  intent: atis_abbreviation
+  slot: O O O O B-fare_basis_code O
+-
+  sentence: show flights from new york city to las vegas
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name I-fromloc.city_name I-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: i need information for ground transportation denver colorado
+  intent: atis_ground_service
+  slot: O O O O O O B-city_name B-state_name
+-
+  sentence: list the flight from philadelphia to san francisco on american airlines
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-airline_name I-airline_name
+-
+  sentence: show me the airlines for flights to or from love field
+  intent: atis_airline
+  slot: O O O O O O O O O B-fromloc.airport_name I-fromloc.airport_name
+-
+  sentence: list nonstop flights from san francisco to oakland that depart in the afternoon
+  intent: atis_flight
+  slot: O B-flight_stop O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O O O O B-arrive_time.period_of_day
+-
+  sentence: which airline serves denver pittsburgh and atlanta
+  intent: atis_airline
+  slot: O O O B-fromloc.city_name B-fromloc.city_name O B-fromloc.city_name
+-
+  sentence: how many first class flights does delta airlines have
+  intent: atis_quantity
+  slot: O O B-class_type I-class_type O O B-airline_name I-airline_name O
+-
+  sentence: please show flights arriving in philadelphia from denver
+  intent: atis_flight
+  slot: O O O O O B-toloc.city_name O B-fromloc.city_name
+-
+  sentence: now show me the flights from pittsburgh to baltimore
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me flights from milwaukee to orlando on wednesday night or thursday morning
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name B-depart_time.period_of_day B-or B-depart_date.day_name B-depart_time.period_of_day
+-
+  sentence: i would like to fly delta airlines from atlanta to pittsburgh
+  intent: atis_flight
+  slot: O O O O O B-airline_name I-airline_name O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what is fare code f
+  intent: atis_abbreviation
+  slot: O O O O B-fare_basis_code
+-
+  sentence: what are the flights for united airlines on september twentieth in the morning
+  intent: atis_flight
+  slot: O O O O O B-airline_name I-airline_name O B-depart_date.month_name B-depart_date.day_number O O B-depart_time.period_of_day
+-
+  sentence: show all airlines with flights between denver and dallas
+  intent: atis_airline
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: cheapest fare from nashville to seattle
+  intent: atis_airfare
+  slot: B-cost_relative O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: how many flights does american airlines have with a class of service code f
+  intent: atis_quantity
+  slot: O O O O B-airline_name I-airline_name O O O O O O O B-fare_basis_code
+-
+  sentence: find a nonstop flight between boston and washington arriving in washington around 5 pm
+  intent: atis_flight
+  slot: O O B-flight_stop O O B-fromloc.city_name O B-toloc.city_name O O B-toloc.city_name B-arrive_time.time_relative B-arrive_time.time I-arrive_time.time
+-
+  sentence: pittsburgh to baltimore please on january one
+  intent: atis_flight
+  slot: B-fromloc.city_name O B-toloc.city_name O O B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: show me the costs and times for flights from san francisco to atlanta
+  intent: atis_airfare#atis_flight_time
+  slot: O O O O O B-flight_time O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what airlines fly from boston to denver
+  intent: atis_airline
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what ground transportation is there in atlanta
+  intent: atis_ground_service
+  slot: O O O O O O B-city_name
+-
+  sentence: how far from the airport in the dallas fort worth airport is dallas
+  intent: atis_distance
+  slot: O O O O O O O B-fromloc.airport_name I-fromloc.airport_name I-fromloc.airport_name I-fromloc.airport_name O B-fromloc.city_name
+-
+  sentence: list all flights from tampa florida to miami that are the cheapest one way
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name B-fromloc.state_name O B-toloc.city_name O O O B-cost_relative B-round_trip I-round_trip
+-
+  sentence: show me the flights from philadelphia to baltimore
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: ground transportation in denver
+  intent: atis_ground_service
+  slot: O O O B-city_name
+-
+  sentence: please list all flights from atlanta to baltimore on wednesday and thursday
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name O B-depart_date.day_name
+-
+  sentence: does flight dl 1083 from philadelphia to denver fly on saturdays
+  intent: atis_flight
+  slot: O O B-airline_code B-flight_number O B-fromloc.city_name O B-toloc.city_name O O B-depart_date.day_name
+-
+  sentence: i would like to book a flight going from tampa to seattle on may twenty sixth i would like to stop in milwaukee on the way
+  intent: atis_flight
+  slot: O O O O O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name B-depart_date.day_number I-depart_date.day_number O O O O O O B-stoploc.city_name O O O
+-
+  sentence: i want to fly from boston to atlanta i would like the cheapest fare please
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O O O O B-cost_relative O O
+-
+  sentence: show me the flights from montreal to philly
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what flights are available sunday afternoon from oakland to dallas
+  intent: atis_flight
+  slot: O O O O B-depart_date.day_name B-depart_time.period_of_day O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: explain the restriction ap 80
+  intent: atis_abbreviation
+  slot: O O O B-restriction_code I-restriction_code
+-
+  sentence: i want to go from baltimore to san francisco with a stopover in denver
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O O O O B-stoploc.city_name
+-
+  sentence: information on a flight from san francisco to philadelphia
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name
+-
+  sentence: shortest morning flights from cincinnati to tampa
+  intent: atis_flight
+  slot: B-flight_mod B-depart_time.period_of_day O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what are the flights from boston to washington on october fifteenth 1991
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name B-depart_date.day_number B-depart_date.year
+-
+  sentence: what flights are there on wednesday evening from denver to sfo
+  intent: atis_flight
+  slot: O O O O O B-depart_date.day_name B-depart_time.period_of_day O B-fromloc.city_name O B-toloc.airport_code
+-
+  sentence: show me a list of flights on american airlines from boston to dc on july twenty second
+  intent: atis_flight
+  slot: O O O O O O O B-airline_name I-airline_name O B-fromloc.city_name O B-toloc.state_code O B-depart_date.month_name B-depart_date.day_number I-depart_date.day_number
+-
+  sentence: us air 269 leaving boston at 428 what is the arrival time in baltimore
+  intent: atis_flight
+  slot: B-airline_name I-airline_name B-flight_number O B-fromloc.city_name O B-depart_time.time O O O B-flight_time I-flight_time O B-toloc.city_name
+-
+  sentence: i would like information on flights leaving early monday morning from atlanta to baltimore
+  intent: atis_flight
+  slot: O O O O O O O B-depart_time.period_mod B-depart_date.day_name B-depart_time.period_of_day O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: now show me the flights from memphis to cleveland
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what flights leave from nashville to phoenix
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me the air fare for the flights from baltimore to dallas
+  intent: atis_airfare
+  slot: O O O O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what are the flights from denver to san francisco
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: which airlines go from san francisco to washington by way of indianapolis
+  intent: atis_airline
+  slot: O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O O O B-stoploc.city_name
+-
+  sentence: all flights from washington dc to san francisco on november twelfth
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name B-fromloc.state_code O B-toloc.city_name I-toloc.city_name O B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: round trip fares from pittsburgh to philadelphia under 1000 dollars
+  intent: atis_airfare
+  slot: B-round_trip I-round_trip O O B-fromloc.city_name O B-toloc.city_name B-cost_relative B-fare_amount I-fare_amount
+-
+  sentence: show nonstop flights from new york to miami on a tuesday which cost less than 466 dollars one way
+  intent: atis_flight
+  slot: O B-flight_stop O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O O B-arrive_date.day_name O O B-cost_relative O B-fare_amount I-fare_amount B-round_trip I-round_trip
+-
+  sentence: i'd like flights on american airlines from philadelphia to dallas arriving before 1145 am
+  intent: atis_flight
+  slot: O O O O B-airline_name I-airline_name O B-fromloc.city_name O B-toloc.city_name O B-arrive_time.time_relative B-arrive_time.time I-arrive_time.time
+-
+  sentence: show business class fares from san francisco to denver on united airlines
+  intent: atis_airfare
+  slot: O B-class_type I-class_type O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O B-airline_name I-airline_name
+-
+  sentence: what is the earliest flight between logan and bwi
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.airport_name O B-toloc.airport_code
+-
+  sentence: describe pittsburgh airport
+  intent: atis_airport
+  slot: O B-airport_name I-airport_name
+-
+  sentence: show flights on us air from pittsburgh to oakland connecting through denver
+  intent: atis_flight
+  slot: O O O B-airline_name I-airline_name O B-fromloc.city_name O B-toloc.city_name B-connect O B-stoploc.city_name
+-
+  sentence: list all nonstop flights on tuesday before noon from charlotte to baltimore
+  intent: atis_flight
+  slot: O O B-flight_stop O O B-arrive_date.day_name B-arrive_time.time_relative B-arrive_time.time O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: minneapolis to phoenix on monday
+  intent: atis_flight
+  slot: B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: please list me the flights and their cost of all airlines flying from denver to baltimore
+  intent: atis_flight#atis_airfare
+  slot: O O O O O O O O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what airline uses the code hp
+  intent: atis_airline
+  slot: O O O O O B-airline_code
+-
+  sentence: find a flight from san francisco to boston on wednesday
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: could you tell me about ground transportation arrangements from the dallas airport to downtown dallas
+  intent: atis_ground_service
+  slot: O O O O O O O O O O B-fromloc.airport_name I-fromloc.airport_name O O B-toloc.city_name
+-
+  sentence: display all flights from pittsburgh to san francisco on august second
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: give me morning flights from charlotte to baltimore
+  intent: atis_flight
+  slot: O O B-depart_time.period_of_day O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: anything from baltimore or washington with a stopover in denver going to san francisco
+  intent: atis_flight
+  slot: O O B-fromloc.city_name B-or B-fromloc.city_name O O O O B-stoploc.city_name O O B-toloc.city_name I-toloc.city_name
+-
+  sentence: show me flights from boston to denver
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me the flights from columbus to charlotte
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i need a flight from new york city to montreal thursday may six
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name I-fromloc.city_name I-fromloc.city_name O B-toloc.city_name B-depart_date.day_name B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: philadelphia to san francisco
+  intent: atis_flight
+  slot: B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: what is the earliest flight from boston to san francisco
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: is there a limousine service available from the pittsburgh airport
+  intent: atis_ground_service
+  slot: O O O B-transport_type O O O O B-fromloc.airport_name I-fromloc.airport_name
+-
+  sentence: boston ground transportation
+  intent: atis_ground_service
+  slot: B-city_name O O
+-
+  sentence: the earliest flight from boston to san francisco please that will be serving a meal
+  intent: atis_flight
+  slot: O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O O O O O O B-meal
+-
+  sentence: what does code qw mean
+  intent: atis_abbreviation
+  slot: O O O B-fare_basis_code O
+-
+  sentence: what airline is hp
+  intent: atis_airline
+  slot: O O O B-airline_code
+-
+  sentence: what are the costs of car rental in dallas
+  intent: atis_ground_fare
+  slot: O O O O O B-transport_type I-transport_type O B-city_name
+-
+  sentence: show me the flights leaving saturday or sunday from milwaukee to phoenix
+  intent: atis_flight
+  slot: O O O O O B-depart_date.day_name B-or B-depart_date.day_name O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i'm interested in a flight from pittsburgh to atlanta
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: flights from kansas city to cleveland on wednesday
+  intent: atis_flight
+  slot: O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: is there a nonstop flight from denver to san francisco
+  intent: atis_flight
+  slot: O O O B-flight_stop O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: display all flights from san francisco to boston on august eighth
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name I-fromloc.city_name O B-toloc.city_name O B-depart_date.month_name B-depart_date.day_number
+-
+  sentence: which airlines have flights between philadelphia and pittsburgh
+  intent: atis_airline
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i want to go from boston to atlanta on monday
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name
+-
+  sentence: what is the next flight from pittsburgh to san francisco after delta flight 1059
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name B-mod B-airline_name O B-flight_number
+-
+  sentence: show me the least expensive flight from miami to cleveland on sunday after noon
+  intent: atis_flight
+  slot: O O O B-cost_relative I-cost_relative O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name B-depart_time.time_relative B-depart_time.time
+-
+  sentence: what type of aircraft is used flying from atlanta to denver before 12 noon
+  intent: atis_aircraft
+  slot: O O O O O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time
+-
+  sentence: show me all flights from boston to atlanta which leave atlanta after noon tomorrow
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O O B-fromloc.city_name B-depart_time.time_relative B-depart_time.time B-depart_date.today_relative
+-
+  sentence: how much does it cost to rent a car in tacoma
+  intent: atis_ground_fare
+  slot: O O O O O O O O B-transport_type O B-city_name
+-
+  sentence: what kind of airplane is flight ua 270 from denver to philadelphia
+  intent: atis_aircraft
+  slot: O O O O O O B-airline_code B-flight_number O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: list all flights from boston to atlanta before 5 o'clock am on thursday
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name B-depart_time.time_relative B-depart_time.time I-depart_time.time I-depart_time.time O B-depart_date.day_name
+-
+  sentence: i'd like the earliest flight from dallas to boston
+  intent: atis_flight
+  slot: O O O B-flight_mod O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: show me the flights on delta from atlanta in the morning
+  intent: atis_flight
+  slot: O O O O O B-airline_name O B-fromloc.city_name O O B-depart_time.period_of_day
+-
+  sentence: what flights from salt lake city to las vegas
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name I-fromloc.city_name I-fromloc.city_name O B-toloc.city_name I-toloc.city_name
+-
+  sentence: show me the list of flights between philadelphia and denver that leave in the afternoon
+  intent: atis_flight
+  slot: O O O O O O O B-fromloc.city_name O B-toloc.city_name O O O O B-depart_time.period_of_day
+-
+  sentence: what is the fare from atlanta to boston on coach one way
+  intent: atis_airfare
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-class_type B-round_trip I-round_trip
+-
+  sentence: how many fares are there one way from tacoma to montreal
+  intent: atis_quantity
+  slot: O O O O O B-round_trip I-round_trip O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: i would like to know some information on flights leaving philadelphia arriving in pittsburgh in the afternoon
+  intent: atis_flight
+  slot: O O O O O O O O O O B-fromloc.city_name O O B-toloc.city_name O O B-arrive_time.period_of_day
+-
+  sentence: what flights are available from pittsburgh to boston on wednesday of next week
+  intent: atis_flight
+  slot: O O O O O B-fromloc.city_name O B-toloc.city_name O B-depart_date.day_name O B-depart_date.date_relative O
+-
+  sentence: is there a flight on continental airlines from boston to denver
+  intent: atis_flight
+  slot: O O O O O B-airline_name I-airline_name O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: pm flights dallas to atlanta
+  intent: atis_flight
+  slot: B-depart_time.period_of_day O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: information on flights from baltimore to philadelphia
+  intent: atis_flight
+  slot: O O O O B-fromloc.city_name O B-toloc.city_name
+-
+  sentence: what flights from atlanta to st. louis on tuesday arriving around 230 pm
+  intent: atis_flight
+  slot: O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name O B-depart_date.day_name O B-arrive_time.time_relative B-arrive_time.time I-arrive_time.time
+-
+  sentence: show me ground transportation in san francisco
+  intent: atis_ground_service
+  slot: O O O O O B-city_name I-city_name
+-
+  sentence: what flights do you have from newark new jersey to ontario california that connect in phoenix
+  intent: atis_flight
+  slot: O O O O O O B-fromloc.city_name B-fromloc.state_name I-fromloc.state_name O B-toloc.city_name B-toloc.state_name O B-connect O B-stoploc.city_name

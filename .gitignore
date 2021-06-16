@@ -108,13 +108,12 @@ venv.bak/
 .idea/
 snips_model/
 atis_model/
+qiyuan_model
 
 .DS_Store
 cached*
 sample_pred_out.txt
 
 # project
-qiyuan_model
-test/testFun.py
-log
-test
+/log
+/test/

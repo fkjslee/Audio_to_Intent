@@ -74,7 +74,7 @@ class JointProcessor(object):
         self.slot_labels = get_slot_labels(args)
 
     def _create_examples(self, texts, intents=None, slots=None, set_type='train'):
-        """Creates examples for the training and dev sets."""
+        """Creates examples for the training and valid sets."""
         examples = []
         if intents is None:
             intents = [None] * len(texts)
@@ -102,7 +102,7 @@ class JointProcessor(object):
     def get_examples(self, mode):
         """
         Args:
-            mode: train, dev, test
+            mode: train, valid, test
         """
         data_path = os.path.join(self.args.data_dir, self.args.task, mode)
         logger.debug("LOOKING AT {}".format(data_path))
@@ -118,12 +118,6 @@ class JointProcessor(object):
         if mode == "train":
             texts, intents, slots = augmentTrainData(texts, intents, slots)
         return self._create_examples(texts=texts, intents=intents, slots=slots, set_type=mode)
-
-
-processors = {
-    "qiyuan": JointProcessor,
-    "snips": JointProcessor
-}
 
 
 def convert_examples_to_features(examples, max_seq_len, tokenizer,
@@ -218,7 +212,7 @@ def convert_examples_to_features(examples, max_seq_len, tokenizer,
 
 
 def load_and_cache_examples(args, tokenizer, mode):
-    processor = processors[args.task](args)
+    processor = JointProcessor(args)
 
     # Load data features from cache or dataset file
     cached_features_file = os.path.join(
@@ -239,12 +233,12 @@ def load_and_cache_examples(args, tokenizer, mode):
         logger.debug("Creating features from dataset file at %s", os.path.join(args.data_dir, args.task))
         if mode == "train":
             examples = processor.get_examples("train")
-        elif mode == "dev":
-            examples = processor.get_examples("dev")
+        elif mode == "valid":
+            examples = processor.get_examples("valid")
         elif mode == "test":
             examples = processor.get_examples("test")
         else:
-            raise Exception("For mode, Only train, dev, test is available")
+            raise Exception("For mode, Only train, valid, test is available")
 
         # Use cross entropy ignore index as padding sentences.txt id so that only real sentences.txt ids contribute to the loss later
         pad_token_label_id = args.ignore_index

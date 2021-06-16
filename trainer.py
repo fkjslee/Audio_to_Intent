@@ -1,7 +1,7 @@
 import os
 import logging
 from tqdm import tqdm, trange
-
+import sys
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
@@ -16,10 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 class Trainer(object):
-    def __init__(self, args, train_dataset=None, dev_dataset=None, test_dataset=None):
+    def __init__(self, args, train_dataset=None, valid_dataset=None, test_dataset=None):
         self.args = args
         self.train_dataset = train_dataset
-        self.dev_dataset = dev_dataset
+        self.valid_dataset = valid_dataset
         self.test_dataset = test_dataset
 
         self.intent_label_lst = get_intent_labels(args)
@@ -56,8 +56,8 @@ class Trainer(object):
         global_step = 0
         self.model.zero_grad()
 
-        for _ in trange(int(self.args.num_train_epochs), desc="Epoch", position=0):
-            epoch_iterator = tqdm(train_dataloader, desc="Iteration", position=0)
+        for _ in trange(int(self.args.num_train_epochs), desc="Epoch", position=0, file=sys.stdout):
+            epoch_iterator = tqdm(train_dataloader, desc="Iteration", position=0, file=sys.stdout)
             for step, batch in enumerate(epoch_iterator):
                 self.model.train()
                 batch = tuple(t.to(self.device) for t in batch)
@@ -65,6 +65,7 @@ class Trainer(object):
                           'slot_labels_ids': batch[4], 'token_type_ids': batch[2]}
                 outputs = self.model(**inputs)
                 loss = outputs[0]
+                epoch_iterator.set_postfix(loss=loss.item())
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.args.max_grad_norm)
                 optimizer.step()
@@ -76,13 +77,13 @@ class Trainer(object):
     def evaluate(self, mode):
         if mode == 'test':
             dataset = self.test_dataset
-        elif mode == 'dev':
-            dataset = self.dev_dataset
+        elif mode == 'valid':
+            dataset = self.valid_dataset
         else:
             raise Exception("Only dev and test dataset available")
 
-        eval_sampler = SequentialSampler(dataset)
-        eval_dataloader = DataLoader(dataset, sampler=eval_sampler, batch_size=self.args.eval_batch_size)
+        valid_sampler = SequentialSampler(dataset)
+        valid_dataloader = DataLoader(dataset, sampler=valid_sampler, batch_size=self.args.eval_batch_size)
 
         # Eval!
         logger.debug("***** Running evaluation on %s dataset *****", mode)
@@ -97,7 +98,7 @@ class Trainer(object):
 
         self.model.eval()
 
-        for batch in tqdm(eval_dataloader, desc="Evaluating"):
+        for batch in tqdm(valid_dataloader, desc="Evaluating"):
             batch = tuple(t.to(self.device) for t in batch)
             with torch.no_grad():
                 inputs = {'input_ids': batch[0], 'attention_mask': batch[1], 'intent_label_ids': batch[3],
