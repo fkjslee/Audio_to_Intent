@@ -7,57 +7,62 @@ import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from transformers import BertConfig, AdamW, get_linear_schedule_with_warmup
 
-from utils import compute_metrics, get_intent_labels, get_slot_labels
+from utils import compute_metrics, get_intent_labels, get_slot_labels, get_args, load_tokenizer
 from data_loader import JointProcessor, convert_examples_to_features
 from transformers import BertTokenizer
-
+from data_loader import load_and_cache_examples
 from model import JointBERT
+
 logger = logging.getLogger(__name__)
 
 
 class Trainer(object):
-    def __init__(self, args, train_dataset=None, valid_dataset=None, test_dataset=None):
-        self.args = args
-        self.train_dataset = train_dataset
-        self.valid_dataset = valid_dataset
-        self.test_dataset = test_dataset
+    def __init__(self):
+        self.args = get_args()
+        args = self.args
+        self.tokenizer = load_tokenizer(self.args)
 
         self.intent_label_lst = get_intent_labels(args)
         self.slot_label_lst = get_slot_labels(args)
-        # Use cross entropy ignore index as padding sentences.txt id so that only real sentences.txt ids contribute to the loss later
         self.pad_token_label_id = args.ignore_index
 
         self.config_class, self.model_class, _ = BertConfig, JointBERT, BertTokenizer
         self.config = self.config_class.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
-        self.model = self.model_class.from_pretrained(args.model_name_or_path,
-                                                      config=self.config,
-                                                      args=args,
+        self.model = self.model_class.from_pretrained(args.model_name_or_path, config=self.config, args=args,
                                                       intent_label_lst=self.intent_label_lst,
                                                       slot_label_lst=self.slot_label_lst)
-
         # GPU or CPU
         self.device = args.device
         self.model.to(self.device)
 
-    def train(self):
-        train_sampler = RandomSampler(self.train_dataset)
-        train_dataloader = DataLoader(self.train_dataset, sampler=train_sampler, batch_size=self.args.train_batch_size)
+        if self.args.do_load:
+            self.load_model()
+        else:
+            self.train(load_and_cache_examples(args, self.tokenizer, 'train'))
+
+        if self.args.do_valid:
+            self.valid(load_and_cache_examples(args, self.tokenizer, 'valid'))
+
+    def train(self, train_dataset):
+        train_sampler = RandomSampler(train_dataset)
+        train_dataloader = DataLoader(train_dataset, sampler=train_sampler, batch_size=self.args.train_batch_size)
 
         # Prepare optimizer and schedule (linear warmup and decay)
         no_decay = ['bias', 'LayerNorm.weight']
         optimizer_grouped_parameters = [
             {'params': [p for n, p in self.model.named_parameters() if not any(nd in n for nd in no_decay)],
              'weight_decay': 0.0},
-            {'params': [p for n, p in self.model.named_parameters() if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
+            {'params': [p for n, p in self.model.named_parameters() if any(nd in n for nd in no_decay)],
+             'weight_decay': 0.0}
         ]
         optimizer = AdamW(optimizer_grouped_parameters, lr=1e-4)
-        scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=self.args.warmup_steps, num_training_steps=len(train_dataloader) * self.args.num_train_epochs)
+        scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=self.args.warmup_steps,
+                                                    num_training_steps=len(train_dataloader) * self.args.num_train_epochs)
 
         global_step = 0
-        self.model.zero_grad()
 
-        for _ in trange(int(self.args.num_train_epochs), desc="Epoch", position=0, file=sys.stdout):
-            epoch_iterator = tqdm(train_dataloader, desc="Iteration", position=0, file=sys.stdout)
+        for _ in range(int(self.args.num_train_epochs)):
+            epoch_iterator = tqdm(train_dataloader, desc="Epoch %d in %d" % (_, self.args.num_train_epochs), position=0, file=sys.stdout)
             for step, batch in enumerate(epoch_iterator):
                 self.model.train()
                 batch = tuple(t.to(self.device) for t in batch)
@@ -66,21 +71,15 @@ class Trainer(object):
                 outputs = self.model(**inputs)
                 loss = outputs[0]
                 epoch_iterator.set_postfix(loss=loss.item())
+                self.model.zero_grad()
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.args.max_grad_norm)
                 optimizer.step()
                 scheduler.step()  # Update learning rate schedule
-                self.model.zero_grad()
                 global_step += 1
-                self.save_model()
+        self.save_model()
 
-    def evaluate(self, mode):
-        if mode == 'test':
-            dataset = self.test_dataset
-        elif mode == 'valid':
-            dataset = self.valid_dataset
-        else:
-            raise Exception("Only dev and test dataset available")
+    def valid(self, dataset, mode='valid'):
 
         valid_sampler = SequentialSampler(dataset)
         valid_dataloader = DataLoader(dataset, sampler=valid_sampler, batch_size=self.args.eval_batch_size)
@@ -133,7 +132,8 @@ class Trainer(object):
                 else:
                     slot_preds = np.append(slot_preds, slot_logits.detach().cpu().numpy(), axis=0)
 
-                out_slot_labels_ids = np.append(out_slot_labels_ids, inputs["slot_labels_ids"].detach().cpu().numpy(), axis=0)
+                out_slot_labels_ids = np.append(out_slot_labels_ids, inputs["slot_labels_ids"].detach().cpu().numpy(),
+                                                axis=0)
 
         eval_loss = eval_loss / nb_eval_steps
         results = {
@@ -165,7 +165,8 @@ class Trainer(object):
 
         return results
 
-    def predict(self, sentences, tokenizer):
+    def predict(self, sentences):
+        tokenizer = self.tokenizer
         processor = JointProcessor(self.args)
         examples = processor._create_examples(sentences)
         features = convert_examples_to_features(examples, self.args.max_seq_len, tokenizer,

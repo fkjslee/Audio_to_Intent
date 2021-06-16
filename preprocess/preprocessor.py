@@ -18,7 +18,7 @@ def add_jieba_word(d):
 
 def init_jieba():
     args = get_args()
-    f = open(os.path.join(args.data_dir, args.task, args.slot_label_file), 'r', encoding='utf-8')
+    f = open(os.path.join(args.data_dir, args.task, "slot_label.yml"), 'r', encoding='utf-8')
     d = yaml.load(f.read(), yaml.FullLoader)
     add_jieba_word(d)
 

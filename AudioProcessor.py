@@ -2,19 +2,21 @@
 from asr.asr import speech_recognizer
 from preprocess.preprocessor import init_jieba, init_asr
 from asr.common.credential import Credential
-from intentpredictor import IntentPredictor
 from datetime import datetime
 import json
 import jieba
 import logging
-from utils import get_intent_labels, get_slot_labels, get_args
+from utils import get_intent_labels, get_slot_labels, get_args, load_tokenizer
 from network.msgsender import MsgSender
+from utils import set_seed, get_args
+from trainer import Trainer
+from data_loader import load_and_cache_examples
 
 logger = logging.getLogger(__name__)
 
 
 class AudioListener(speech_recognizer.SpeechRecognitionListener):
-    def __init__(self, id, predictor, msg_sender: MsgSender):
+    def __init__(self, id, predictor: Trainer, msg_sender: MsgSender):
         self.id = id
         self.predictor = predictor
         self.msg_sender = msg_sender
@@ -59,8 +61,9 @@ class AudioRecognizer(speech_recognizer.SpeechRecognizer):
     def __init__(self):
         asrMsg = init_asr()
         args = get_args()
+        set_seed(args)
         msg_sender = MsgSender(addr=args.command_server_addr, port=args.command_server_port)
-        listener = AudioListener(0, IntentPredictor(), msg_sender)
+        listener = AudioListener(0, Trainer(), msg_sender)
         super().__init__(asrMsg['APPID'], Credential(asrMsg['SECRET_ID'], asrMsg['SECRET_KEY']),
                          asrMsg['ENGINE_MODEL_TYPE'], listener)
         self.set_filter_modal(1)
