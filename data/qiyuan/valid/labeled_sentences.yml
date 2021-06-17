@@ -4,25 +4,25 @@
 -
   sentence: 放大 地图
   intent: map_larger
-  slot: larger o
+  slot: B-larger O
 
 -
   sentence: 缩小 地图
   intent: map_smaller
-  slot: smaller o
+  slot: B-smaller B-O
 
 
 -
   sentence: 上移 百分之十
   intent: move_up
-  slot: up digit
+  slot: B-up B-digit
 
 -
   sentence: 下移 百分之十
   intent: move_down
-  slot: down digit
+  slot: B-down B-digit
 
 -
   sentence: 把 飞行一大队 移动到 莆田机场
   intent: move_object
-  slot: o moved_object o moved_position
+  slot: O B-moved_object O B-moved_position

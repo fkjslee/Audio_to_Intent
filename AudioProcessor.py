@@ -39,7 +39,7 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
         cut_text = jieba.lcut(text)
         space_cut_text = " ".join(cut_text)
         logger.info("jieba cut message: %s", space_cut_text)
-        intent_pred, slot_pred_list = self.predictor.predict(space_cut_text)
+        intent_pred, slot_pred_list = self.predictor.predict([space_cut_text])
         intent_pred, slot_pred_list = intent_pred[0], slot_pred_list[0]
         logger.info("predict intent: %s\n predict slot: %s", str(get_intent_labels(get_args())[intent_pred]), str(slot_pred_list))
         slot_map = {}

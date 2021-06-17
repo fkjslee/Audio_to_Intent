@@ -20,7 +20,7 @@ class MsgSender:
     def send_msg(self, intent: str, entities: dict):
         if self.client_socket is None:
             return
-        if intent == "move_object" and 'moved_object' in entities.keys() and 'moved_position' in entities.keys():
+        if intent == "move_object" and 'B-moved_object' in entities.keys() and 'B-moved_position' in entities.keys():
             builder = flatbuffers.Builder(0)
             operation = VoiceOperationCommandPacket(builder, entities['moved_object'], "time", "location", entities['moved_position'])
             voicecommand = VoiceCommandPacket(builder, "command",

@@ -26,18 +26,16 @@ class Trainer(object):
         self.slot_label_lst = get_slot_labels(args)
         self.pad_token_label_id = args.ignore_index
 
-        self.config_class, self.model_class, _ = BertConfig, JointBERT, BertTokenizer
-        self.config = self.config_class.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
-        self.model = self.model_class.from_pretrained(args.model_name_or_path, config=self.config, args=args,
-                                                      intent_label_lst=self.intent_label_lst,
-                                                      slot_label_lst=self.slot_label_lst)
-        # GPU or CPU
+        self.config = BertConfig.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
         self.device = args.device
-        self.model.to(self.device)
 
         if self.args.do_load:
             self.load_model()
         else:
+            self.model = JointBERT.from_pretrained(args.model_name_or_path, config=self.config, args=args,
+                                                   intent_label_lst=self.intent_label_lst,
+                                                   slot_label_lst=self.slot_label_lst)
+            self.model.to(self.device)
             self.train(load_and_cache_examples(args, self.tokenizer, 'train'))
 
         if self.args.do_valid:
@@ -57,12 +55,14 @@ class Trainer(object):
         ]
         optimizer = AdamW(optimizer_grouped_parameters, lr=1e-4)
         scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=self.args.warmup_steps,
-                                                    num_training_steps=len(train_dataloader) * self.args.num_train_epochs)
+                                                    num_training_steps=len(
+                                                        train_dataloader) * self.args.num_train_epochs)
 
         global_step = 0
 
         for _ in range(int(self.args.num_train_epochs)):
-            epoch_iterator = tqdm(train_dataloader, desc="Epoch %d in %d" % (_, self.args.num_train_epochs), position=0, file=sys.stdout)
+            epoch_iterator = tqdm(train_dataloader, desc="Epoch %d in %d" % (_, self.args.num_train_epochs), position=0,
+                                  file=sys.stdout)
             for step, batch in enumerate(epoch_iterator):
                 self.model.train()
                 batch = tuple(t.to(self.device) for t in batch)
@@ -85,8 +85,8 @@ class Trainer(object):
         valid_dataloader = DataLoader(dataset, sampler=valid_sampler, batch_size=self.args.eval_batch_size)
 
         # Eval!
-        logger.debug("***** Running evaluation on %s dataset *****", mode)
-        logger.debug("  Num examples = %d", len(dataset))
+        logger.info("***** Running evaluation on %s dataset *****", mode)
+        logger.info("  Num examples = %d", len(dataset))
         logger.debug("  Batch size = %d", self.args.eval_batch_size)
         eval_loss = 0.0
         nb_eval_steps = 0
@@ -223,10 +223,10 @@ class Trainer(object):
             raise Exception("Model doesn't exists! Train first! model path: %s " % str(self.args.model_dir))
 
         try:
-            self.model = self.model_class.from_pretrained(self.args.model_dir,
-                                                          args=self.args,
-                                                          intent_label_lst=self.intent_label_lst,
-                                                          slot_label_lst=self.slot_label_lst)
+            self.model = JointBERT.from_pretrained(self.args.model_dir,
+                                                   args=self.args,
+                                                   intent_label_lst=self.intent_label_lst,
+                                                   slot_label_lst=self.slot_label_lst)
             self.model.to(self.device)
             logger.info("***** Model Loaded *****")
         except:
