@@ -30,7 +30,10 @@ class Trainer(object):
         self.device = args.device
 
         if self.args.do_load:
-            self.load_model()
+            try:
+                self.load_model()
+            except Exception:
+                logger.critical("Load model failed! % ")
         else:
             self.model = JointBERT.from_pretrained(args.model_name_or_path, config=self.config, args=args,
                                                    intent_label_lst=self.intent_label_lst,

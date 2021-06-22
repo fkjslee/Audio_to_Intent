@@ -36,6 +36,15 @@ SLICE_SIZE: 111
 #### 不想要asr
 可以直接运行根目录下的test_nlu.py, 输入命令后测试
 
+## 命令行参数
+- **--do_load**  
+    load之前训练的模型，一般存在根目录下*_model文件中, 默认False
+- **--do_valid**  
+  是否用数据集下的valid数据集验证结果，一般可以用来预判一下模型是否正常(acc>0.9一般就没啥问题), 默认False
+- **--device**  
+  模型是在cpu或者哪块gpu上运行，比如 **--device cuda:1** 则是在1号GPU运行, 默认"cuda 0"
+
+
 ## 结果说明
 ```
 asr result: 语音转文字的识别结果
