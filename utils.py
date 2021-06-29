@@ -33,7 +33,7 @@ def load_tokenizer(args):
 def init_logger():
     log_levels = {"debug": logging.DEBUG, "info": logging.INFO, "warning": logging.WARNING, "error": logging.ERROR, "critical": logging.CRITICAL}
     if not os.path.exists("./log"):
-        os.mkdir("./log")
+        os.makedirs(path)
     logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                         datefmt='%m/%d/%Y %H:%M:%S',
                         level=logging.DEBUG, filename="./log/log_file.txt")

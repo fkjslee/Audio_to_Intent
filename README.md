@@ -44,6 +44,8 @@ SLICE_SIZE: 111
 - **--device**  
   模型是在cpu或者哪块gpu上运行，比如 **--device cuda:1** 则是在1号GPU运行, 默认"cuda 0"
 
+## Replay
+把需要重放的文件放在"./replay"文件夹下，运行replay.py，命令行参数的普通运行的命令行参数一样
 
 ## 结果说明
 ```
