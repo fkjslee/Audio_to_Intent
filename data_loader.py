@@ -17,10 +17,10 @@ class InputExample(object):
     A single training/test example for simple sequence classification.
 
     Args:
-        guid: Unique id for the example.
-        words: list. The words of the sequence.
-        intent_label: (Optional) string. The intent sentences.txt of the example.
-        slot_labels: (Optional) list. The slot labels of the example.
+        guid: Unique id for the example. [train, valid, test]-<id of instance> example: train-5
+        words: list. The words of the sequence. example: ['Book', 'a', 'ticket']
+        intent_label: (Optional) int. The intent of sentences. example: 2
+        slot_labels: (Optional) list of int. The slot labels of the example. example: [3, 2, 1]
     """
 
     def __init__(self, guid, words, intent_label=None, slot_labels=None):
@@ -43,9 +43,13 @@ class InputExample(object):
 
 
 class InputFeatures(object):
-    """A single set of features of data."""
-
-    def __init__(self, input_ids, attention_mask, token_type_ids, intent_label_id, slot_labels_ids):
+    """
+        A single set of features of data.
+        input_ids: sentence's word to id, means word's id in corpus, example: [101, 3123, 1092, 0, 0, 0, 0]
+        attention_mask: which id is valid, example: [1, 1, 1, 0, 0, 0, 0]
+        token_type_ids: explain what type of each token
+    """
+    def __init__(self, input_ids: list, attention_mask: list, token_type_ids: list, intent_label_id: int, slot_labels_ids: list):
         self.input_ids = input_ids
         self.attention_mask = attention_mask
         self.token_type_ids = token_type_ids
@@ -74,19 +78,19 @@ class JointProcessor(object):
         self.slot_labels = get_slot_labels(args)
 
     def _create_examples(self, texts, intents=None, slots=None, set_type='train'):
-        """Creates examples for the training and valid sets."""
+        """
+        Creates examples for the training and valid sets.
+        one-hot encoding for word intent slot.
+        """
         examples = []
         if intents is None:
             intents = [None] * len(texts)
             slots = [None] * len(texts)
         for i, (text, intent, slot) in enumerate(zip(texts, intents, slots)):
             guid = "%s-%s" % (set_type, i)
-            # 1. input_text
-            words = text.split()  # Some are spaced twice
-            # 2. intent
+            words = text.split()
             intent_label = None if intent is None else self.intent_labels.index(
                 intent) if intent in self.intent_labels else self.intent_labels.index("UNK")
-            # 3. slot
             slot_labels = []
             if slot is None:
                 slot_labels = [None] * len(words)
@@ -117,7 +121,7 @@ class JointProcessor(object):
             slots.append(key['slot'])
         if mode == "train":
             texts, intents, slots = augmentTrainData(texts, intents, slots)
-        return self._create_examples(texts=texts, intents=intents, slots=slots, set_type=mode)
+        return self._create_examples(texts=texts, intents=intents, slots=slots, set_type=mode)  # one-hot encoding text, intent, slot
 
 
 def convert_examples_to_features(examples, max_seq_len, tokenizer,
@@ -125,7 +129,20 @@ def convert_examples_to_features(examples, max_seq_len, tokenizer,
                                  cls_token_segment_id=0,
                                  pad_token_segment_id=0,
                                  sequence_a_segment_id=0,
-                                 mask_padding_with_zero=True):
+                                 mask_padding_with_zero=True) -> list:
+    """
+    convert features to one-hot encoding by tokenizer
+    Args:
+        examples: main object to be converted
+        max_seq_len: how long of ids. For every sentence share same feature columns
+        tokenizer: convert word to id
+        pad_token_label_id: remain word's id, for example, microsoft company's id is 555, microsoft company may be converted to [555, -1] if pad_token_label_id=-1
+        cls_token_segment_id: special word CLS's id
+        pad_token_segment_id: special word PAD's id
+        sequence_a_segment_id: valid token's mask
+        mask_padding_with_zero:
+        return: a list of feature
+    """
     # Setting based on the current model type
     cls_token = tokenizer.cls_token
     sep_token = tokenizer.sep_token
@@ -211,7 +228,14 @@ def convert_examples_to_features(examples, max_seq_len, tokenizer,
     return features
 
 
-def load_and_cache_examples(args, tokenizer, mode):
+def load_and_cache_examples(args, tokenizer, mode) -> TensorDataset:
+    """
+    generate dataset, if has cache, load cache.
+    Args:
+        args: commandline args.
+        tokenizer: a tool convert sentences to word.
+        mode: in ['train', 'valid', 'test']
+    """
     processor = JointProcessor(args)
 
     # Load data features from cache or dataset file
