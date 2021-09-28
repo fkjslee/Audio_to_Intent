@@ -17,6 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 class Trainer(object):
+    r"""
+    trainer for intent and slot recognising
+    """
     def __init__(self):
         self.args = get_args()
         args = self.args
