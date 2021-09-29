@@ -3,7 +3,6 @@ import argparse
 
 from trainer import Trainer
 from utils import init_logger, load_tokenizer, read_prediction_text, set_seed, get_args
-from data_loader import load_and_cache_examples
 from transformers import BertTokenizer
 from utils import get_intent_labels, get_slot_labels
 

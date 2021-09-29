@@ -10,15 +10,41 @@ from transformers import BertConfig, AdamW, get_linear_schedule_with_warmup
 from utils import compute_metrics, get_intent_labels, get_slot_labels, get_args, load_tokenizer
 from data_loader import JointProcessor, convert_examples_to_features
 from transformers import BertTokenizer
-from data_loader import load_and_cache_examples
 from model import JointBERT
+from word_dataset import WordDataset
+import yaml
 
 logger = logging.getLogger(__name__)
 
 
+def augmentTrainData(texts, intents, slots):
+    args = get_args()
+    f = open(os.path.join(args.data_dir, args.task, "slot_label.yml"), 'r', encoding='utf-8')
+    d = yaml.load(f.read(), yaml.FullLoader)
+    store_texts = []
+    store_intents = []
+    store_slots = []
+    been_augment_entity = []
+    for text, intent, slot in zip(texts, intents, slots):
+        for i, (word, entity) in enumerate(zip(text, slot)):
+            if isinstance(d[entity], list) and entity not in been_augment_entity:
+                been_augment_entity.append(entity)
+                for example in d[entity]:
+                    new_text = text.split(" ")
+                    new_text[i] = example
+                    new_text = " ".join(new_text)
+                    store_texts.append(new_text)
+                    store_intents.append(intent)
+                    store_slots.append(slot)
+    texts.extend(store_texts)
+    intents.extend(store_intents)
+    slots.extend(store_slots)
+    return texts, intents, slots
+
+
 class Trainer(object):
     r"""
-    trainer for intent and slot recognising
+    trainer for intent and slot recognizing
     """
     def __init__(self):
         self.args = get_args()
@@ -32,6 +58,25 @@ class Trainer(object):
         self.config = BertConfig.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
         self.device = args.device
 
+        data_path = os.path.join(args.data_dir, args.task, "train")
+        f = open(os.path.join(data_path, "labeled_sentences.yml"), 'r', encoding='utf-8')
+        d = yaml.load(f.read(), yaml.FullLoader)
+        texts = []
+        intents = []
+        slots = []
+        for key in d:
+            texts.append(key['sentence'])
+            intents.append(key['intent'])
+            slots.append(key['slot'])
+        texts, intents, slots = augmentTrainData(texts, intents, slots)
+
+        config = {
+            "word_length": 50,
+            "pretrained_model_name_or_path": "bert-base-chinese",
+            "intent_label_file_path": os.path.abspath(os.path.join(args.data_dir, args.task, "intent_label.yml")),
+            "slot_label_file_path": os.path.abspath(os.path.join(args.data_dir, args.task, "slot_label.yml")),
+        }
+
         if self.args.do_load:
             try:
                 self.load_model()
@@ -42,10 +87,15 @@ class Trainer(object):
                                                    intent_label_lst=self.intent_label_lst,
                                                    slot_label_lst=self.slot_label_lst)
             self.model.to(self.device)
-            self.train(load_and_cache_examples(args, self.tokenizer, 'train'))
+
+            self.train(WordDataset(texts, slots, "B-moved_object", intents, config))
+
+            print(" predict ")
 
         if self.args.do_valid:
-            self.valid(load_and_cache_examples(args, self.tokenizer, 'valid'))
+            self.valid(WordDataset(texts, slots, "B-moved_object", intents, config))
+
+        print(self.predict("放大 地图"))
 
     def train(self, train_dataset):
         train_sampler = RandomSampler(train_dataset)
@@ -69,7 +119,9 @@ class Trainer(object):
         for _ in range(int(self.args.num_train_epochs)):
             epoch_iterator = tqdm(train_dataloader, desc="Epoch %d in %d" % (_, self.args.num_train_epochs), position=0,
                                   file=sys.stdout)
-            for step, batch in enumerate(epoch_iterator):
+            step = -1
+            for batch in epoch_iterator:
+                step += 1
                 self.model.train()
                 batch = tuple(t.to(self.device) for t in batch)
                 inputs = {'input_ids': batch[0], 'attention_mask': batch[1], 'intent_label_ids': batch[3],
@@ -194,11 +246,7 @@ class Trainer(object):
         intent_preds = intent_logits.detach().cpu().numpy()
         intent_preds = np.argmax(intent_preds, axis=1)
 
-        if self.args.use_crf:
-            # decode() in `torchcrf` returns list with best index directly
-            slot_preds = np.array(self.model.crf.decode(slot_logits))
-        else:
-            slot_preds = slot_logits.detach().cpu().numpy()
+        slot_preds = slot_logits.detach().cpu().numpy()
 
         slot_preds = np.argmax(slot_preds, axis=2)
 
