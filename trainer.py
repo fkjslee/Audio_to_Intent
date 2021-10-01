@@ -7,68 +7,25 @@ import torch
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from transformers import BertConfig, AdamW, get_linear_schedule_with_warmup
 
-from utils import compute_metrics, get_intent_labels, get_slot_labels, get_args, load_tokenizer
-from data_loader import JointProcessor, convert_examples_to_features
+from utils import compute_metrics, get_args
 from transformers import BertTokenizer
 from model import JointBERT
-from word_dataset import WordDataset
+from data import WordDataset
 import yaml
 
 logger = logging.getLogger(__name__)
-
-
-def augmentTrainData(texts, intents, slots):
-    args = get_args()
-    f = open(os.path.join(args.data_dir, args.task, "slot_label.yml"), 'r', encoding='utf-8')
-    d = yaml.load(f.read(), yaml.FullLoader)
-    store_texts = []
-    store_intents = []
-    store_slots = []
-    been_augment_entity = []
-    for text, intent, slot in zip(texts, intents, slots):
-        for i, (word, entity) in enumerate(zip(text, slot)):
-            if isinstance(d[entity], list) and entity not in been_augment_entity:
-                been_augment_entity.append(entity)
-                for example in d[entity]:
-                    new_text = text.split(" ")
-                    new_text[i] = example
-                    new_text = " ".join(new_text)
-                    store_texts.append(new_text)
-                    store_intents.append(intent)
-                    store_slots.append(slot)
-    texts.extend(store_texts)
-    intents.extend(store_intents)
-    slots.extend(store_slots)
-    return texts, intents, slots
 
 
 class Trainer(object):
     r"""
     trainer for intent and slot recognizing
     """
+
     def __init__(self):
         self.args = get_args()
         args = self.args
-        self.tokenizer = load_tokenizer(self.args)
-
-        self.intent_label_lst = get_intent_labels(args)
-        self.slot_label_lst = get_slot_labels(args)
-        self.pad_token_label_id = args.ignore_index
-
         self.config = BertConfig.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
         self.device = args.device
-
-        data_path = os.path.join(args.data_dir, args.task, "train")
-        f = open(os.path.join(data_path, "labeled_sentences.yml"), 'r', encoding='utf-8')
-        d = yaml.load(f.read(), yaml.FullLoader)
-        texts = []
-        intents = []
-        slots = []
-        for key in d:
-            texts.append(key['sentence'])
-            intents.append(key['intent'])
-            slots.append(key['slot'])
-        texts, intents, slots = augmentTrainData(texts, intents, slots)
 
         config = {
             "word_length": 50,
@@ -76,6 +33,8 @@ class Trainer(object):
             "intent_label_file_path": os.path.abspath(os.path.join(args.data_dir, args.task, "intent_label.yml")),
             "slot_label_file_path": os.path.abspath(os.path.join(args.data_dir, args.task, "slot_label.yml")),
         }
+        logger.info("Init word dataset with config: {}".format(str(config)))
+        WordDataset.init_word_dataset(config)
 
         if self.args.do_load:
             try:
@@ -84,18 +43,15 @@ class Trainer(object):
                 logger.critical("Load model failed! % ")
         else:
             self.model = JointBERT.from_pretrained(args.model_name_or_path, config=self.config, args=args,
-                                                   intent_label_lst=self.intent_label_lst,
-                                                   slot_label_lst=self.slot_label_lst)
+                                                   intent_label_lst=WordDataset.intent_bidict,
+                                                   slot_label_lst=WordDataset.all_slot_dict)
             self.model.to(self.device)
 
-            self.train(WordDataset(texts, slots, "B-moved_object", intents, config))
-
-            print(" predict ")
+            self.train(WordDataset(os.path.join(args.data_dir, args.task, "train"), "B-moved_object", "train"))
 
         if self.args.do_valid:
-            self.valid(WordDataset(texts, slots, "B-moved_object", intents, config))
+            self.valid(WordDataset(os.path.join(args.data_dir, args.task, "valid"), "B-moved_object", "valid"))
 
-        print(self.predict("放大 地图"))
 
     def train(self, train_dataset):
         train_sampler = RandomSampler(train_dataset)
@@ -119,15 +75,12 @@ class Trainer(object):
         for _ in range(int(self.args.num_train_epochs)):
             epoch_iterator = tqdm(train_dataloader, desc="Epoch %d in %d" % (_, self.args.num_train_epochs), position=0,
                                   file=sys.stdout)
-            step = -1
             for batch in epoch_iterator:
-                step += 1
                 self.model.train()
                 batch = tuple(t.to(self.device) for t in batch)
-                inputs = {'input_ids': batch[0], 'attention_mask': batch[1], 'intent_label_ids': batch[3],
-                          'slot_labels_ids': batch[4], 'token_type_ids': batch[2]}
-                outputs = self.model(**inputs)
-                loss = outputs[0]
+                result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[3],
+                                    slot_labels_ids=batch[4], token_type_ids=batch[2])
+                loss = result['total_loss']
                 epoch_iterator.set_postfix(loss=loss.item())
                 self.model.zero_grad()
                 loss.backward()
@@ -139,83 +92,27 @@ class Trainer(object):
 
     def valid(self, dataset, mode='valid'):
 
+        logger.info("***** Running evaluation on %s dataset *****", mode)
+        logger.debug("  Batch size = %d", self.args.eval_batch_size)
+
         valid_sampler = SequentialSampler(dataset)
         valid_dataloader = DataLoader(dataset, sampler=valid_sampler, batch_size=self.args.eval_batch_size)
 
-        # Eval!
-        logger.info("***** Running evaluation on %s dataset *****", mode)
-        logger.info("  Num examples = %d", len(dataset))
-        logger.debug("  Batch size = %d", self.args.eval_batch_size)
         eval_loss = 0.0
-        nb_eval_steps = 0
-        intent_preds = None
-        slot_preds = None
-        out_intent_label_ids = None
-        out_slot_labels_ids = None
-
         self.model.eval()
-
         for batch in tqdm(valid_dataloader, desc="Evaluating"):
             batch = tuple(t.to(self.device) for t in batch)
             with torch.no_grad():
-                inputs = {'input_ids': batch[0], 'attention_mask': batch[1], 'intent_label_ids': batch[3],
-                          'slot_labels_ids': batch[4], 'token_type_ids': batch[2]}
-                outputs = self.model(**inputs)
-                tmp_eval_loss, (intent_logits, slot_logits) = outputs[:2]
+                result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[3],
+                                    slot_labels_ids=batch[4], token_type_ids=batch[2])
+                tmp_eval_loss = result['total_loss']
 
-                eval_loss += tmp_eval_loss.mean().item()
-            nb_eval_steps += 1
+            eval_loss += tmp_eval_loss.mean().item()
 
-            # Intent prediction
-            if intent_preds is None:
-                intent_preds = intent_logits.detach().cpu().numpy()
-                out_intent_label_ids = inputs['intent_label_ids'].detach().cpu().numpy()
-            else:
-                intent_preds = np.append(intent_preds, intent_logits.detach().cpu().numpy(), axis=0)
-                out_intent_label_ids = np.append(
-                    out_intent_label_ids, inputs['intent_label_ids'].detach().cpu().numpy(), axis=0)
-
-            # Slot prediction
-            if slot_preds is None:
-                if self.args.use_crf:
-                    # decode() in `torchcrf` returns list with best index directly
-                    slot_preds = np.array(self.model.crf.decode(slot_logits))
-                else:
-                    slot_preds = slot_logits.detach().cpu().numpy()
-
-                out_slot_labels_ids = inputs["slot_labels_ids"].detach().cpu().numpy()
-            else:
-                if self.args.use_crf:
-                    slot_preds = np.append(slot_preds, np.array(self.model.crf.decode(slot_logits)), axis=0)
-                else:
-                    slot_preds = np.append(slot_preds, slot_logits.detach().cpu().numpy(), axis=0)
-
-                out_slot_labels_ids = np.append(out_slot_labels_ids, inputs["slot_labels_ids"].detach().cpu().numpy(),
-                                                axis=0)
-
-        eval_loss = eval_loss / nb_eval_steps
+        eval_loss = eval_loss / len(valid_dataloader)
         results = {
             "loss": eval_loss
         }
-
-        # Intent result
-        intent_preds = np.argmax(intent_preds, axis=1)
-
-        # Slot result
-        if not self.args.use_crf:
-            slot_preds = np.argmax(slot_preds, axis=2)
-        slot_label_map = {i: label for i, label in enumerate(self.slot_label_lst)}
-        out_slot_label_list = [[] for _ in range(out_slot_labels_ids.shape[0])]
-        slot_preds_list = [[] for _ in range(out_slot_labels_ids.shape[0])]
-
-        for i in range(out_slot_labels_ids.shape[0]):
-            for j in range(out_slot_labels_ids.shape[1]):
-                if out_slot_labels_ids[i, j] != self.pad_token_label_id:
-                    out_slot_label_list[i].append(slot_label_map[out_slot_labels_ids[i][j]])
-                    slot_preds_list[i].append(slot_label_map[slot_preds[i][j]])
-
-        total_result = compute_metrics(intent_preds, out_intent_label_ids, slot_preds_list, out_slot_label_list)
-        results.update(total_result)
 
         logger.info("***** Eval results *****")
         for key in sorted(results.keys()):
@@ -223,42 +120,13 @@ class Trainer(object):
 
         return results
 
-    def predict(self, sentences):
-        tokenizer = self.tokenizer
-        processor = JointProcessor(self.args)
-        examples = processor._create_examples(sentences)
-        features = convert_examples_to_features(examples, self.args.max_seq_len, tokenizer,
-                                                pad_token_label_id=self.args.ignore_index)
-
-        all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
-        all_attention_mask = torch.tensor([f.attention_mask for f in features], dtype=torch.long)
-        all_token_type_ids = torch.tensor([f.token_type_ids for f in features], dtype=torch.long)
-        all_intent_label_ids = torch.tensor([f.intent_label_id for f in features], dtype=torch.long)
-        all_slot_labels_ids = torch.tensor([f.slot_labels_ids for f in features], dtype=torch.long)
-
-        batch = [all_input_ids, all_attention_mask, all_token_type_ids, all_intent_label_ids, all_slot_labels_ids]
+    def predict_sentence(self, sentence: list):
+        instance = WordDataset.generate_feature_and_label(sentence)
+        batch = list(map(lambda x: x.unsqueeze(0), instance))
         batch = tuple(t.to(self.device) for t in batch)
-        with torch.no_grad():
-            inputs = {'input_ids': batch[0], 'attention_mask': batch[1], 'intent_label_ids': batch[3],
-                      'slot_labels_ids': batch[4], 'token_type_ids': batch[2]}
-            outputs = self.model(**inputs)
-            tmp_eval_loss, (intent_logits, slot_logits) = outputs[:2]
-        intent_preds = intent_logits.detach().cpu().numpy()
-        intent_preds = np.argmax(intent_preds, axis=1)
-
-        slot_preds = slot_logits.detach().cpu().numpy()
-
-        slot_preds = np.argmax(slot_preds, axis=2)
-
-        out_slot_labels_ids = inputs["slot_labels_ids"].detach().cpu().numpy()
-        slot_preds_list = [[] for _ in range(out_slot_labels_ids.shape[0])]
-
-        slot_label_map = {i: label for i, label in enumerate(self.slot_label_lst)}
-        for i in range(out_slot_labels_ids.shape[0]):
-            for j in range(out_slot_labels_ids.shape[1]):
-                if out_slot_labels_ids[i, j] != self.pad_token_label_id:
-                    slot_preds_list[i].append(slot_label_map[slot_preds[i][j]])
-        return intent_preds, slot_preds_list
+        result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[3],
+                            slot_labels_ids=batch[4], token_type_ids=batch[2])
+        return result['intent_logits'][0], result['slot_logits'][0]
 
     def save_model(self):
         # Save model checkpoint (Overwrite)
@@ -279,8 +147,8 @@ class Trainer(object):
         try:
             self.model = JointBERT.from_pretrained(self.args.model_dir,
                                                    args=self.args,
-                                                   intent_label_lst=self.intent_label_lst,
-                                                   slot_label_lst=self.slot_label_lst)
+                                                   intent_label_lst=WordDataset.intent_bidict,
+                                                   slot_label_lst=WordDataset.all_slot_dict)
             self.model.to(self.device)
             logger.info("***** Model Loaded *****")
         except:
