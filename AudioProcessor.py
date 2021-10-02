@@ -7,7 +7,7 @@ from datetime import datetime
 import json
 import jieba
 import logging
-from utils import get_intent_labels, get_slot_labels, get_args, load_tokenizer
+from utils import get_args
 from network.msgsender import MsgSender
 from utils import set_seed, get_args
 from trainer import Trainer
@@ -62,22 +62,16 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
         # print(response['result']['voice_text_str'])
         ...
 
-    def get_predict_result(self, space_cut_text):
-        intent_pred, slot_pred_list = self.predictor.predict([space_cut_text])
-        intent_pred, slot_pred_list = intent_pred[0], slot_pred_list[0]
-        logger.info("predict intent: %s\n predict slot: %s", str(get_intent_labels(get_args())[intent_pred]), str(slot_pred_list))
-        return intent_pred, slot_pred_list
-
     def on_sentence_end(self, response):
         logger.info("%s|OnRecognitionEnd\n" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         self.record_data()
         text = response['result']['voice_text_str']
         space_cut_text = formatText(text)
-        intent_pred, slot_pred_list = self.get_predict_result(space_cut_text)
+        intent_str, intent_logit, all_word_str, all_word_logit = self.predictor.predict_sentence(space_cut_text)
         slot_map = {}
-        for word, entity in zip(space_cut_text.split(' '), slot_pred_list):
-            slot_map[entity] = word
-        self.msg_sender.send_msg(str(get_intent_labels(get_args())[intent_pred]), slot_map)
+        for word, word_type in zip(space_cut_text.split(' '), all_word_str):
+            slot_map[word_type[0]] = word
+        self.msg_sender.send_msg(intent_str[0], slot_map)
 
     def on_recognition_complete(self, response):
         logger.info("%s|OnRecognitionComplete\n" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))

@@ -5,8 +5,10 @@ import socket
 sys.path.append(os.path.join(os.path.dirname(__file__), '../python'))
 
 import flatbuffers
+import logging
 from network.VoiceCommand import ASRCommand, VoiceOperationCommand, UnionCommand
 
+logger = logging.getLogger(__name__)
 
 class MsgSender:
     def __init__(self, addr=None, port=None):
@@ -21,13 +23,18 @@ class MsgSender:
         if self.client_socket is None:
             return
         if intent == "move_object" and 'B-moved_object' in entities.keys() and 'B-moved_position' in entities.keys():
-            builder = flatbuffers.Builder(0)
-            operation = VoiceOperationCommandPacket(builder, entities['B-moved_object'], "time", "location", entities['B-moved_position'])
-            voicecommand = VoiceCommandPacket(builder, "command",
-                                              UnionCommand.UnionCommand().VoiceOperationCommand, operation)
-            builder.Finish(voicecommand, b"asr2")
-            self.client_socket.send(builder.Output())
-            # self.client_socket.send(str(entities).encode("utf-8"))
+            try:
+                logger.warning("Start to send message, message = {}".format(str({"intent": intent, "slot": entities})))
+                builder = flatbuffers.Builder(0)
+                operation = VoiceOperationCommandPacket(builder, entities['B-moved_object'], "time", "location", entities['B-moved_position'])
+                voicecommand = VoiceCommandPacket(builder, "command",
+                                                  UnionCommand.UnionCommand().VoiceOperationCommand, operation)
+                builder.Finish(voicecommand, b"asr2")
+                self.client_socket.send(builder.Output())
+            except Exception:
+                logger.warning("Send message failed, message = {}".format(str({"intent": intent, "slot": entities})))
+        else:
+            logger.warning("Send message failed, wrong message format, message = {}".format(str({"intent": intent, "slot": entities})))
 
 
     def __del__(self):

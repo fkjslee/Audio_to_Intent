@@ -22,7 +22,7 @@ def augmentTrainData(texts, intents, slots):
     store_slots = []
     been_augment_entity = []
     for text, intent, slot in zip(texts, intents, slots):
-        for i, (word, entity) in enumerate(zip(text.split(" "), slot.split(" "))):
+        for i, (word, entity) in enumerate(zip(text, slot)):
             if isinstance(d[entity], list) and entity not in been_augment_entity:
                 been_augment_entity.append(entity)
                 for example in d[entity]:
