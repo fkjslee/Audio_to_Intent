@@ -2,6 +2,10 @@
 
 ## 整体架构
 ![图片](https://github.com/fkjslee/github_image/blob/main/pic4.jpg)
+关于NLU部分结构图解
+数据流程如图
+![图片](https://github.com/fkjslee/github_image/blob/main/architecture.png)
+模型整个图中括号内的数字表示tensor的shape
 
 ## 如何运行
 环境：  
