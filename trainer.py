@@ -1,17 +1,18 @@
 import os
 import logging
-from tqdm import tqdm, trange
+import torch
+import yaml
 import sys
 import numpy as np
-import torch
+
+from tqdm import tqdm, trange
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from transformers import BertConfig, AdamW, get_linear_schedule_with_warmup
-
 from utils import compute_metrics, get_args
 from transformers import BertTokenizer
 from model import JointBERT
 from data import WordDataset
-import yaml
+from typing import Tuple, List
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,7 @@ class Trainer(object):
 
         config = {
             "word_length": 50,
-            "pretrained_model_name_or_path": "bert-base-chinese",
+            "pretrained_model_name_or_path": args.model_name_or_path,
             "intent_label_file_path": os.path.abspath(os.path.join(args.data_dir, args.task, "intent_label.yml")),
             "slot_label_file_path": os.path.abspath(os.path.join(args.data_dir, args.task, "slot_label.yml")),
         }
@@ -37,10 +38,7 @@ class Trainer(object):
         WordDataset.init_word_dataset(config)
 
         if self.args.do_load:
-            try:
-                self.load_model()
-            except Exception:
-                logger.critical("Load model failed! % ")
+            self.load_model()
         else:
             self.model = JointBERT.from_pretrained(args.model_name_or_path, config=self.config, args=args,
                                                    intent_label_lst=WordDataset.intent_bidict,
@@ -86,9 +84,10 @@ class Trainer(object):
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.args.max_grad_norm)
                 optimizer.step()
-                scheduler.step()  # Update learning rate schedule
+                scheduler.step()
                 global_step += 1
         self.save_model()
+        logger.info("***** Train Model Complete with train last batch's total loss = {} *****".format(str(loss.item())))
 
     def valid(self, dataset, mode='valid'):
 
@@ -120,36 +119,56 @@ class Trainer(object):
 
         return results
 
-    def predict_sentence(self, sentence: list):
+    def predict_sentence(self, space_cut_sentence: str) -> Tuple[list, list, List[list], List[list]]:
+        """
+        predict a sentence's intent and slot
+        :param space_cut_sentence: sentence which split by space
+        :return: intent_str and intent_logit means intent type and its probability, slot type and its probability.
+        example
+            predict_sentence("Move Tsinghua University to Guangdong")
+            return ["Move", "Query"], [0.9, 0.1], [["UNK", "B-moved_object", ...], ["B-moved_object", "UNK", ....], ...], [[0.8, 0.1, ...], [0.8, 0.1, ...], ...]
+        """
+        sentence = space_cut_sentence.split(' ')
         instance = WordDataset.generate_feature_and_label(sentence)
         batch = list(map(lambda x: x.unsqueeze(0), instance))
         batch = tuple(t.to(self.device) for t in batch)
         result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[3],
                             slot_labels_ids=batch[4], token_type_ids=batch[2])
-        return result['intent_logits'][0], result['slot_logits'][0]
+        intent_logit = result['intent_logits'][0].softmax(dim=0)
+        intent_dict = WordDataset.intent_bidict.inverse
+        sorted_idx = intent_logit.argsort(descending=True)
+        intent_logit = intent_logit[sorted_idx].tolist()
+        intent_str = [intent_dict[idx.item()] for idx in sorted_idx]
+
+        slot_logit = result['slot_logits'][0].softmax(dim=1)
+
+        all_word_logit = []
+        all_word_str = []
+        for word_logit in slot_logit:
+            sorted_idx = word_logit.argsort(descending=True)
+            all_word_logit.append(word_logit[sorted_idx].tolist())
+            slot_dict = WordDataset.all_slot_dict.inverse
+            all_word_str.append([slot_dict[idx.item()] for idx in sorted_idx])
+
+        return intent_str, intent_logit, all_word_str, all_word_logit
 
     def save_model(self):
-        # Save model checkpoint (Overwrite)
         if not os.path.exists(self.args.model_dir):
             os.makedirs(self.args.model_dir)
         model_to_save = self.model.module if hasattr(self.model, 'module') else self.model
         model_to_save.save_pretrained(self.args.model_dir)
 
-        # Save training arguments together with the trained model
         torch.save(self.args, os.path.join(self.args.model_dir, 'training_args.bin'))
         logger.debug("Saving model checkpoint to %s", self.args.model_dir)
 
     def load_model(self):
-        # Check whether model exists
         if not os.path.exists(self.args.model_dir):
             raise Exception("Model doesn't exists! Train first! model path: %s " % str(self.args.model_dir))
-
         try:
-            self.model = JointBERT.from_pretrained(self.args.model_dir,
-                                                   args=self.args,
+            self.model = JointBERT.from_pretrained(self.args.model_dir, args=self.args,
                                                    intent_label_lst=WordDataset.intent_bidict,
                                                    slot_label_lst=WordDataset.all_slot_dict)
             self.model.to(self.device)
-            logger.info("***** Model Loaded *****")
-        except:
+            logger.info("***** Load Model Complete *****")
+        except Exception:
             raise Exception("Some model files might be missing...")

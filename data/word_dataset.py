@@ -57,16 +57,17 @@ class WordDataset(Dataset):
     def get_data_from_path(data_path, mode):
         f = open(os.path.join(data_path, "labeled_sentences.yml"), 'r', encoding='utf-8')
         d = yaml.load(f.read(), yaml.FullLoader)
-        texts = []
+        space_cut_sentences = []
         intents = []
         slots = []
         for key in d:
-            texts.append(key['sentence'])
+            space_cut_sentences.append(key['sentence'])
             intents.append(key['intent'])
             slots.append(key['slot'])
         if mode == "train":
-            texts, intents, slots = augmentTrainData(texts, intents, slots)
-        return texts, intents, slots
+            space_cut_sentences, intents, slots = augmentTrainData(space_cut_sentences, intents, slots)
+        word_list_sentences = [sentence.split(' ') for sentence in space_cut_sentences]
+        return word_list_sentences, intents, slots
 
     @staticmethod
     def init_word_dataset(config):

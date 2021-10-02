@@ -51,9 +51,7 @@ def get_args():
 
     parser.add_argument('--seed', type=int, default=1234, help="random seed for initialization")
     parser.add_argument("--train_batch_size", default=32, type=int, help="Batch size for training.")
-    parser.add_argument("--eval_batch_size", default=64, type=int, help="Batch size for evaluation.")
-    parser.add_argument("--max_seq_len", default=50, type=int,
-                        help="The maximum total input sequence length after tokenization.")
+    parser.add_argument("--eval_batch_size", default=32, type=int, help="Batch size for evaluation.")
     parser.add_argument("--num_train_epochs", default=10.0, type=float,
                         help="Total number of training epochs to perform.")
     parser.add_argument("--max_grad_norm", default=1.0, type=float, help="Max gradient norm.")
@@ -65,17 +63,9 @@ def get_args():
     parser.add_argument("--do_valid", action="store_true", help="Whether to validate model.")
     parser.add_argument("--device", default="cuda:0", help="Run device, default is cuda:0")
 
-    parser.add_argument("--ignore_index", default=0, type=int,
-                        help='Specifies a target value that is ignored and does not contribute to the input gradient')
-
     parser.add_argument('--slot_loss_coef', type=float, default=1.0, help='Coefficient for the slot loss.')
     parser.add_argument('--command_server_addr', default=None, help='Address of server which receive intent')
     parser.add_argument('--command_server_port', type=int, default=None, help='Port of Server which receive intent')
-
-    # CRF option
-    parser.add_argument("--use_crf", action="store_true", help="Whether to use CRF")
-    parser.add_argument("--slot_pad_label", default="PAD", type=str,
-                        help="Pad token for slot sentences.txt pad (to be ignore when calculate loss)")
 
     args = parser.parse_args()
     args.model_dir = args.task + "_model"

@@ -62,20 +62,16 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
         # print(response['result']['voice_text_str'])
         ...
 
-    def get_predict_result(self, space_cut_text):
-        return self.predictor.predict_sentence(space_cut_text)
-
     def on_sentence_end(self, response):
         logger.info("%s|OnRecognitionEnd\n" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         self.record_data()
         text = response['result']['voice_text_str']
         space_cut_text = formatText(text)
-        # TO DO predict
-        intent_pred, slot_pred_list = self.get_predict_result(space_cut_text)
+        intent_str, intent_logit, all_word_str, all_word_logit = self.predictor.predict_sentence(space_cut_text)
         slot_map = {}
-        for word, entity in zip(space_cut_text.split(' '), slot_pred_list):
-            slot_map[entity] = word
-        self.msg_sender.send_msg(intent_pred, slot_map)
+        for word, word_type in zip(space_cut_text.split(' '), all_word_str):
+            slot_map[word_type[0]] = word
+        self.msg_sender.send_msg(intent_str[0], slot_map)
 
     def on_recognition_complete(self, response):
         logger.info("%s|OnRecognitionComplete\n" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
