@@ -93,8 +93,7 @@ class Trainer(object):
             for batch in epoch_iterator:
                 self.model.train()
                 batch = tuple(t.to(self.device) for t in batch)
-                result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[3],
-                                    slot_labels_ids=batch[4], token_type_ids=batch[2])
+                result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2], slot_labels_ids=batch[3])
                 loss = result['total_loss']
                 epoch_iterator.set_postfix(loss=loss.item())
                 self.model.zero_grad()
@@ -119,8 +118,8 @@ class Trainer(object):
         for batch in tqdm(valid_dataloader, desc="Evaluating"):
             batch = tuple(t.to(self.device) for t in batch)
             with torch.no_grad():
-                result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[3],
-                                    slot_labels_ids=batch[4], token_type_ids=batch[2])
+                result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2],
+                                    slot_labels_ids=batch[3])
                 tmp_eval_loss = result['total_loss']
 
             eval_loss += tmp_eval_loss.mean().item()
@@ -149,8 +148,8 @@ class Trainer(object):
         instance = WordDataset.generate_feature_and_label(sentence)
         batch = list(map(lambda x: x.unsqueeze(0), instance))
         batch = tuple(t.to(self.device) for t in batch)
-        result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[3],
-                            slot_labels_ids=batch[4], token_type_ids=batch[2])
+        result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2],
+                            slot_labels_ids=batch[3])
         intent_logit = result['intent_logits'][0].softmax(dim=0)
         intent_dict = WordDataset.intent_bidict.inverse
         sorted_idx = intent_logit.argsort(descending=True)

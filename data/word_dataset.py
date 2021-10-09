@@ -103,7 +103,7 @@ class WordDataset(Dataset):
         intent_id = -1 if intent is None else WordDataset.intent_bidict[intent]
         input_ids, attention_mask, slot_label_ids = WordDataset.one_hot_encoding_sentence(sentence, slot_list)
         return list(map(lambda x: torch.tensor(x, dtype=torch.int64),
-                        [input_ids, attention_mask, [0] * len(input_ids), intent_id,
+                        [input_ids, attention_mask, intent_id,
                          slot_label_ids]))
 
     @staticmethod
