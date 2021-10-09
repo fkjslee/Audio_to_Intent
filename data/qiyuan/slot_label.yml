@@ -2,11 +2,6 @@
 PAD:
 UNK:
 O: # 不需要注意的词
-B-larger:
-B-smaller:
-B-up:
-B-down:
-B-digit:  # 数字
 B-moved_object: # 被移动的物体
     - 飞行一大队
     - 飞行二大队

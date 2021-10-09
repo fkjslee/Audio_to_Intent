@@ -1,35 +1,4 @@
 # 第一行句子 第二行意图 第三行槽 意图和槽应该是"..//intent_label.yml"中的IntentSet 和"..//slot_label.yml"中的SlotSet的词
-
-
--
-  sentence: 放大 地图
-  intent: map_larger
-  slot:
-    - B-larger
-    - O
-
--
-  sentence: 缩小 地图
-  intent: map_smaller
-  slot:
-    - B-smaller
-    - O
-
-
--
-  sentence: 上移 百分之十
-  intent: move_up
-  slot:
-    - B-up
-    - B-digit
-
--
-  sentence: 下移 百分之十
-  intent: move_down
-  slot:
-    - B-down
-    - B-digit
-
 -
   sentence: 把 飞行一大队 移动到 莆田机场
   intent: move_object
@@ -38,3 +7,63 @@
     - B-moved_object
     - O
     - B-moved_position
+
+-
+  sentence: 移动到 莆田机场 把 飞行一大队
+  intent: move_object
+  slot:
+    - O
+    - B-moved_position
+    - O
+    - B-moved_object
+
+-
+  sentence: 先 嗯 移动 飞行一大队 到 莆田机场
+  intent: move_object
+  slot:
+    - O
+    - O
+    - O
+    - B-moved_object
+    - O
+    - B-moved_position
+
+
+-
+  sentence: 飞行一大队 向 莆田机场 前进
+  intent: move_object
+  slot:
+    - B-moved_object
+    - O
+    - B-moved_position
+    - O
+
+-
+  sentence: 飞行一大队 移动到 莆田机场
+  intent: move_object
+  slot:
+    - B-moved_object
+    - O
+    - B-moved_position
+
+-
+  sentence: 这个 方案 不太行吧
+  intent: UNK
+  slot:
+    - O
+    - O
+    - O
+
+-
+  sentence: 我 感觉 我们 应该 更 关注 如何 说服 别人
+  intent: UNK
+  slot:
+    - O
+    - O
+    - O
+    - O
+    - O
+    - O
+    - O
+    - O
+    - O
