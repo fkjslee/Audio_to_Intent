@@ -2,8 +2,7 @@
 import argparse
 
 from trainer import Trainer
-from utils import init_logger, load_tokenizer, set_seed, get_args
-from transformers import BertTokenizer
+from utils import init_logger, set_seed, get_args
 
 
 def main(args):

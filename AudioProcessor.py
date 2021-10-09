@@ -68,6 +68,10 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
         text = response['result']['voice_text_str']
         space_cut_text = formatText(text)
         intent_str, intent_logit, all_word_str, all_word_logit = self.predictor.predict_sentence(space_cut_text)
+        print('intent type(sorted)', intent_str)
+        print('intent possibility', intent_logit)
+        print('slot type(sorted)', all_word_str)
+        print('slot possibility', all_word_logit)
         slot_map = {}
         for word, word_type in zip(space_cut_text.split(' '), all_word_str):
             slot_map[word_type[0]] = word

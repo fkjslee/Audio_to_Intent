@@ -6,7 +6,6 @@ import torch
 from typing import Optional
 from torch.utils.data import Dataset
 from transformers import BertTokenizer
-from .dataaugment import augmentTrainData
 
 logger = logging.getLogger(__name__)
 
@@ -18,15 +17,12 @@ class WordDataset(Dataset):
     all_slot_dict = None
     feature_length = None
 
-    def __init__(self, data_path, which_slot: str, mode: str):
-        self.data_path = data_path
+    def __init__(self, data, which_slot: str):
         self.which_slot = which_slot
         try:
-            self.sentence_list, self.intent_list, self.slot_list = WordDataset.get_data_from_path(data_path, mode)
+            self.sentence_list, self.intent_list, self.slot_list = data
         except KeyError:
             assert False, logging.error("key error config={}".format(str(config)))
-        except FileNotFoundError:
-            assert False, logging.error("load data failed!, check if data path:{} is correct!".format(data_path))
         assert which_slot in self.each_slot_dict.keys(), "Which_slot must in {}".format(
             str(self.each_slot_dict.keys()))
         logger.info(str(self))
@@ -40,7 +36,7 @@ class WordDataset(Dataset):
                                                       self.intent_list[idx])
 
     def __str__(self):
-        res = '\nLoad dataset {} Complete\nDataset total length = {}\n'.format(self.data_path, len(self))
+        res = '\nLoad dataset Complete\nDataset total length = {}\n'.format(len(self))
         show_sample_num = min(len(self), 3)
         res += 'Show {} samples\n'.format(show_sample_num)
         for i in range(show_sample_num):
@@ -52,22 +48,6 @@ class WordDataset(Dataset):
                 res += '{}\n'.format(str_elem)
             res += "\n"
         return res
-
-    @staticmethod
-    def get_data_from_path(data_path, mode):
-        f = open(os.path.join(data_path, "labeled_sentences.yml"), 'r', encoding='utf-8')
-        d = yaml.load(f.read(), yaml.FullLoader)
-        space_cut_sentences = []
-        intents = []
-        slots = []
-        for key in d:
-            space_cut_sentences.append(key['sentence'])
-            intents.append(key['intent'])
-            slots.append(key['slot'])
-        if mode == "train":
-            space_cut_sentences, intents, slots = augmentTrainData(space_cut_sentences, intents, slots)
-        word_list_sentences = [sentence.split(' ') for sentence in space_cut_sentences]
-        return word_list_sentences, intents, slots
 
     @staticmethod
     def init_word_dataset(config):

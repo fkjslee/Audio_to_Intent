@@ -14,6 +14,43 @@ import yaml
 logger = logging.getLogger(__name__)
 
 
+def augmentTrainData(texts, intents, slots):
+    """
+    augment data:
+    replace each slot with all examples
+    e.g.
+    moved_object=['a', 'b']
+    sentences = ["move x to y"]
+    after augment:
+    sentences = ["move x to y", "move a to y", "move b to y"]
+    """
+    try:
+        args = get_args()
+        f = open(os.path.join(args.data_dir, args.task, "slot_label.yml"), 'r', encoding='utf-8')
+        d = yaml.load(f.read(), yaml.FullLoader)
+        store_texts = []
+        store_intents = []
+        store_slots = []
+        been_augment_entity = []
+        for text, intent, slot in zip(texts, intents, slots):
+            for i, (word, entity) in enumerate(zip(text, slot)):
+                if isinstance(d[entity], list) and entity not in been_augment_entity:
+                    been_augment_entity.append(entity)
+                    for example in d[entity]:
+                        new_text = text.split(" ")
+                        new_text[i] = example
+                        new_text = " ".join(new_text)
+                        store_texts.append(new_text)
+                        store_intents.append(intent)
+                        store_slots.append(slot)
+        texts.extend(store_texts)
+        intents.extend(store_intents)
+        slots.extend(store_slots)
+        return texts, intents, slots
+    except FileNotFoundError:
+        assert False, logging.error("augment data failed!, check if data path:{} is correct!".format(os.path.join(args.data_dir, args.task, "slot_label.yml")))
+
+
 def init_logger():
     log_levels = {"debug": logging.DEBUG, "info": logging.INFO, "warning": logging.WARNING, "error": logging.ERROR, "critical": logging.CRITICAL}
     if not os.path.exists("./log"):
@@ -40,6 +77,24 @@ def compute_metrics(intent_preds, intent_labels, slot_preds, slot_labels):
     assert len(intent_preds) == len(slot_preds) and intent_preds.shape == intent_labels.shape and slot_preds.shape == slot_labels.shape
     results = {'intent_acc': (intent_preds == intent_labels).mean(), 'slot_acc': (slot_preds == slot_labels).mean()}
     return results
+
+
+def get_data_from_path(data_path):
+    try:
+        f = open(os.path.join(data_path, "labeled_sentences.yml"), 'r', encoding='utf-8')
+        d = yaml.load(f.read(), yaml.FullLoader)
+        space_cut_sentences = []
+        intents = []
+        slots = []
+        for key in d:
+            space_cut_sentences.append(key['sentence'])
+            intents.append(key['intent'])
+            slots.append(key['slot'])
+        space_cut_sentences, intents, slots = augmentTrainData(space_cut_sentences, intents, slots)
+        word_list_sentences = [sentence.split(' ') for sentence in space_cut_sentences]
+        return word_list_sentences, intents, slots
+    except FileNotFoundError:
+        assert False, logging.error("load data failed!, check if data path:{} is correct!".format(data_path))
 
 
 def get_args():

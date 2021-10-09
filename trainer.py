@@ -4,8 +4,10 @@ import torch
 import yaml
 import sys
 import numpy as np
+import random
 
 from tqdm import tqdm, trange
+from utils import get_data_from_path
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 from transformers import BertConfig, AdamW, get_linear_schedule_with_warmup
 from utils import compute_metrics, get_args
@@ -45,10 +47,25 @@ class Trainer(object):
                                                    slot_label_lst=WordDataset.all_slot_dict)
             self.model.to(self.device)
 
-            self.train(WordDataset(os.path.join(args.data_dir, args.task, "train"), "B-moved_object", "train"))
+            all_data = get_data_from_path(os.path.join(args.data_dir, args.task, "train"))
+            idx = [i for i in range(len(all_data[0]))]
+            random.shuffle(idx)
 
-        if self.args.do_valid:
-            self.valid(WordDataset(os.path.join(args.data_dir, args.task, "valid"), "B-moved_object", "valid"))
+            if args.do_valid:
+                train_ratio = 0.8
+            else:
+                train_ratio = 1.0
+            assert 0 <= train_ratio <= 1.0
+            train_idx = idx[:int(len(idx) * train_ratio)]
+            valid_idx = idx[int(len(idx) * train_ratio):]
+            train_data = []
+            valid_data = []
+            for j in range(3):
+                train_data.append([all_data[j][i] for i in train_idx])
+                valid_data.append([all_data[j][i] for i in valid_idx])
+
+            self.train(WordDataset(train_data, "B-moved_object"))
+            self.valid(WordDataset(valid_data, "B-moved_object"))
 
 
     def train(self, train_dataset):
