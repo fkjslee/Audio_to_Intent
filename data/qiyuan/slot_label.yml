@@ -31,6 +31,7 @@ B-moved_object: # 被移动的物体
     - 玉树号驱逐舰
     - 导弹九九旅
     - 指挥所
+    - UNK
 B-moved_position: # 移动到的位置
     - 莆田机场
     - 泉州机场
@@ -55,6 +56,7 @@ B-moved_position: # 移动到的位置
     - 澎湖列岛
     - 新竹
     - 嘉义市
+    - UNK
 
 intent:
     - move_object # 移动物体

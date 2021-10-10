@@ -45,3 +45,40 @@
     - B-moved_object
     - O
     - B-moved_position
+
+
+-
+  sentence: 题型 都 挺 多 的
+  intent: UNK
+  slot:
+    - O
+    - O
+    - O
+    - O
+    - O
+
+-
+  sentence: 或者 针对性 的 提高
+  intent: UNK
+  slot:
+    - O
+    - O
+    - O
+    - O
+
+-
+  sentence: 整体 界面 向上 移动
+  intent: UNK
+  slot:
+    - O
+    - O
+    - O
+    - O
+
+-
+  sentence: 今天 天气 不错
+  intent: UNK
+  slot:
+    - O
+    - O
+    - O

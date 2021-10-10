@@ -90,6 +90,7 @@ def get_data_from_path(data_path, augment=True):
         intents = []
         slots = []
         for key in d:
+            assert len(key['sentence'].split(' ')) == len(key['slot'])
             space_cut_sentences.append(key['sentence'])
             intents.append(key['intent'])
             slots.append(key['slot'])

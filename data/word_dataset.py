@@ -96,7 +96,7 @@ class WordDataset(Dataset):
         if which_slot == 'intent':
             label_id = -1 if label is None else WordDataset.each_slot_dict['intent'][label]
         else:
-            label_id = -1
+            label_id = WordDataset.each_slot_dict[which_slot]['UNK']
             for slot_str, slot_type in zip(sentence, slot_list):
                 if slot_type == which_slot:
                     label_id = WordDataset.each_slot_dict[which_slot][slot_str]
