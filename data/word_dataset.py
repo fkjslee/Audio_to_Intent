@@ -14,7 +14,6 @@ class WordDataset(Dataset):
     tokenizer = None
     intent_bidict = None
     each_slot_dict = None
-    all_slot_dict = None
     feature_length = None
 
     def __init__(self, data, which_slot: str):
@@ -49,7 +48,7 @@ class WordDataset(Dataset):
     def init_word_dataset(config):
         WordDataset.tokenizer = BertTokenizer.from_pretrained(config['pretrained_model_name_or_path'])
         WordDataset.intent_bidict = WordDataset.build_intent_bidict(config['intent_label_file_path'])
-        WordDataset.all_slot_dict, WordDataset.each_slot_dict = WordDataset.build_slot_bidict(config['slot_label_file_path'])
+        WordDataset.each_slot_dict = WordDataset.build_slot_bidict(config['slot_label_file_path'])
         WordDataset.feature_length = config['word_length']
 
     @staticmethod
@@ -66,8 +65,7 @@ class WordDataset(Dataset):
             for slot_key in label_map.keys():
                 if isinstance(label_map[slot_key], list):
                     each_slot_dict[slot_key] = bidict.bidict({key: idx for idx, key in enumerate(label_map[slot_key])})
-            all_slot_bidict = bidict.bidict({key: idx for idx, key in enumerate(label_map.keys())})
-        return all_slot_bidict, each_slot_dict
+        return each_slot_dict
 
     @staticmethod
     def generate_feature_and_label(sentence: list, which_slot, slot_list: Optional[list] = None,
@@ -103,7 +101,7 @@ class WordDataset(Dataset):
             for slot_str, slot_type in zip(sentence, slot_list):
                 if slot_type == which_slot:
                     label_id = WordDataset.each_slot_dict[which_slot][slot_str]
-        input_ids, attention_mask, slot_label_ids = WordDataset.one_hot_encoding_sentence(sentence, slot_list)
+        input_ids, attention_mask = WordDataset.one_hot_encoding_sentence(sentence, slot_list)
         return list(map(lambda x: torch.tensor(x, dtype=torch.int64), [input_ids, attention_mask, label_id]))
 
     @staticmethod
@@ -114,24 +112,19 @@ class WordDataset(Dataset):
         """
         assert WordDataset.intent_bidict is not None, "not initialize dataset yet!"
         tokens = []
-        slot_label_ids = []
         for word, slot_label in zip(sentence, slot_list):
             word_tokens = WordDataset.tokenizer.tokenize(word)
             if not word_tokens:
                 word_tokens = WordDataset.tokenizer.unk_token
             tokens.extend(word_tokens)
-            slot_label_ids.extend(
-                [-1 if slot_label is None else WordDataset.all_slot_dict[slot_label]] + [-2] * (len(word_tokens) - 1))
 
         input_id = WordDataset.tokenizer.convert_tokens_to_ids(tokens)
         if len(tokens) > WordDataset.feature_length - 2:
             attention_mask = [1] * WordDataset.feature_length
-            slot_label_ids = [-2] + slot_label_ids[0: WordDataset.feature_length - 2] + [-2]
             input_id = [WordDataset.tokenizer.cls_token_id] + input_id[0: WordDataset.feature_length - 2] + [
                 WordDataset.tokenizer.sep_token_id]
         else:
             add_len = WordDataset.feature_length - 2 - len(input_id)
             attention_mask = [1] * (len(input_id) + 2) + [0] * add_len
-            slot_label_ids = [-2] + slot_label_ids + [-2] + [-2] * add_len
             input_id = [WordDataset.tokenizer.cls_token_id] + input_id + [WordDataset.tokenizer.sep_token_id] + [0] * add_len
-        return input_id, attention_mask, slot_label_ids
+        return input_id, attention_mask
