@@ -24,60 +24,76 @@ class Trainer(object):
     trainer for intent and slot recognizing
     """
 
-    def __init__(self):
+    def __init__(self, all_model_name):
         self.args = get_args()
         args = self.args
-        self.config = BertConfig.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
-        self.device = args.device
-
-        config = {
+        self.bert_config = BertConfig.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
+        self.dataset_config = {
             "word_length": 50,
             "pretrained_model_name_or_path": args.model_name_or_path,
             "intent_label_file_path": os.path.abspath(os.path.join(args.data_dir, args.task, "intent_label.yml")),
             "slot_label_file_path": os.path.abspath(os.path.join(args.data_dir, args.task, "slot_label.yml")),
         }
-        logger.info("Init word dataset with config: {}".format(str(config)))
-        WordDataset.init_word_dataset(config)
+        self.device = args.device
+
+        self.all_model_name = all_model_name
+        logger.info("Init word dataset with config: {}".format(str(self.dataset_config)))
+        WordDataset.init_word_dataset(self.dataset_config)
 
         if self.args.do_load:
-            self.load_model()
+            self.all_models = self.load_model()
         else:
-            self.model = JointBERT.from_pretrained(args.model_name_or_path, config=self.config, args=args,
-                                                   intent_label_lst=WordDataset.intent_bidict,
-                                                   slot_label_lst=WordDataset.all_slot_dict)
-            self.model.to(self.device)
+            self.all_models, self.all_dataset = self.generate_model_and_dataset(self.all_model_name)
+            for which_slot, model, dataset in zip(self.all_model_name, self.all_models, self.all_dataset):
+                self.train(model, dataset[0])
+                if self.args.do_valid:
+                    self.valid(which_slot, model, dataset[1])
+            self.save_model()
 
-            all_data = get_data_from_path(os.path.join(args.data_dir, args.task, "train"))
-            idx = [i for i in range(len(all_data[0]))]
-            random.shuffle(idx)
+    def generate_model_and_dataset(self, all_network_name):
+        def generate_model(all_network_name):
+            all_models = []
+            for which_slot in all_network_name:
+                model = JointBERT.from_pretrained(self.args.model_name_or_path, config=self.bert_config, args=self.args,
+                                                  intent_label_lst=WordDataset.each_slot_dict[which_slot])
+                all_models.append(model.to(self.device))
+            return all_models
 
-            if args.do_valid:
+        def generate_dataset(all_network_name):
+            if self.args.do_valid:
                 train_ratio = 0.8
             else:
                 train_ratio = 1.0
             assert 0 <= train_ratio <= 1.0
+            all_data = get_data_from_path(
+                os.path.join(self.args.data_dir, self.args.task, "train"))  # sentences, intents, slots
+            idx = [i for i in range(len(all_data[0]))]
+            random.shuffle(idx)
             train_idx = idx[:int(len(idx) * train_ratio)]
             valid_idx = idx[int(len(idx) * train_ratio):]
             train_data = []
             valid_data = []
-            for j in range(3):
-                train_data.append([all_data[j][i] for i in train_idx])
-                valid_data.append([all_data[j][i] for i in valid_idx])
+            for j in range(len(all_data)):
+                train_data.append([all_data[j][u] for u in train_idx])
+                valid_data.append([all_data[j][u] for u in valid_idx])
+            all_dataset = []
+            for which_slot in all_network_name:
+                all_dataset.append((WordDataset(train_data, which_slot), WordDataset(valid_data, which_slot)))
+            return all_dataset
 
-            self.train(WordDataset(train_data, "B-moved_object"))
-            self.valid(WordDataset(valid_data, "B-moved_object"))
+        all_model = generate_model(all_network_name)
+        all_dataset = generate_dataset(all_network_name)
+        return all_model, all_dataset
 
-
-    def train(self, train_dataset):
+    def train(self, model, train_dataset):
         train_sampler = RandomSampler(train_dataset)
         train_dataloader = DataLoader(train_dataset, sampler=train_sampler, batch_size=self.args.train_batch_size)
 
-        # Prepare optimizer and schedule (linear warmup and decay)
         no_decay = ['bias', 'LayerNorm.weight']
         optimizer_grouped_parameters = [
-            {'params': [p for n, p in self.model.named_parameters() if not any(nd in n for nd in no_decay)],
+            {'params': [p for n, p in model.named_parameters() if not any(nd in n for nd in no_decay)],
              'weight_decay': 0.0},
-            {'params': [p for n, p in self.model.named_parameters() if any(nd in n for nd in no_decay)],
+            {'params': [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)],
              'weight_decay': 0.0}
         ]
         optimizer = AdamW(optimizer_grouped_parameters, lr=1e-4)
@@ -85,106 +101,99 @@ class Trainer(object):
                                                     num_training_steps=len(
                                                         train_dataloader) * self.args.num_train_epochs)
 
-        global_step = 0
-
         for _ in range(int(self.args.num_train_epochs)):
             epoch_iterator = tqdm(train_dataloader, desc="Epoch %d in %d" % (_, self.args.num_train_epochs), position=0,
                                   file=sys.stdout)
             for batch in epoch_iterator:
-                self.model.train()
+                model.train()
                 batch = tuple(t.to(self.device) for t in batch)
-                result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2], slot_labels_ids=batch[3])
+                result = model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2])
                 loss = result['total_loss']
                 epoch_iterator.set_postfix(loss=loss.item())
-                self.model.zero_grad()
+                model.zero_grad()
                 loss.backward()
-                torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.args.max_grad_norm)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), self.args.max_grad_norm)
                 optimizer.step()
                 scheduler.step()
-                global_step += 1
-        self.save_model()
         logger.info("***** Train Model Complete with train last batch's total loss = {} *****".format(str(loss.item())))
 
-    def valid(self, dataset, mode='valid'):
+    def valid(self, which_slot, model, dataset):
 
-        logger.info("***** Running evaluation on %s dataset *****", mode)
-        logger.debug("  Batch size = %d", self.args.eval_batch_size)
+        logger.info("***** Running evaluation {} *****".format(which_slot))
 
         valid_sampler = SequentialSampler(dataset)
         valid_dataloader = DataLoader(dataset, sampler=valid_sampler, batch_size=self.args.eval_batch_size)
 
         eval_loss = 0.0
-        self.model.eval()
+        model.eval()
+        eval_acc = torch.tensor([]).to(self.device)
         for batch in tqdm(valid_dataloader, desc="Evaluating"):
             batch = tuple(t.to(self.device) for t in batch)
             with torch.no_grad():
-                result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2],
-                                    slot_labels_ids=batch[3])
+                result = model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2])
                 tmp_eval_loss = result['total_loss']
 
             eval_loss += tmp_eval_loss.mean().item()
+            eval_acc = torch.cat((eval_acc, result['intent_acc'].detach().reshape(1)), dim=0)
 
         eval_loss = eval_loss / len(valid_dataloader)
         results = {
-            "loss": eval_loss
+            "loss": eval_loss,
+            "acc": eval_acc.mean().item()
         }
 
-        logger.info("***** Eval results *****")
+        logger.info("***** Eval {} results *****".format(which_slot))
         for key in sorted(results.keys()):
-            logger.info("  %s = %s", key, str(results[key]))
+            logger.info("{} = {}".format(key, str(results[key])))
 
         return results
 
-    def predict_sentence(self, space_cut_sentence: str) -> Tuple[list, list, List[list], List[list]]:
+    def predict_sentence(self, space_cut_sentence: str, which_slot: str) -> Tuple[list, list]:
         """
-        predict a sentence's intent and slot
+        predict a sentence's type
         :param space_cut_sentence: sentence which split by space
+        :param which_slot: what kind of network you want, 'B-moved_object'? 'B-move_position'?
         :return: intent_str and intent_logit means intent type and its probability, slot type and its probability.
         example
-            predict_sentence("Move Tsinghua University to Guangdong")
-            return ["Move", "Query"], [0.9, 0.1], [["UNK", "B-moved_object", ...], ["B-moved_object", "UNK", ....], ...], [[0.8, 0.1, ...], [0.8, 0.1, ...], ...]
+            predict_sentence("Move Tsinghua University to Guangdong", 'B-moved_object')
+            return ["Tsinghua University", "Peking University"], [0.9, 0.1]
         """
         sentence = space_cut_sentence.split(' ')
-        instance = WordDataset.generate_feature_and_label(sentence)
+        instance = WordDataset.generate_feature_and_label(sentence, which_slot)
         batch = list(map(lambda x: x.unsqueeze(0), instance))
         batch = tuple(t.to(self.device) for t in batch)
-        result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2],
-                            slot_labels_ids=batch[3])
+        result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2])
         intent_logit = result['intent_logits'][0].softmax(dim=0)
         intent_dict = WordDataset.intent_bidict.inverse
         sorted_idx = intent_logit.argsort(descending=True)
         intent_logit = intent_logit[sorted_idx].tolist()
         intent_str = [intent_dict[idx.item()] for idx in sorted_idx]
 
-        slot_logit = result['slot_logits'][0].softmax(dim=1)
-
-        all_word_logit = []
-        all_word_str = []
-        for word_logit in slot_logit:
-            sorted_idx = word_logit.argsort(descending=True)
-            all_word_logit.append(word_logit[sorted_idx].tolist())
-            slot_dict = WordDataset.all_slot_dict.inverse
-            all_word_str.append([slot_dict[idx.item()] for idx in sorted_idx])
-
-        return intent_str, intent_logit, all_word_str, all_word_logit
+        return intent_str, intent_logit
 
     def save_model(self):
-        if not os.path.exists(self.args.model_dir):
-            os.makedirs(self.args.model_dir)
-        model_to_save = self.model.module if hasattr(self.model, 'module') else self.model
-        model_to_save.save_pretrained(self.args.model_dir)
+        for which_slot, model in zip(self.all_model_name, self.all_models):
+            path = os.path.join(self.args.model_dir, which_slot)
+            if not os.path.exists(path):
+                os.makedirs(path)
+            model_to_save = model.module if hasattr(model, 'module') else model
+            model_to_save.save_pretrained(path)
 
-        torch.save(self.args, os.path.join(self.args.model_dir, 'training_args.bin'))
-        logger.debug("Saving model checkpoint to %s", self.args.model_dir)
+            torch.save(self.args, os.path.join(path, 'training_args.bin'))
+            logger.debug("Saving {} model checkpoint to {}".format(which_slot, path))
 
     def load_model(self):
-        if not os.path.exists(self.args.model_dir):
-            raise Exception("Model doesn't exists! Train first! model path: %s " % str(self.args.model_dir))
-        try:
-            self.model = JointBERT.from_pretrained(self.args.model_dir, args=self.args,
-                                                   intent_label_lst=WordDataset.intent_bidict,
-                                                   slot_label_lst=WordDataset.all_slot_dict)
-            self.model.to(self.device)
-            logger.info("***** Load Model Complete *****")
-        except Exception:
-            raise Exception("Some model files might be missing...")
+        all_models = []
+        for which_slot in self.all_model_name:
+            path = os.path.join(self.args.model_dir, which_slot)
+            if not os.path.exists(path):
+                raise Exception("Model doesn't exists! Train first! model path: %s " % str(path))
+            try:
+                model = JointBERT.from_pretrained(path, args=self.args,
+                                                  intent_label_lst=WordDataset.each_slot_dict[which_slot])
+                model.to(self.device)
+                logger.info("***** Load {} Model Complete *****".format(which_slot))
+                all_models.append(model)
+            except Exception:
+                raise Exception("Some model files might be missing...")
+        return all_models

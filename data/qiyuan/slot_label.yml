@@ -55,3 +55,7 @@ B-moved_position: # 移动到的位置
     - 澎湖列岛
     - 新竹
     - 嘉义市
+
+intent:
+    - moved_object # 移动物体
+    - UNK # unknown

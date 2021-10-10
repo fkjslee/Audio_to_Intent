@@ -23,8 +23,7 @@ class WordDataset(Dataset):
             self.sentence_list, self.intent_list, self.slot_list = data
         except KeyError:
             assert False, logging.error("key error config={}".format(str(config)))
-        assert which_slot in self.each_slot_dict.keys(), "Which_slot must in {}".format(
-            str(self.each_slot_dict.keys()))
+        assert which_slot in self.each_slot_dict.keys(), "Which_slot must in {}".format(str(self.each_slot_dict.keys()))
         logger.info(str(self))
 
     def __len__(self):
@@ -32,20 +31,17 @@ class WordDataset(Dataset):
 
     # input_ids, attention_mas, token_type_ids, intent_label_id, slot_labels_ids
     def __getitem__(self, idx):
-        return WordDataset.generate_feature_and_label(self.sentence_list[idx], self.slot_list[idx],
-                                                      self.intent_list[idx])
+        return WordDataset.generate_feature_and_label(self.sentence_list[idx], self.which_slot, self.slot_list[idx], self.intent_list[idx])
 
     def __str__(self):
-        res = '\nLoad dataset Complete\nDataset total length = {}\n'.format(len(self))
+        res = '\nLoad {} dataset Complete\nDataset total length = {}\n'.format(self.which_slot, len(self))
         show_sample_num = min(len(self), 3)
         res += 'Show {} samples\n'.format(show_sample_num)
         for i in range(show_sample_num):
             res += "Sample {}:\n".format(i)
-            for elem in self.__getitem__(i):
-                str_elem = str(elem)
-                if len(str_elem) > 50:
-                    str_elem = str_elem[0: 50] + "..."
-                res += '{}\n'.format(str_elem)
+            res += "Sentences: {}\n".format(self.sentence_list[i])
+            res += "Intent: {}\n".format(self.intent_list[i])
+            res += "Slot: {}\n".format(self.slot_list[i])
             res += "\n"
         return res
 
@@ -74,18 +70,18 @@ class WordDataset(Dataset):
         return all_slot_bidict, each_slot_dict
 
     @staticmethod
-    def generate_feature_and_label(sentence: list, slot_list: Optional[list] = None,
-                                   intent: Optional[str] = None):
+    def generate_feature_and_label(sentence: list, which_slot, slot_list: Optional[list] = None,
+                                   label: Optional[str] = None):
         """
         generate instance of sentence(feature), slot and intent(label) after been ont-hot encoded
         :param sentence: sentence which need to be converted, which should be tokenizer first.
         :param slot_list: sentence's slot label.
-        :param intent: intent of the sentence.
+        :param label: label of the sentence.
         :return: one_hot encoding result. example
         example:
             generate_feature_and_label(['Move', 'Tsinghua University', 'to', 'Guangdong'],
                                         ['O', 'B-moved_object', 'O', 'B-moved_position'],
-                                        "move_object"
+                                        "moved_object"
                                        )
             (Tsinghua University may be tokenized to two word), add CLS in front and SEP in tail
             So, sentence may be understood as ['CLS', 'Move', 'Tsinghua', 'University', 'to', 'GUANGDONG', 'SEP']
@@ -100,11 +96,15 @@ class WordDataset(Dataset):
         assert WordDataset.intent_bidict is not None, "not initialize dataset yet!"
         if slot_list is None:
             slot_list = [None] * len(sentence)
-        intent_id = -1 if intent is None else WordDataset.intent_bidict[intent]
+        if which_slot == 'intent':
+            label_id = -1 if label is None else WordDataset.intent_bidict[label]
+        else:
+            label_id = -1
+            for slot_str, slot_type in zip(sentence, slot_list):
+                if slot_type == which_slot:
+                    label_id = WordDataset.each_slot_dict[which_slot][slot_str]
         input_ids, attention_mask, slot_label_ids = WordDataset.one_hot_encoding_sentence(sentence, slot_list)
-        return list(map(lambda x: torch.tensor(x, dtype=torch.int64),
-                        [input_ids, attention_mask, intent_id,
-                         slot_label_ids]))
+        return list(map(lambda x: torch.tensor(x, dtype=torch.int64), [input_ids, attention_mask, label_id]))
 
     @staticmethod
     def one_hot_encoding_sentence(sentence: list, slot_list: list):
