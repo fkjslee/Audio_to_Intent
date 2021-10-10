@@ -57,5 +57,5 @@ B-moved_position: # 移动到的位置
     - 嘉义市
 
 intent:
-    - moved_object # 移动物体
+    - move_object # 移动物体
     - UNK # unknown

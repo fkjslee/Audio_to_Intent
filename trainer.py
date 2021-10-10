@@ -65,8 +65,7 @@ class Trainer(object):
             else:
                 train_ratio = 1.0
             assert 0 <= train_ratio <= 1.0
-            all_data = get_data_from_path(
-                os.path.join(self.args.data_dir, self.args.task, "train"))  # sentences, intents, slots
+            all_data = get_data_from_path(os.path.join(self.args.data_dir, self.args.task, "train"), augment=True)  # sentences, intents, slots
             idx = [i for i in range(len(all_data[0]))]
             random.shuffle(idx)
             train_idx = idx[:int(len(idx) * train_ratio)]
@@ -158,13 +157,14 @@ class Trainer(object):
             predict_sentence("Move Tsinghua University to Guangdong", 'B-moved_object')
             return ["Tsinghua University", "Peking University"], [0.9, 0.1]
         """
+        model_idx = self.all_model_name.index(which_slot)
         sentence = space_cut_sentence.split(' ')
         instance = WordDataset.generate_feature_and_label(sentence, which_slot)
         batch = list(map(lambda x: x.unsqueeze(0), instance))
         batch = tuple(t.to(self.device) for t in batch)
-        result = self.model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2])
+        result = self.all_models[model_idx](input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2])
         intent_logit = result['intent_logits'][0].softmax(dim=0)
-        intent_dict = WordDataset.intent_bidict.inverse
+        intent_dict = WordDataset.each_slot_dict[which_slot].inverse
         sorted_idx = intent_logit.argsort(descending=True)
         intent_logit = intent_logit[sorted_idx].tolist()
         intent_str = [intent_dict[idx.item()] for idx in sorted_idx]

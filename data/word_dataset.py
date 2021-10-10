@@ -12,7 +12,6 @@ logger = logging.getLogger(__name__)
 
 class WordDataset(Dataset):
     tokenizer = None
-    intent_bidict = None
     each_slot_dict = None
     feature_length = None
 
@@ -47,8 +46,7 @@ class WordDataset(Dataset):
     @staticmethod
     def init_word_dataset(config):
         WordDataset.tokenizer = BertTokenizer.from_pretrained(config['pretrained_model_name_or_path'])
-        WordDataset.intent_bidict = WordDataset.build_intent_bidict(config['intent_label_file_path'])
-        WordDataset.each_slot_dict = WordDataset.build_slot_bidict(config['slot_label_file_path'])
+        WordDataset.each_slot_dict = WordDataset.build_slot_bidict(config['slot_label_file_path'], config['intent_label_file_path'])
         WordDataset.feature_length = config['word_length']
 
     @staticmethod
@@ -58,13 +56,14 @@ class WordDataset(Dataset):
             return bidict.bidict({key: idx for idx, key in enumerate(label_map.keys())})
 
     @staticmethod
-    def build_slot_bidict(label_path):
-        with open(label_path, "r", encoding="utf-8") as f:
+    def build_slot_bidict(slot_label_path, intent_label_path):
+        with open(slot_label_path, "r", encoding="utf-8") as f:
             label_map = yaml.load(f.read(), yaml.FullLoader)
             each_slot_dict = {}
             for slot_key in label_map.keys():
                 if isinstance(label_map[slot_key], list):
                     each_slot_dict[slot_key] = bidict.bidict({key: idx for idx, key in enumerate(label_map[slot_key])})
+            each_slot_dict['intent'] = WordDataset.build_intent_bidict(intent_label_path)
         return each_slot_dict
 
     @staticmethod
@@ -91,11 +90,11 @@ class WordDataset(Dataset):
                 [-2, 0, 1, -2, 1, 2, -2, ]
             (-2: ignore slot, -1: unknow slot)
         """
-        assert WordDataset.intent_bidict is not None, "not initialize dataset yet!"
+        assert WordDataset.each_slot_dict is not None, "not initialize dataset yet!"
         if slot_list is None:
             slot_list = [None] * len(sentence)
         if which_slot == 'intent':
-            label_id = -1 if label is None else WordDataset.intent_bidict[label]
+            label_id = -1 if label is None else WordDataset.each_slot_dict['intent'][label]
         else:
             label_id = -1
             for slot_str, slot_type in zip(sentence, slot_list):
@@ -110,7 +109,7 @@ class WordDataset(Dataset):
         one-hot encoding sentence and slot by tokenizer
         param example can be seen in generate_feature_and_label
         """
-        assert WordDataset.intent_bidict is not None, "not initialize dataset yet!"
+        assert WordDataset.each_slot_dict is not None, "not initialize dataset yet!"
         tokens = []
         for word, slot_label in zip(sentence, slot_list):
             word_tokens = WordDataset.tokenizer.tokenize(word)

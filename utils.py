@@ -30,25 +30,28 @@ def augmentTrainData(texts, intents, slots):
         d = yaml.load(f.read(), yaml.FullLoader)
     except FileNotFoundError:
         assert False, logging.error("augment data failed!, check if data path:{} is correct!".format(os.path.join(args.data_dir, args.task, "slot_label.yml")))
+
+    def dfs(example, dep, augment_text, augment_intent, augment_slot, replace_words, all_texts, all_intents, all_slots):
+        if len(example) == dep:
+            all_texts.append(" ".join(augment_text))
+            all_intents.append(augment_intent)
+            all_slots.append(augment_slot)
+            return
+        if isinstance(replace_words[augment_slot[dep]], list):
+            for replace_word in replace_words[augment_slot[dep]]:
+                augment_text[dep] = replace_word
+                dfs(example, dep+1, augment_text, augment_intent, augment_slot, replace_words, all_texts, all_intents, all_slots)
+        else:
+            augment_text[dep] = example[dep]
+            dfs(example, dep+1, augment_text, augment_intent, augment_slot, replace_words, all_texts, all_intents, all_slots)
+
     store_texts = []
     store_intents = []
     store_slots = []
-    been_augment_entity = []
     for text, intent, slot in zip(texts, intents, slots):
-        for i, (word, entity) in enumerate(zip(text, slot)):
-            if isinstance(d[entity], list) and entity not in been_augment_entity:
-                been_augment_entity.append(entity)
-                for example in d[entity]:
-                    new_text = text.split(" ")
-                    new_text[i] = example
-                    new_text = " ".join(new_text)
-                    store_texts.append(new_text)
-                    store_intents.append(intent)
-                    store_slots.append(slot)
-    texts.extend(store_texts)
-    intents.extend(store_intents)
-    slots.extend(store_slots)
-    return texts, intents, slots
+        text = text.split(" ")
+        dfs(text, 0, text.copy(), intent, slot, d, store_texts, store_intents, store_slots)
+    return store_texts, store_intents, store_slots
 
 
 def init_logger():
@@ -79,7 +82,7 @@ def compute_metrics(intent_preds, intent_labels, slot_preds, slot_labels):
     return results
 
 
-def get_data_from_path(data_path):
+def get_data_from_path(data_path, augment=True):
     try:
         f = open(os.path.join(data_path, "labeled_sentences.yml"), 'r', encoding='utf-8')
         d = yaml.load(f.read(), yaml.FullLoader)
@@ -90,7 +93,8 @@ def get_data_from_path(data_path):
             space_cut_sentences.append(key['sentence'])
             intents.append(key['intent'])
             slots.append(key['slot'])
-        space_cut_sentences, intents, slots = augmentTrainData(space_cut_sentences, intents, slots)
+        if augment:
+            space_cut_sentences, intents, slots = augmentTrainData(space_cut_sentences, intents, slots)
         word_list_sentences = [sentence.split(' ') for sentence in space_cut_sentences]
         return word_list_sentences, intents, slots
     except FileNotFoundError:
