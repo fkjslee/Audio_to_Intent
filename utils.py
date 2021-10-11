@@ -6,12 +6,53 @@ import logging
 import torch
 import numpy as np
 from seqeval.metrics import precision_score, recall_score, f1_score
+from typing import List
 
 from transformers import BertTokenizer
 import argparse
 import yaml
 
 logger = logging.getLogger(__name__)
+
+
+def augmentTrainData(texts, intents, slots):
+    """
+    augment data:
+    replace each slot with all examples
+    e.g.
+    moved_object=['a', 'b']
+    sentences = ["move x to y"]
+    after augment:
+    sentences = ["move x to y", "move a to y", "move b to y"]
+    """
+    try:
+        args = get_args()
+        f = open(os.path.join(args.data_dir, args.task, "slot_label.yml"), 'r', encoding='utf-8')
+        d = yaml.load(f.read(), yaml.FullLoader)
+    except FileNotFoundError:
+        assert False, logging.error("augment data failed!, check if data path:{} is correct!".format(os.path.join(args.data_dir, args.task, "slot_label.yml")))
+
+    def dfs(example, dep, augment_text, augment_intent, augment_slot, replace_words, all_texts, all_intents, all_slots):
+        if len(example) == dep:
+            all_texts.append(" ".join(augment_text))
+            all_intents.append(augment_intent)
+            all_slots.append(augment_slot)
+            return
+        if isinstance(replace_words[augment_slot[dep]], list):
+            for replace_word in replace_words[augment_slot[dep]]:
+                augment_text[dep] = replace_word
+                dfs(example, dep+1, augment_text, augment_intent, augment_slot, replace_words, all_texts, all_intents, all_slots)
+        else:
+            augment_text[dep] = example[dep]
+            dfs(example, dep+1, augment_text, augment_intent, augment_slot, replace_words, all_texts, all_intents, all_slots)
+
+    store_texts = []
+    store_intents = []
+    store_slots = []
+    for text, intent, slot in zip(texts, intents, slots):
+        text = text.split(" ")
+        dfs(text, 0, text.copy(), intent, slot, d, store_texts, store_intents, store_slots)
+    return store_texts, store_intents, store_slots
 
 
 def init_logger():
@@ -42,12 +83,33 @@ def compute_metrics(intent_preds, intent_labels, slot_preds, slot_labels):
     return results
 
 
+def get_data_from_path(data_path, augment=True):
+    try:
+        f = open(os.path.join(data_path, "labeled_sentences.yml"), 'r', encoding='utf-8')
+        d = yaml.load(f.read(), yaml.FullLoader)
+        space_cut_sentences = []
+        intents = []
+        slots = []
+        for key in d:
+            assert len(key['sentence'].split(' ')) == len(key['slot'])
+            space_cut_sentences.append(key['sentence'])
+            intents.append(key['intent'])
+            slots.append(key['slot'])
+        if augment:
+            space_cut_sentences, intents, slots = augmentTrainData(space_cut_sentences, intents, slots)
+        word_list_sentences = [sentence.split(' ') for sentence in space_cut_sentences]
+        return word_list_sentences, intents, slots
+    except FileNotFoundError:
+        assert False, logging.error("load data failed!, check if data path:{} is correct!".format(data_path))
+
+
 def get_args():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("--log_level", default="info", type=str, help="The name of the task to train")
     parser.add_argument("--task", default="qiyuan", type=str, help="The name of the task to train")
     parser.add_argument("--data_dir", default="data", type=str, help="The input data dir")
+    parser.add_argument("--predict_slots", default=[], nargs='+', help="Which slots to predict")
 
     parser.add_argument('--seed', type=int, default=1234, help="random seed for initialization")
     parser.add_argument("--train_batch_size", default=32, type=int, help="Batch size for training.")
@@ -57,6 +119,7 @@ def get_args():
     parser.add_argument("--max_grad_norm", default=1.0, type=float, help="Max gradient norm.")
     parser.add_argument("--warmup_steps", default=0, type=int, help="Linear warmup over warmup_steps.")
     parser.add_argument("--dropout_rate", default=0.1, type=float, help="Dropout for fully-connected layers")
+    parser.add_argument("--train_ratio", default=-1.0, type=float, help="Percentage of split train and valid set. Default 0.8 if need to validation else 1.0")
 
 
     parser.add_argument("--do_load", action="store_true", help="Whether to load model.")
@@ -70,8 +133,17 @@ def get_args():
     args = parser.parse_args()
     args.model_dir = args.task + "_model"
 
+    if args.train_ratio < 0:
+        if args.do_valid:
+            args.train_ratio = 0.8
+        else:
+            args.train_ratio = 1.0
+
+
     if args.task in ["qiyuan"]:
         args.model_name_or_path = 'bert-base-chinese'
+        if not args.predict_slots:
+            args.predict_slots = ['intent', 'B-moved_object', 'B-moved_position']
     elif args.task in ["atis", "snip"]:
         args.model_name_or_path = 'bert-base-uncased'
     else:

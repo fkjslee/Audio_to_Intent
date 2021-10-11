@@ -67,11 +67,17 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
         self.record_data()
         text = response['result']['voice_text_str']
         space_cut_text = formatText(text)
-        intent_str, intent_logit, all_word_str, all_word_logit = self.predictor.predict_sentence(space_cut_text)
-        slot_map = {}
-        for word, word_type in zip(space_cut_text.split(' '), all_word_str):
-            slot_map[word_type[0]] = word
-        self.msg_sender.send_msg(intent_str[0], slot_map)
+        result = {}
+        for model_name in get_args().predict_slots:
+            result[model_name] = self.predictor.predict_sentence(space_cut_text, which_slot=model_name)
+            print('{} type(sorted): {}'.format(model_name, result[model_name][0]))
+            print('{} possibility: {}'.format(model_name, result[model_name][1]))
+        if get_args().task == 'qiyuan':
+            intent_str, intent_logit = result['intent']
+            moved_object_str, moved_object_logit = result['B-moved_object']
+            moved_position_str, moved_position_logit = result['B-moved_position']
+            slot_map = {'B-moved_object': moved_object_str[0], 'B-moved_position': moved_position_str[0]}
+            self.msg_sender.send_msg(intent_str[0], slot_map)
 
     def on_recognition_complete(self, response):
         logger.info("%s|OnRecognitionComplete\n" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
@@ -86,6 +92,7 @@ class AudioRecognizer(speech_recognizer.SpeechRecognizer):
         asrMsg = init_asr()
         args = get_args()
         set_seed(args)
+        self.all_model_name = ['intent', 'B-moved_object', 'B-moved_position']
         msg_sender = MsgSender(addr=args.command_server_addr, port=args.command_server_port)
         listener = AudioListener(0, Trainer(), msg_sender, samplerate, replay)
         super().__init__(asrMsg['APPID'], Credential(asrMsg['SECRET_ID'], asrMsg['SECRET_KEY']),

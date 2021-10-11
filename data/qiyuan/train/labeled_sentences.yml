@@ -1,40 +1,84 @@
-# 第一行句子 第二行意图 第三行槽 意图和槽应该是"..//intent_label.yml"中的IntentSet 和"..//slot_label.yml"中的SlotSet的词
-
-
+# 第1行句子 第二行意图 第三行槽 意图和槽应该是"..//intent_label.yml"中的IntentSet 和"..//slot_label.yml"中的SlotSet的词
 -
-  sentence: 放大 地图
-  intent: map_larger
-  slot:
-    - B-larger
-    - O
-
--
-  sentence: 缩小 地图
-  intent: map_smaller
-  slot:
-    - B-smaller
-    - O
-
-
--
-  sentence: 上移 百分之十
-  intent: move_up
-  slot:
-    - B-up
-    - B-digit
-
--
-  sentence: 下移 百分之十
-  intent: move_down
-  slot:
-    - B-down
-    - B-digit
-
--
-  sentence: 把 飞行一大队 移动到 莆田机场
+  sentence: 把 飞行1大队 移动到 莆田机场
   intent: move_object
   slot:
     - O
     - B-moved_object
     - O
     - B-moved_position
+
+-
+  sentence: 移动到 莆田机场 把 飞行1大队
+  intent: move_object
+  slot:
+    - O
+    - B-moved_position
+    - O
+    - B-moved_object
+
+-
+  sentence: 先 嗯 移动 飞行1大队 到 莆田机场
+  intent: move_object
+  slot:
+    - O
+    - O
+    - O
+    - B-moved_object
+    - O
+    - B-moved_position
+
+
+-
+  sentence: 飞行1大队 向 莆田机场 前进
+  intent: move_object
+  slot:
+    - B-moved_object
+    - O
+    - B-moved_position
+    - O
+
+-
+  sentence: 飞行1大队 移动到 莆田机场
+  intent: move_object
+  slot:
+    - B-moved_object
+    - O
+    - B-moved_position
+
+
+-
+  sentence: 题型 都 挺 多 的
+  intent: UNK
+  slot:
+    - O
+    - O
+    - O
+    - O
+    - O
+
+-
+  sentence: 或者 针对性 的 提高
+  intent: UNK
+  slot:
+    - O
+    - O
+    - O
+    - O
+
+-
+  sentence: 整体 界面 向上 移动
+  intent: UNK
+  slot:
+    - O
+    - O
+    - O
+    - O
+
+-
+  sentence: 今天 天气 不错
+  intent: UNK
+  slot:
+    - O
+    - O
+    - O
