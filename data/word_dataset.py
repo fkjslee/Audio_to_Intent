@@ -3,6 +3,7 @@ import yaml
 import logging
 import os
 import torch
+import random
 from typing import Optional
 from torch.utils.data import Dataset
 from transformers import BertTokenizer
@@ -34,12 +35,13 @@ class WordDataset(Dataset):
     def __str__(self):
         res = '\nLoad {} dataset Complete\nDataset total length = {}\n'.format(self.which_slot, len(self))
         show_sample_num = min(len(self), 3)
-        res += 'Show {} samples\n'.format(show_sample_num)
+        res += 'Randomly show {} samples\n'.format(show_sample_num)
         for i in range(show_sample_num):
+            idx = random.randint(0, len(self)-1)
             res += "Sample {}:\n".format(i)
-            res += "Sentences: {}\n".format(self.sentence_list[i])
-            res += "Intent: {}\n".format(self.intent_list[i])
-            res += "Slot: {}\n".format(self.slot_list[i])
+            res += "Sentences: {}\n".format(self.sentence_list[idx])
+            res += "Intent: {}\n".format(self.intent_list[idx])
+            res += "Slot: {}\n".format(self.slot_list[idx])
             res += "\n"
         return res
 
