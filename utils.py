@@ -6,6 +6,7 @@ import logging
 import torch
 import numpy as np
 from seqeval.metrics import precision_score, recall_score, f1_score
+from typing import List
 
 from transformers import BertTokenizer
 import argparse
@@ -108,6 +109,7 @@ def get_args():
     parser.add_argument("--log_level", default="info", type=str, help="The name of the task to train")
     parser.add_argument("--task", default="qiyuan", type=str, help="The name of the task to train")
     parser.add_argument("--data_dir", default="data", type=str, help="The input data dir")
+    parser.add_argument("--predict_slots", default=[], nargs='+', help="Which slots to predict")
 
     parser.add_argument('--seed', type=int, default=1234, help="random seed for initialization")
     parser.add_argument("--train_batch_size", default=32, type=int, help="Batch size for training.")
@@ -117,6 +119,7 @@ def get_args():
     parser.add_argument("--max_grad_norm", default=1.0, type=float, help="Max gradient norm.")
     parser.add_argument("--warmup_steps", default=0, type=int, help="Linear warmup over warmup_steps.")
     parser.add_argument("--dropout_rate", default=0.1, type=float, help="Dropout for fully-connected layers")
+    parser.add_argument("--train_ratio", default=-1.0, type=float, help="Percentage of split train and valid set. Default 0.8 if need to validation else 1.0")
 
 
     parser.add_argument("--do_load", action="store_true", help="Whether to load model.")
@@ -130,8 +133,17 @@ def get_args():
     args = parser.parse_args()
     args.model_dir = args.task + "_model"
 
+    if args.train_ratio < 0:
+        if args.do_valid:
+            args.train_ratio = 0.8
+        else:
+            args.train_ratio = 1.0
+
+
     if args.task in ["qiyuan"]:
         args.model_name_or_path = 'bert-base-chinese'
+        if not args.predict_slots:
+            args.predict_slots = ['intent', 'B-moved_object', 'B-moved_position']
     elif args.task in ["atis", "snip"]:
         args.model_name_or_path = 'bert-base-uncased'
     else:

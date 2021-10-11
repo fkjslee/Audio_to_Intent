@@ -24,7 +24,7 @@ class Trainer(object):
     trainer for intent and slot recognizing
     """
 
-    def __init__(self, all_model_name):
+    def __init__(self):
         self.args = get_args()
         args = self.args
         self.bert_config = BertConfig.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
@@ -36,7 +36,7 @@ class Trainer(object):
         }
         self.device = args.device
 
-        self.all_model_name = all_model_name
+        self.all_model_name = self.args.predict_slots
         logger.info("Init word dataset with config: {}".format(str(self.dataset_config)))
         WordDataset.init_word_dataset(self.dataset_config)
 
@@ -60,10 +60,7 @@ class Trainer(object):
             return all_models
 
         def generate_dataset(all_network_name):
-            if self.args.do_valid:
-                train_ratio = 0.8
-            else:
-                train_ratio = 1.0
+            train_ratio = get_args().train_ratio
             assert 0 <= train_ratio <= 1.0
             all_data = get_data_from_path(os.path.join(self.args.data_dir, self.args.task, "train"), augment=True)  # sentences, intents, slots
             idx = [i for i in range(len(all_data[0]))]

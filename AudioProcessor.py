@@ -68,7 +68,7 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
         text = response['result']['voice_text_str']
         space_cut_text = formatText(text)
         result = {}
-        for model_name in self.predictor.all_model_name:
+        for model_name in get_args().predict_slots:
             result[model_name] = self.predictor.predict_sentence(space_cut_text, which_slot=model_name)
             print('{} type(sorted): {}'.format(model_name, result[model_name][0]))
             print('{} possibility: {}'.format(model_name, result[model_name][1]))
@@ -95,7 +95,7 @@ class AudioRecognizer(speech_recognizer.SpeechRecognizer):
         set_seed(args)
         self.all_model_name = ['intent', 'B-moved_object', 'B-moved_position']
         msg_sender = MsgSender(addr=args.command_server_addr, port=args.command_server_port)
-        listener = AudioListener(0, Trainer(self.all_model_name), msg_sender, samplerate, replay)
+        listener = AudioListener(0, Trainer(), msg_sender, samplerate, replay)
         super().__init__(asrMsg['APPID'], Credential(asrMsg['SECRET_ID'], asrMsg['SECRET_KEY']),
                          asrMsg['ENGINE_MODEL_TYPE'], listener)
         self.set_filter_modal(1)
