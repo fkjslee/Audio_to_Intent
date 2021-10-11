@@ -72,13 +72,12 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
             result[model_name] = self.predictor.predict_sentence(space_cut_text, which_slot=model_name)
             print('{} type(sorted): {}'.format(model_name, result[model_name][0]))
             print('{} possibility: {}'.format(model_name, result[model_name][1]))
-        # intent_str, intent_logit = result['intent']
-        # moved_object_str, moved_object_logit = result['B-moved_object']
-        # moved_position_str, moved_position_logit = result['B-moved_position']
-        # slot_map = {}
-        # for word, word_type in zip(space_cut_text.split(' '), all_word_str):
-        #     slot_map[word_type[0]] = word
-        # self.msg_sender.send_msg(intent_str[0], slot_map)
+        if get_args().task == 'qiyuan':
+            intent_str, intent_logit = result['intent']
+            moved_object_str, moved_object_logit = result['B-moved_object']
+            moved_position_str, moved_position_logit = result['B-moved_position']
+            slot_map = {'B-moved_object': moved_object_str[0], 'B-moved_position': moved_position_str[0]}
+            self.msg_sender.send_msg(intent_str[0], slot_map)
 
     def on_recognition_complete(self, response):
         logger.info("%s|OnRecognitionComplete\n" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
