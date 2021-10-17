@@ -149,10 +149,6 @@ class Stream_Reader:
             print("No working microphone devices found!")
             sys.exit()
 
-        print("Found %d working microphone device(s): " % len(mics))
-        for mic in mics:
-            self.print_mic_info(mic)
-
         return mics[0]
 
     def print_mic_info(self, mic):

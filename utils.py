@@ -106,11 +106,16 @@ def get_data_from_path(data_path, augment=True):
 def get_args():
     parser = argparse.ArgumentParser()
 
+    # model config
     parser.add_argument("--log_level", default="info", type=str, help="The name of the task to train")
     parser.add_argument("--task", default="qiyuan", type=str, help="The name of the task to train")
     parser.add_argument("--data_dir", default="data", type=str, help="The input data dir")
     parser.add_argument("--predict_slots", default=[], nargs='+', help="Which slots to predict")
+    parser.add_argument("--device", default="cuda:0", help="Run device, default is cuda:0")
+    parser.add_argument("--do_load", action="store_true", help="Whether to load model.")
+    parser.add_argument("--do_valid", action="store_true", help="Whether to validate model.")
 
+    # model parameter
     parser.add_argument('--seed', type=int, default=1234, help="random seed for initialization")
     parser.add_argument("--train_batch_size", default=32, type=int, help="Batch size for training.")
     parser.add_argument("--eval_batch_size", default=32, type=int, help="Batch size for evaluation.")
@@ -121,14 +126,14 @@ def get_args():
     parser.add_argument("--dropout_rate", default=0.1, type=float, help="Dropout for fully-connected layers")
     parser.add_argument("--train_ratio", default=-1.0, type=float, help="Percentage of split train and valid set. Default 0.8 if need to validation else 1.0")
 
-
-    parser.add_argument("--do_load", action="store_true", help="Whether to load model.")
-    parser.add_argument("--do_valid", action="store_true", help="Whether to validate model.")
-    parser.add_argument("--device", default="cuda:0", help="Run device, default is cuda:0")
-
     parser.add_argument('--slot_loss_coef', type=float, default=1.0, help='Coefficient for the slot loss.')
+
+    # network
     parser.add_argument('--command_server_addr', default=None, help='Address of server which receive intent')
     parser.add_argument('--command_server_port', type=int, default=None, help='Port of Server which receive intent')
+
+    # gui
+    parser.add_argument("--gui", action="store_true", help="Whether to visualize audio. (recommended if it could be)")
 
     args = parser.parse_args()
     args.model_dir = args.task + "_model"
