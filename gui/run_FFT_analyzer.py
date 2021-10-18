@@ -19,6 +19,7 @@ class AudioController:
     def __init__(self):
         self.hidden = True
         self.fps_msg = ""
+        self.pred_res = []
 
 
 def parse_args():
@@ -62,6 +63,7 @@ def run_FFT_analyzer(controller: AudioController = None):
             if controller and ear.visualize:
                 ear.visualizer.hidden = controller.hidden
                 ear.visualizer.other_fps_msg = controller.fps_msg
+                ear.visualizer.pred_res = controller.pred_res
         elif args.sleep_between_frames:
             time.sleep(max(((1. / fps) - (time.time() - last_update)) * 0.99, 0))
 

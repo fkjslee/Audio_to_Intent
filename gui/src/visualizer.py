@@ -14,7 +14,7 @@ class Spectrum_Visualizer:
     def __init__(self, ear):
         self.plot_audio_history = True
         self.ear = ear
-        self.hidden = True
+        self.hidden = False
 
         self.HEIGHT = self.ear.height
         window_ratio = self.ear.window_ratio
@@ -51,6 +51,7 @@ class Spectrum_Visualizer:
         self.fps_interval = 10
         self.fps = 0
         self.other_fps_msg = ""
+        self.pred_res = []
         self._is_running = False
 
     def toggle_history_mode(self):
@@ -94,7 +95,7 @@ class Spectrum_Visualizer:
 
         pygame.display.set_caption('Spectrum Analyzer -- (FFT-Peak: %05d Hz)' % self.ear.strongest_frequency)
         self.bin_font = pygame.font.Font('freesansbold.ttf', round(0.025 * self.HEIGHT))
-        self.fps_font = pygame.font.Font('freesansbold.ttf', round(0.05 * self.HEIGHT))
+        self.fps_font = pygame.font.SysFont('SimHei', round(0.05 * self.HEIGHT))
 
         for i in range(self.ear.n_frequency_bins):
             if i == 0 or i == (self.ear.n_frequency_bins - 1):
@@ -139,7 +140,7 @@ class Spectrum_Visualizer:
 
     def update(self):
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT),
-                                              (pygame.HIDDEN if self.hidden else pygame.SHOWN) | pygame.NOFRAME)
+                                              (pygame.HIDDEN if self.hidden else pygame.SHOWN))
         for event in pygame.event.get():
             if self.history_button.click():
                 self.plot_audio_history = not self.plot_audio_history
@@ -174,16 +175,16 @@ class Spectrum_Visualizer:
             self.fps = self.fps_interval / (time.time() - self.start_time)
             self.start_time = time.time()
 
-        self.text = self.fps_font.render('Fps: %.1f %s' % (self.fps, self.other_fps_msg), True, (255, 255, 255),
-                                         (self.bg_color, self.bg_color, self.bg_color))
-        self.textRect = self.text.get_rect()
-        self.textRect.x, self.textRect.y = round(0.015 * self.WIDTH), round(0.03 * self.HEIGHT)
-        pygame.display.set_caption('Spectrum Analyzer -- (FFT-Peak: %05d Hz)' % self.ear.strongest_frequency)
-
+        text = ['Fps: %.1f %s' % (self.fps, self.other_fps_msg)]
+        text.extend(self.pred_res)
         self.plot_bars()
-
+        for i, content in enumerate(text):
+            content = self.fps_font.render(content, True, (255, 255, 255),
+                                           (self.bg_color, self.bg_color, self.bg_color))
+            contentRect = content.get_rect()
+            contentRect.x, contentRect.y = round(0.015 * self.WIDTH), round(0.03 * self.HEIGHT + i * contentRect.h)
+            self.screen.blit(content, contentRect)
         # Draw text tags:
-        self.screen.blit(self.text, self.textRect)
         if len(self.bin_text_tags) > 0:
             cnt = 0
             for i in range(self.ear.n_frequency_bins):

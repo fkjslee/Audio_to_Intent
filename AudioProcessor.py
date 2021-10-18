@@ -24,11 +24,13 @@ class Record_data:
     data = np.zeros(0).reshape(0, 1).astype(np.int16)
 
 
-def formatText(text):
-    logger.info("asr result: %s" % text)
+def formatText(text, end):
+    if end:
+        logger.info("asr result: %s" % text)
     cut_text = jieba.lcut(text)
     space_cut_text = " ".join(cut_text)
-    logger.info("jieba cut message: %s", space_cut_text)
+    if end:
+        logger.info("jieba cut message: %s", space_cut_text)
     return space_cut_text
 
 
@@ -48,8 +50,12 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
         self.last_update_asr_fps_time = None
         self.last_update_pred_fps_time = None
         self.lock = threading.Lock()
+        self.asr_res = []
+        self.pred_res = []
+        self.all_other_res = []
         self.predict_text = ""
         self.is_predicting = False
+        self.gui_lock = threading.Lock()
         if self.args.gui:
             sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), "gui"))
             from gui import run_FFT_analyzer
@@ -68,13 +74,25 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
             wavfile.write(os.path.join(folder_path, str_time + ".wav"), self.samplerate, Record_data.data)
         Record_data.data = np.zeros(0).reshape(0, 1).astype(np.int16)
 
+    def emit_gui_res(self):
+        self.gui_lock.acquire()
+        self.gui_controller.pred_res = self.asr_res + self.pred_res
+        self.gui_lock.release()
+
     def _predict(self, end):
-        space_cut_text = formatText(self.predict_text)
+        space_cut_text = formatText(self.predict_text, end)
         result = {}
+        self.pred_res = []
         for model_name in self.args.predict_slots:
             result[model_name] = self.predictor.predict_sentence(space_cut_text, which_slot=model_name)
-            logger.info('{} type(sorted): {}'.format(model_name, result[model_name][0]))
-            logger.info('{} possibility: {}'.format(model_name, result[model_name][1]))
+            if end:
+                logger.info('{} type(sorted): {}'.format(model_name, result[model_name][0]))
+                logger.info('{} possibility: {}'.format(model_name, result[model_name][1]))
+            single_res = model_name + ": "
+            for i in range(min(len(result[model_name][0]), 3)):
+                single_res += '{}({:.1f}%) '.format(result[model_name][0][i], result[model_name][1][i] * 100)
+            self.pred_res.append(single_res)
+            self.emit_gui_res()
         if self.args.task == 'qiyuan':
             intent_str, intent_logit = result['intent']
             moved_object_str, moved_object_logit = result['B-moved_object']
@@ -87,6 +105,8 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
     def predict(self, end):
         if self.is_predicting and not end:
             return
+        while self.is_predicting:  # wait until another thread finished its prediction, without this two thread may predict simultaneously
+            time.sleep(0.1)
         self.is_predicting = True
 
         threading.Thread(target=self._predict, kwargs={"end": end}).start()
@@ -114,6 +134,8 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
         logger.info("%s|OnRecognitionSentenceBegin" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
     def on_recognition_result_change(self, response):
+        self.asr_res = ["ASR result: " + response['result']['voice_text_str']]
+        self.emit_gui_res()
         self.lock.acquire()
         if self.last_update_asr_fps_time is None:
             self.last_update_asr_fps_time = datetime.now()
@@ -130,6 +152,7 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
         self.predict(end=False)
 
     def on_sentence_end(self, response):
+        self.asr_res = ["ASR result: " + response['result']['voice_text_str']]
         logger.info("%s|OnRecognitionEnd\n" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         self.record_data()
         self.lock.acquire()
@@ -137,8 +160,8 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
         self.gui_controller.fps_msg = "ASR Fps: {} Predict Fps: {}".format(int(round(self.asr_fps)), int(round(self.prediction_fps)))
         self.lock.release()
         self.predict(end=True)
-        if self.args.gui:
-            self.gui_controller.hidden = True
+        # if self.args.gui:
+        #     self.gui_controller.hidden = True
 
     def on_recognition_complete(self, response):
         logger.info("%s|OnRecognitionComplete\n" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
