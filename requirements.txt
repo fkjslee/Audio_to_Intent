@@ -6,3 +6,8 @@ PyYAML==5.4.1
 websocket-client2==1.0
 sounddevice==0.4.1
 flatbuffers==2.0
+pygame==1.9.6
+PyAudio==0.2.11
+scipy==1.4.1
+numpy==1.18.4
+matplotlib==3.2.1
