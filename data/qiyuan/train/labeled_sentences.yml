@@ -82,3 +82,57 @@
     - O
     - O
     - O
+
+-
+  sentence: 放大 地图
+  intent: map_larger
+  slot:
+    - O
+    - O
+
+-
+  sentence: 缩小 地图
+  intent: map_smaller
+  slot:
+    - O
+    - O
+-
+  sentence: 上移 地图
+  intent: map_up
+  slot:
+    - O
+    - O
+-
+  sentence: 下移 地图
+  intent: map_down
+  slot:
+    - O
+    - O
+-
+  sentence: 显示 ts分析
+  intent: show_msg
+  slot:
+    - O
+    - B-message
+
+-
+  sentence: 把 ts分析 隐藏
+  intent: hide_msg
+  slot:
+    - O
+    - B-message
+    - O
+
+-
+  sentence: 取消 ts分析
+  intent: hide_msg
+  slot:
+    - O
+    - B-message
+
+-
+  sentence: 透明化 ts分析
+  intent: hide_msg
+  slot:
+    - O
+    - B-message
