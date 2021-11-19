@@ -1,3 +1,15 @@
 # 意图集合
 UNK: # unknown
 move_object: # 移动物体
+map_larger:
+map_smaller:
+map_up:
+map_down:
+show_msg:
+hide_msg:
+start:
+end:
+pause:
+resume:
+speed_up:
+speed_down:

@@ -58,6 +58,9 @@ B-moved_position: # 移动到的位置
     - 嘉义市
     - UNK
 
-intent:
-    - move_object # 移动物体
-    - UNK # unknown
+B-message:
+    - ts分析
+    - ts预测
+    - ts评估
+    - 决策支持
+    - UNK
