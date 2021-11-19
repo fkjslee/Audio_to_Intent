@@ -11,6 +11,7 @@ from typing import List
 from transformers import BertTokenizer
 import argparse
 import yaml
+import bisect
 
 logger = logging.getLogger(__name__)
 
@@ -46,13 +47,31 @@ def augmentTrainData(texts, intents, slots):
             augment_text[dep] = example[dep]
             dfs(example, dep+1, augment_text, augment_intent, augment_slot, replace_words, all_texts, all_intents, all_slots)
 
+    def balance_train_data(texts, intents, slots):
+        # sort by intent
+        idx = np.argsort(intents)
+        texts = [texts[i] for i in idx]
+        intents = [intents[i] for i in idx]
+        slots = [slots[i] for i in idx]
+
+        # randomly add 100 example every intent
+        unique_intents = np.unique(intents)
+        original_len = len(intents)
+        for intent in unique_intents:
+            for _ in range(100):
+                random_idx = random.randint(bisect.bisect_left(intents, intent, 0, original_len), bisect.bisect_right(intents, intent, 0, original_len) - 1)
+                texts.append(texts[random_idx])
+                intents.append(intents[random_idx])
+                slots.append(slots[random_idx])
+        return texts, intents, slots
+
     store_texts = []
     store_intents = []
     store_slots = []
     for text, intent, slot in zip(texts, intents, slots):
         text = text.split(" ")
         dfs(text, 0, text.copy(), intent, slot, d, store_texts, store_intents, store_slots)
-    return store_texts, store_intents, store_slots
+    return balance_train_data(store_texts, store_intents, store_slots)
 
 
 def init_logger():
