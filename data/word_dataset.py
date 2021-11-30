@@ -11,18 +11,40 @@ from transformers import BertTokenizer
 logger = logging.getLogger(__name__)
 
 
+class Vocabulary:
+    def __init__(self, dir_path, slot_name):
+        if slot_name == 'intent':
+            with open(dir_path + "/intent_label.yml", "r", encoding="utf-8") as f:
+                label_map = yaml.load(f.read(), yaml.FullLoader)
+                self.vocab = bidict.bidict({key: idx for idx, key in enumerate(label_map.keys())})
+        else:
+            with open(dir_path + "/slot_label.yml", "r", encoding="utf-8") as f:
+                label_map = yaml.load(f.read(), yaml.FullLoader)
+                if slot_name == 'slot':
+                    self.vocab = bidict.bidict({key: idx for idx, key in enumerate(label_map.keys())})
+                else:
+                    self.vocab = bidict.bidict({key: idx for idx, key in enumerate(label_map[slot_name])})
+
+    def stoi(self, word):
+        return self.vocab.get(word, self.vocab['UNK'])
+
+    def itos(self, idx):
+        return self.vocab.inverse.get(idx, 'UNK')
+
+
+
 class WordDataset(Dataset):
     tokenizer = None
     each_slot_dict = None
     feature_length = None
 
-    def __init__(self, data, which_slot: str):
-        self.which_slot = which_slot
+    def __init__(self, data, which_dataset: str, config):
+        self.which_dataset = which_dataset
+        self.config = config
         try:
             self.sentence_list, self.intent_list, self.slot_list = data
         except KeyError:
             assert False, logging.error("key error config={}".format(str(config)))
-        assert which_slot in self.each_slot_dict.keys(), "Which_slot must in {}".format(str(self.each_slot_dict.keys()))
         logger.info(str(self))
 
     def __len__(self):
@@ -30,10 +52,10 @@ class WordDataset(Dataset):
 
     # input_ids, attention_mas, token_type_ids, intent_label_id, slot_labels_ids
     def __getitem__(self, idx):
-        return WordDataset.generate_feature_and_label(self.sentence_list[idx], self.which_slot, self.slot_list[idx], self.intent_list[idx])
+        return WordDataset.generate_feature_and_label(self.sentence_list[idx], self.which_dataset, self.config, self.slot_list[idx], self.intent_list[idx])
 
     def __str__(self):
-        res = '\nLoad {} dataset Complete\nDataset total length = {}\n'.format(self.which_slot, len(self))
+        res = '\nLoad {} dataset Complete\nDataset total length = {}\n'.format(self.which_dataset, len(self))
         show_sample_num = min(len(self), 3)
         res += 'Randomly show {} samples\n'.format(show_sample_num)
         for i in range(show_sample_num):
@@ -46,30 +68,7 @@ class WordDataset(Dataset):
         return res
 
     @staticmethod
-    def init_word_dataset(config):
-        WordDataset.tokenizer = BertTokenizer.from_pretrained(config['pretrained_model_name_or_path'])
-        WordDataset.each_slot_dict = WordDataset.build_slot_bidict(config['slot_label_file_path'], config['intent_label_file_path'])
-        WordDataset.feature_length = config['word_length']
-
-    @staticmethod
-    def build_intent_bidict(label_path):
-        with open(label_path, "r", encoding="utf-8") as f:
-            label_map = yaml.load(f.read(), yaml.FullLoader)
-            return bidict.bidict({key: idx for idx, key in enumerate(label_map.keys())})
-
-    @staticmethod
-    def build_slot_bidict(slot_label_path, intent_label_path):
-        with open(slot_label_path, "r", encoding="utf-8") as f:
-            label_map = yaml.load(f.read(), yaml.FullLoader)
-            each_slot_dict = {}
-            for slot_key in label_map.keys():
-                if isinstance(label_map[slot_key], list):
-                    each_slot_dict[slot_key] = bidict.bidict({key: idx for idx, key in enumerate(label_map[slot_key])})
-            each_slot_dict['intent'] = WordDataset.build_intent_bidict(intent_label_path)
-        return each_slot_dict
-
-    @staticmethod
-    def generate_feature_and_label(sentence: list, which_slot, slot_list: Optional[list] = None,
+    def generate_feature_and_label(sentence: list, which_dataset, config, slot_list: Optional[list] = None,
                                    label: Optional[str] = None):
         """
         generate instance of sentence(feature), slot and intent(label) after been ont-hot encoded
@@ -92,40 +91,40 @@ class WordDataset(Dataset):
                 [-2, 0, 1, -2, 1, 2, -2, ]
             (-2: ignore slot, -1: unknow slot)
         """
-        assert WordDataset.each_slot_dict is not None, "not initialize dataset yet!"
         if slot_list is None:
             slot_list = [None] * len(sentence)
-        if which_slot == 'intent':
-            label_id = -1 if label is None else WordDataset.each_slot_dict['intent'][label]
+        if which_dataset == 'intent':
+            label_id = -1 if label is None else config['vocab'][which_dataset].stoi('UNK')
+        elif which_dataset == 'slot':
+            ...
         else:
-            label_id = WordDataset.each_slot_dict[which_slot]['UNK']
+            label_id = config['vocab'][which_dataset].stoi('UNK')
             for slot_str, slot_type in zip(sentence, slot_list):
-                if slot_type == which_slot:
-                    label_id = WordDataset.each_slot_dict[which_slot][slot_str]
-        input_ids, attention_mask = WordDataset.one_hot_encoding_sentence(sentence, slot_list)
+                if slot_type == which_dataset:
+                    label_id = config['vocab'][which_dataset].stoi(slot_str)
+        input_ids, attention_mask = WordDataset.one_hot_encoding_sentence(sentence, slot_list, config)
         return list(map(lambda x: torch.tensor(x, dtype=torch.int64), [input_ids, attention_mask, label_id]))
 
     @staticmethod
-    def one_hot_encoding_sentence(sentence: list, slot_list: list):
+    def one_hot_encoding_sentence(sentence: list, slot_list: list, config):
         """
         one-hot encoding sentence and slot by tokenizer
         param example can be seen in generate_feature_and_label
         """
-        assert WordDataset.each_slot_dict is not None, "not initialize dataset yet!"
         tokens = []
         for word, slot_label in zip(sentence, slot_list):
-            word_tokens = WordDataset.tokenizer.tokenize(word)
+            word_tokens = config["tokenizer"].tokenize(word)
             if not word_tokens:
-                word_tokens = WordDataset.tokenizer.unk_token
+                word_tokens = config["tokenizer"].unk_token
             tokens.extend(word_tokens)
 
-        input_id = WordDataset.tokenizer.convert_tokens_to_ids(tokens)
-        if len(tokens) > WordDataset.feature_length - 2:
-            attention_mask = [1] * WordDataset.feature_length
-            input_id = [WordDataset.tokenizer.cls_token_id] + input_id[0: WordDataset.feature_length - 2] + [
-                WordDataset.tokenizer.sep_token_id]
+        input_id = config["tokenizer"].convert_tokens_to_ids(tokens)
+        if len(tokens) > config["feature_length"] - 2:
+            attention_mask = [1] * config.feature_length
+            input_id = [config["tokenizer"].cls_token_id] + input_id[0: config["feature_length"] - 2] + [
+                config["tokenizer"].sep_token_id]
         else:
-            add_len = WordDataset.feature_length - 2 - len(input_id)
+            add_len = config["feature_length"] - 2 - len(input_id)
             attention_mask = [1] * (len(input_id) + 2) + [0] * add_len
-            input_id = [WordDataset.tokenizer.cls_token_id] + input_id + [WordDataset.tokenizer.sep_token_id] + [0] * add_len
+            input_id = [config["tokenizer"].cls_token_id] + input_id + [config["tokenizer"].sep_token_id] + [0] * add_len
         return input_id, attention_mask

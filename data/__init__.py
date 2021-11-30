@@ -1,1 +1,1 @@
-from .word_dataset import WordDataset
+from .word_dataset import WordDataset, Vocabulary

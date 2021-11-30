@@ -13,7 +13,7 @@ from transformers import BertConfig, AdamW, get_linear_schedule_with_warmup
 from utils import compute_metrics, get_args
 from transformers import BertTokenizer
 from model import JointBERT
-from data import WordDataset
+from data import WordDataset, Vocabulary
 from typing import Tuple, List
 
 logger = logging.getLogger(__name__)
@@ -28,17 +28,18 @@ class Trainer(object):
         self.args = get_args()
         args = self.args
         self.bert_config = BertConfig.from_pretrained(args.model_name_or_path, finetuning_task=args.task)
-        self.dataset_config = {
-            "word_length": 50,
-            "pretrained_model_name_or_path": args.model_name_or_path,
-            "intent_label_file_path": os.path.abspath(os.path.join(args.data_dir, args.task, "intent_label.yml")),
-            "slot_label_file_path": os.path.abspath(os.path.join(args.data_dir, args.task, "slot_label.yml")),
-        }
         self.device = args.device
 
         self.all_model_name = self.args.predict_slots
+        self.all_vocab = {}
+        for model_name in self.all_model_name:
+            self.all_vocab[model_name] = Vocabulary(os.path.abspath(os.path.join(args.data_dir, args.task)), model_name)
+        self.dataset_config = {
+            "feature_length": 50,
+            "tokenizer": BertTokenizer.from_pretrained(args.model_name_or_path),
+            "vocab": self.all_vocab
+        }
         logger.info("Init word dataset with config: {}".format(str(self.dataset_config)))
-        WordDataset.init_word_dataset(self.dataset_config)
 
         if self.args.do_load:
             self.all_models = self.load_model()
@@ -55,7 +56,7 @@ class Trainer(object):
             all_models = []
             for which_slot in all_network_name:
                 model = JointBERT.from_pretrained(self.args.model_name_or_path, config=self.bert_config, args=self.args,
-                                                  intent_label_lst=WordDataset.each_slot_dict[which_slot])
+                                                  intent_label_lst=self.all_vocab[which_slot].vocab)
                 all_models.append(model.to(self.device))
             return all_models
 
@@ -74,7 +75,7 @@ class Trainer(object):
                 valid_data.append([all_data[j][u] for u in valid_idx])
             all_dataset = []
             for which_slot in all_network_name:
-                all_dataset.append((WordDataset(train_data, which_slot), WordDataset(valid_data, which_slot)))
+                all_dataset.append((WordDataset(train_data, which_slot, self.dataset_config), WordDataset(valid_data, which_slot, self.dataset_config)))
             return all_dataset
 
         all_model = generate_model(all_network_name)
@@ -156,12 +157,12 @@ class Trainer(object):
         """
         model_idx = self.all_model_name.index(which_slot)
         sentence = space_cut_sentence.split(' ')
-        instance = WordDataset.generate_feature_and_label(sentence, which_slot)
+        instance = WordDataset.generate_feature_and_label(sentence, which_slot, config=self.dataset_config)
         batch = list(map(lambda x: x.unsqueeze(0), instance))
         batch = tuple(t.to(self.device) for t in batch)
         result = self.all_models[model_idx](input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2])
         intent_logit = result['intent_logits'][0].softmax(dim=0)
-        intent_dict = WordDataset.each_slot_dict[which_slot].inverse
+        intent_dict = self.all_vocab[which_slot].vocab.inverse
         sorted_idx = intent_logit.argsort(descending=True)
         intent_logit = intent_logit[sorted_idx].tolist()
         intent_str = [intent_dict[idx.item()] for idx in sorted_idx]
@@ -187,7 +188,7 @@ class Trainer(object):
                 raise Exception("Model doesn't exists! Train first! model path: %s " % str(path))
             try:
                 model = JointBERT.from_pretrained(path, args=self.args,
-                                                  intent_label_lst=WordDataset.each_slot_dict[which_slot])
+                                                  intent_label_lst=self.all_vocab[which_slot].vocab)
                 model.to(self.device)
                 logger.info("***** Load {} Model Complete *****".format(which_slot))
                 all_models.append(model)
