@@ -109,6 +109,7 @@ venv.bak/
 snips_model/
 atis_model/
 qiyuan_model
+VGA_model
 
 .DS_Store
 cached*

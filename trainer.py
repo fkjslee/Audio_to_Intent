@@ -56,7 +56,7 @@ class Trainer(object):
             all_models = []
             for which_slot in all_network_name:
                 model = JointBERT.from_pretrained(self.args.model_name_or_path, config=self.bert_config, args=self.args,
-                                                  intent_label_lst=self.all_vocab[which_slot].vocab)
+                                                  intent_label_lst=self.all_vocab[which_slot].vocab, which_slot=which_slot)
                 all_models.append(model.to(self.device))
             return all_models
 
@@ -131,7 +131,7 @@ class Trainer(object):
                 tmp_eval_loss = result['total_loss']
 
             eval_loss += tmp_eval_loss.mean().item()
-            eval_acc = torch.cat((eval_acc, result['intent_acc'].detach().reshape(1)), dim=0)
+            eval_acc = torch.cat((eval_acc, result['acc'].detach().reshape(1)), dim=0)
 
         eval_loss = eval_loss / len(valid_dataloader)
         results = {
@@ -150,7 +150,7 @@ class Trainer(object):
         predict a sentence's type
         :param space_cut_sentence: sentence which split by space
         :param which_slot: what kind of network you want, 'B-moved_object'? 'B-move_position'?
-        :return: intent_str and intent_logit means intent type and its probability, slot type and its probability.
+        :return: res_str and res_logit means intent type and its probability, slot type and its probability.
         example
             predict_sentence("Move Tsinghua University to Guangdong", 'B-moved_object')
             return ["Tsinghua University", "Peking University"], [0.9, 0.1]
@@ -161,13 +161,24 @@ class Trainer(object):
         batch = list(map(lambda x: x.unsqueeze(0), instance))
         batch = tuple(t.to(self.device) for t in batch)
         result = self.all_models[model_idx](input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2])
-        intent_logit = result['intent_logits'][0].softmax(dim=0)
-        intent_dict = self.all_vocab[which_slot].vocab.inverse
-        sorted_idx = intent_logit.argsort(descending=True)
-        intent_logit = intent_logit[sorted_idx].tolist()
-        intent_str = [intent_dict[idx.item()] for idx in sorted_idx]
+        res_logit = result['logits'][0].softmax(dim=0)
+        if which_slot != "slot":
+            intent_dict = self.all_vocab[which_slot].vocab.inverse
+            sorted_idx = res_logit.argsort(descending=True)
+            res_logit = res_logit[sorted_idx].tolist()
+            res_str = [intent_dict[idx.item()] for idx in sorted_idx]
+        else:
+            slot_dict = self.all_vocab[which_slot].vocab.inverse
+            res_str = []
+            res_logit_list = []
+            for slot_logit in res_logit:
+                sorted_idx = slot_logit.argsort(descending=True)
+                slot_logit = slot_logit[sorted_idx].tolist()
+                slot_str = [slot_dict[idx.item()] for idx in sorted_idx]
+                res_str.append(slot_str)
+                res_logit_list.append(slot_logit)
 
-        return intent_str, intent_logit
+        return res_str, res_logit
 
     def save_model(self):
         for which_slot, model in zip(self.all_model_name, self.all_models):
@@ -188,7 +199,7 @@ class Trainer(object):
                 raise Exception("Model doesn't exists! Train first! model path: %s " % str(path))
             try:
                 model = JointBERT.from_pretrained(path, args=self.args,
-                                                  intent_label_lst=self.all_vocab[which_slot].vocab)
+                                                  intent_label_lst=self.all_vocab[which_slot].vocab, which_slot=which_slot)
                 model.to(self.device)
                 logger.info("***** Load {} Model Complete *****".format(which_slot))
                 all_models.append(model)

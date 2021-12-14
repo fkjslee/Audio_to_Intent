@@ -34,9 +34,6 @@ class Vocabulary:
 
 
 class WordDataset(Dataset):
-    tokenizer = None
-    each_slot_dict = None
-    feature_length = None
 
     def __init__(self, data, which_dataset: str, config):
         self.which_dataset = which_dataset
@@ -52,7 +49,7 @@ class WordDataset(Dataset):
 
     # input_ids, attention_mas, token_type_ids, intent_label_id, slot_labels_ids
     def __getitem__(self, idx):
-        return WordDataset.generate_feature_and_label(self.sentence_list[idx], self.which_dataset, self.config, self.slot_list[idx], self.intent_list[idx])
+        return WordDataset.generate_feature_and_label(self.sentence_list[idx], self.which_dataset, self.config, self.slot_list[idx], self.intent_list[idx], self.which_dataset == 'slot')
 
     def __str__(self):
         res = '\nLoad {} dataset Complete\nDataset total length = {}\n'.format(self.which_dataset, len(self))
@@ -69,7 +66,7 @@ class WordDataset(Dataset):
 
     @staticmethod
     def generate_feature_and_label(sentence: list, which_dataset, config, slot_list: Optional[list] = None,
-                                   label: Optional[str] = None):
+                                   label: Optional[str] = None, pred_slot=False):
         """
         generate instance of sentence(feature), slot and intent(label) after been ont-hot encoded
         :param sentence: sentence which need to be converted, which should be tokenizer first.
@@ -93,16 +90,16 @@ class WordDataset(Dataset):
         """
         if slot_list is None:
             slot_list = [None] * len(sentence)
+        input_ids, attention_mask, slot_label_ids = WordDataset.one_hot_encoding_sentence(sentence, slot_list, config)
         if which_dataset == 'intent':
             label_id = -1 if label is None else config['vocab'][which_dataset].stoi('UNK')
         elif which_dataset == 'slot':
-            ...
+            label_id = slot_label_ids
         else:
             label_id = config['vocab'][which_dataset].stoi('UNK')
             for slot_str, slot_type in zip(sentence, slot_list):
                 if slot_type == which_dataset:
                     label_id = config['vocab'][which_dataset].stoi(slot_str)
-        input_ids, attention_mask = WordDataset.one_hot_encoding_sentence(sentence, slot_list, config)
         return list(map(lambda x: torch.tensor(x, dtype=torch.int64), [input_ids, attention_mask, label_id]))
 
     @staticmethod
@@ -112,19 +109,25 @@ class WordDataset(Dataset):
         param example can be seen in generate_feature_and_label
         """
         tokens = []
+        slot_label_ids = []
         for word, slot_label in zip(sentence, slot_list):
             word_tokens = config["tokenizer"].tokenize(word)
             if not word_tokens:
                 word_tokens = config["tokenizer"].unk_token
             tokens.extend(word_tokens)
+            slot_vocab = config['vocab']['slot']
+            slot_label_ids.extend(
+                [-1 if slot_label is None else slot_vocab.stoi(slot_label)] + [-2] * (len(word_tokens) - 1))
 
         input_id = config["tokenizer"].convert_tokens_to_ids(tokens)
         if len(tokens) > config["feature_length"] - 2:
             attention_mask = [1] * config.feature_length
+            slot_label_ids = [-2] + slot_label_ids[0: WordDataset.feature_length - 2] + [-2]
             input_id = [config["tokenizer"].cls_token_id] + input_id[0: config["feature_length"] - 2] + [
                 config["tokenizer"].sep_token_id]
         else:
             add_len = config["feature_length"] - 2 - len(input_id)
             attention_mask = [1] * (len(input_id) + 2) + [0] * add_len
+            slot_label_ids = [-2] + slot_label_ids + [-2] + [-2] * add_len
             input_id = [config["tokenizer"].cls_token_id] + input_id + [config["tokenizer"].sep_token_id] + [0] * add_len
-        return input_id, attention_mask
+        return input_id, attention_mask, slot_label_ids

@@ -164,7 +164,7 @@ def get_args():
             args.train_ratio = 1.0
 
 
-    if args.task in ["qiyuan"]:
+    if args.task in ["qiyuan", "VGA"]:
         args.model_name_or_path = 'bert-base-chinese'
         if not args.predict_slots:
             args.predict_slots = ['intent', 'B-moved_object', 'B-moved_position']
