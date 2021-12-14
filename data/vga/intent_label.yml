@@ -1,0 +1,5 @@
+# 意图集合
+UNK: # unknown
+add_sentence:
+delete_sentence:
+move_cursor:

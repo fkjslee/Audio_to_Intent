@@ -1,0 +1,55 @@
+# voice generate article
+-
+  sentence: 添加 句子 组装 训练 模型
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 输入 组装 训练 模型
+  intent: add_sentence
+  slot:
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 组装 训练 模型
+  intent: add_sentence
+  slot:
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 删除 句子 组装 训练 模型
+  intent: delete_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 删除 组装 训练 模型
+  intent: delete_sentence
+  slot:
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 取消 训练 模型
+  intent: delete_sentence
+  slot:
+    - O
+    - B-sentence
+    - E-sentence
+
