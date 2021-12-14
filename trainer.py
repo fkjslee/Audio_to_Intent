@@ -161,7 +161,7 @@ class Trainer(object):
         batch = list(map(lambda x: x.unsqueeze(0), instance))
         batch = tuple(t.to(self.device) for t in batch)
         result = self.all_models[model_idx](input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2])
-        res_logit = result['logits'][0].softmax(dim=0)
+        res_logit = result['logits'][0].softmax(dim=-1)
         if which_slot != "slot":
             intent_dict = self.all_vocab[which_slot].vocab.inverse
             sorted_idx = res_logit.argsort(descending=True)
@@ -177,6 +177,7 @@ class Trainer(object):
                 slot_str = [slot_dict[idx.item()] for idx in sorted_idx]
                 res_str.append(slot_str)
                 res_logit_list.append(slot_logit)
+            res_logit = res_logit_list
 
         return res_str, res_logit
 

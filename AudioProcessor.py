@@ -86,11 +86,19 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
         for model_name in self.args.predict_slots:
             result[model_name] = self.predictor.predict_sentence(space_cut_text, which_slot=model_name)
             if end:
-                logger.info('{} type(sorted): {}'.format(model_name, result[model_name][0]))
-                logger.info('{} possibility: {}'.format(model_name, result[model_name][1]))
+                if model_name == "slot":
+                    for word, slot_str, possibility in zip(space_cut_text.split(' '), result[model_name][0], result[model_name][1]):
+                        logging.info('predict {} as {} with possibility: {:.1f}%'.format(word, slot_str[0], possibility[0]))
+                else:
+                    logger.info('{} type(sorted): {}'.format(model_name, result[model_name][0]))
+                    logger.info('{} possibility: {}'.format(model_name, result[model_name][1]))
             single_res = model_name + ": "
-            for i in range(min(len(result[model_name][0]), 3)):
-                single_res += '{}({:.1f}%) '.format(result[model_name][0][i], result[model_name][1][i] * 100)
+            if model_name == "slot":
+                for word, slot_str, possibility in zip(space_cut_text.split(' '), result[model_name][0], result[model_name][1]):
+                    single_res += '{}:{}({:.1f}%)'.format(word, slot_str[0], possibility[0] * 100)
+            else:
+                for i in range(min(len(result[model_name][0]), 3)):
+                    single_res += '{}({:.1f}%) '.format(result[model_name][0][i], result[model_name][1][i] * 100)
             self.pred_res.append(single_res)
             self.emit_gui_res()
         if self.args.task == 'qiyuan':

@@ -21,10 +21,12 @@ class JointBERT(BertPreTrainedModel):
 
         if self.which_slot == 'slot':
             slot_logits = self.intent_classifier(outputs[0])
-            result['logits'] = slot_logits
+            active_slot = intent_label_ids != -2
+            result['logits'] = []
+            for i in range(len(active_slot)):
+                result['logits'].append(slot_logits[i][active_slot[i]])
             if torch.any(intent_label_ids >= 0):
                 # Slot
-                active_slot = intent_label_ids >= 0
                 slot_loss = nn.CrossEntropyLoss()(slot_logits[active_slot], intent_label_ids[active_slot])
                 result['acc'] = (torch.argmax(slot_logits[active_slot], dim=1) == intent_label_ids[active_slot]).float().mean()
                 result['total_loss'] = slot_loss

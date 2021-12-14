@@ -92,7 +92,7 @@ class WordDataset(Dataset):
             slot_list = [None] * len(sentence)
         input_ids, attention_mask, slot_label_ids = WordDataset.one_hot_encoding_sentence(sentence, slot_list, config)
         if which_dataset == 'intent':
-            label_id = -1 if label is None else config['vocab'][which_dataset].stoi('UNK')
+            label_id = -1 if label is None else config['vocab'][which_dataset].stoi(label)
         elif which_dataset == 'slot':
             label_id = slot_label_ids
         else:
