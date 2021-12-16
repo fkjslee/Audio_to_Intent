@@ -12,15 +12,15 @@ logger = logging.getLogger(__name__)
 
 class MsgSender:
     def __init__(self, addr=None, port=None):
-        if addr is not None:
-            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.client_socket.connect((addr, port))
-        else:
-            self.client_socket = None
+        self.addr = addr
+        self.port = port
 
 
     def send_msg(self, intent: str, entities: dict):
-        if self.client_socket is None:
+        if self.addr is not None:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.client_socket.connect((self.addr, self.port))
+        else:
             return
         if intent == "move_object" and 'B-moved_object' in entities.keys() and 'B-moved_position' in entities.keys():
             try:
@@ -33,8 +33,20 @@ class MsgSender:
                 self.client_socket.send(builder.Output())
             except Exception:
                 logger.warning("Send message failed, message = {}".format(str({"intent": intent, "slot": entities})))
-        else:
-            logger.warning("Send message failed, wrong message format, message = {}".format(str({"intent": intent, "slot": entities})))
+        elif intent in ["add_sentence", "delete_sentence"]:
+            try:
+                import json
+                msg = json.dumps({"intent": intent, "sentence": entities["sentence"]})
+                logger.warning("Start to send message, message = {}".format(msg))
+                builder = flatbuffers.Builder(0)
+                operation = VoiceOperationCommandPacket(builder, msg, "time", "location", 'position')
+                voicecommand = VoiceCommandPacket(builder, "command",
+                                                  UnionCommand.UnionCommand().VoiceOperationCommand, operation)
+                builder.Finish(voicecommand, b"asr2")
+                self.client_socket.send(builder.Output())
+            except Exception as e:
+                logger.warning(e)
+                logger.warning("Send message failed, message = {}".format(str({"intent": intent, "slot": entities})))
 
 
     def __del__(self):

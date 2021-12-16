@@ -53,3 +53,1267 @@
     - B-sentence
     - E-sentence
 
+-
+  sentence: 添加 句子 朋友 送 我 一对 珍珠鸟
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我 把 它们 养在 一个 竹条 编 的 笼子 里
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 笼子 里 有 一团 干草
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 那 是 小鸟 又 舒适 又 温暖 的 巢
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 有人 说
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 这是 一种 害怕 人 的 鸟
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我 把 笼子 挂 在 窗前
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 那儿 有 一盆 茂盛 的 法国 吊兰
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我 让 吊兰 的 长满 绿叶 的 藤蔓 覆盖 在 鸟笼 上
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 珍珠鸟 就 像 躲 进 幽深 的 丛林 一样 安全
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 从中 传出 的 笛 儿般 又 细 又 亮 的 叫声
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 也 就 格外 轻松自在 了
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 阳光 射进 窗来
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 把 吊兰 的 一串串 小叶 照 得 如同 碧玉
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 小鸟 的 影子 就 在 这 中间 隐约 闪动
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 看 不 完整
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 有时 连 笼子 也 看不出
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 却 见 它们 可爱 的 鲜红 小嘴儿 从 绿叶 中 伸出 来
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我 很少 扒开 叶蔓 瞧 它们
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 它们 便 渐渐 敢 伸出 小 脑袋 瞅 瞅 我
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我们 就 这样 一点点 熟悉 了
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 三个 月 后
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 那 一团 愈发 繁茂 的 藤蔓 里边
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 发出 一种 尖细 又 娇嫩 的 叫声
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我 猜 到
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 是 它们 有 了 雏儿
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我 呢 ？ 决不 掀开 叶片 往里 看
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 连添食 加水 时 也 不 睁 大 好奇 的 眼睛 去 惊动 它们
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 过 不 多久
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 忽然 有 一个 小 脑袋 从叶间 探出来
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 正是 它们 的 雏儿
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 这个 小家伙 能 轻易 地 由 笼子 里 钻 出身
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 瞧
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - S-sentence
+-
+  sentence: 添加 句子 多么 像 它 的 母亲
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 红嘴 红脚
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 灰 蓝色 的 毛
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 只是 后背 还 没有 生出 珍珠 似的 圆圆的 白点
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 它 好肥
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 整个 身子 好像 一个 蓬松 的 球儿
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 起先
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - S-sentence
+-
+  sentence: 添加 句子 这 小家伙 只 在 笼子 四周 活动
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 随后 就 在 屋里 飞来飞去
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 一会儿 落 在 柜 顶上
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 一会儿 神气十足 地站 在 书架上
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 啄 着 书 背上 那些 大 文豪 的 名字 ； 一会儿 把 灯绳 撞 得 来回 摇动
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 跟着 又 跳 到 画框 上去 了
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 只要 大鸟 在 笼子 里 叫 一声
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 它 立即 飞 回笼 里 去
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我 不管 它
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 就是 打开 窗子
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 它 最 多只 在 窗框 上 站 一会儿
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 决不 飞出去
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 渐渐 地
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 它 胆子 大 了
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 有时 落 在 我 的 书桌上
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 它 先是 离 我 较 远
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 见 我 不 去 伤害 它
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 便 一点点 挨近
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 然后 蹦 到 我 的 杯子 上
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 低下头来 喝茶
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 再 偏过 脸 瞧瞧 我 的 反应
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我 只是 微微一笑
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 依旧 写 东西
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 它 就 放开 胆子 跑 到 稿纸 上
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 绕 着 我 的 笔尖 蹦 来 蹦 去
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 跳动 的 小红 爪子 在 纸 上 发出 嚓嚓 的 响声
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我 不动声色 地写
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 默默 享受 着 这 小家伙 亲近 的 情意
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 这样
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - S-sentence
+-
+  sentence: 添加 句子 它 完全 放心 了
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 索性 用 那涂 了 蜡 似的 、 角质 的 小红嘴
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 嗒 嗒 啄 着 我 颤动 的 笔尖
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我用 手摸 一摸 它 细腻 的 绒毛
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 它 也 不怕
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 反而 友好 地 啄 两下 我 的 手指
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 白天
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - S-sentence
+-
+  sentence: 添加 句子 它 这样 淘气 地 陪伴 我
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 天色 暗 下来
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 它 就 在 父母 的 再三 呼唤 中
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 飞 向 笼子
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 扭动 滚圆 的 身子
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 挤开 那些 绿叶 钻进去
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 有 一天
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我 伏案写作 时
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 它 居然 落到 我 的 肩上
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我 手中 的 笔 不觉 停 了
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 生怕 吓跑 它
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 过 了 一会儿
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 扭头 看看
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 这 小家伙 竟 扒 在 我 的 肩头 上 睡着 了
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 银灰色 的 眼皮 盖住 眼睛
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 小红脚 刚好 给 胸脯 上 长长的 绒毛 盖住
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我 轻轻 抬一 抬肩
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 它 没醒
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 睡得 好 熟
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 还 咂咂嘴
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 难道 在 做梦
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 我 笔尖 一动
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 写下 一时 的 感受
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence
+
+-
+  sentence: 添加 句子 信赖
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - S-sentence
+-
+  sentence: 添加 句子 往往 创造 出 美好 的 境界
+  intent: add_sentence
+  slot:
+    - O
+    - O
+    - B-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - M-sentence
+    - E-sentence

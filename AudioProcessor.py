@@ -108,6 +108,33 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
             slot_map = {'B-moved_object': moved_object_str[0], 'B-moved_position': moved_position_str[0]}
             if end:
                 self.msg_sender.send_msg(intent_str[0], slot_map)
+        elif self.args.task == "VGA":
+            intent_str, intent_logit = result['intent']
+            slot_str, slot_logit = result['slot']
+            intent_str = intent_str[0]
+            slot_str = [s[0] for s in slot_str]
+            def get_sentence(slots, words):
+                sentence = ""
+                for word, s in zip(words, slots):
+                    if s.startswith("S-"):
+                        return words
+                    elif s.startswith("B-"):
+                        sentence = word
+                    elif s.startswith("M-"):
+                        sentence += word
+                    elif s.startswith("E-"):
+                        sentence += word
+                        return sentence
+                return "no E-!"
+            if intent_str == "add_sentence":
+                sentence = get_sentence(slot_str, space_cut_text.split(" "))
+                if end:
+                    self.msg_sender.send_msg(intent_str, {"sentence": sentence})
+            elif intent_str == "delete_sentence":
+                sentence = get_sentence(slot_str, space_cut_text.split(" "))
+                if end:
+                    self.msg_sender.send_msg(intent_str, {"sentence": sentence})
+
         self.is_predicting = False
 
     def predict(self, end):
