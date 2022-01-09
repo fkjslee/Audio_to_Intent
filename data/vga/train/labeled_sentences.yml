@@ -5813,3 +5813,52 @@
     - O
     - B-sentence
     - E-sentence
+
+# voice generate article
+-
+  sentence: 把 青草 的 青 改成 清水 的 清
+  intent: modify
+  slot:
+    - O
+    - O
+    - O
+    - S-wrong-word
+    - O
+    - O
+    - O
+    - S-right-word
+
+-
+  sentence: 胜利 的 胜
+  intent: modify
+  slot:
+    - O
+    - O
+    - S-right-word
+
+-
+  sentence: 换成 拨打
+  intent: modify
+  slot:
+    - O
+    - S-right-word
+
+-
+  sentence: 把 生壁纸 换成 生僻字
+  intent: modify
+  slot:
+    - O
+    - S-wrong-word
+    - O
+    - S-right-word
+
+-
+  sentence: 被 错了 换成 背后 的 背
+  intent: add_sentence
+  slot:
+    - S-wrong-word
+    - O
+    - O
+    - O
+    - O
+    - S-right-word
