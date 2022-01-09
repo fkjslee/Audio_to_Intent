@@ -2,4 +2,4 @@
 UNK: # unknown
 add_sentence:
 delete_sentence:
-move_cursor:
+modify:

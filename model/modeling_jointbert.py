@@ -13,6 +13,8 @@ class JointBERT(BertPreTrainedModel):
         self.bert = BertModel(config=config)  # Load pretrained bert
         self.intent_classifier = IntentClassifier(config.hidden_size, self.num_intent_labels, args.dropout_rate)
         self.which_slot = which_slot
+        if args.crf:
+            self.crf = CRF(num_tags=len(intent_label_lst), batch_first=True)
 
     def forward(self, input_ids, attention_mask, intent_label_ids):
         outputs = self.bert(input_ids, attention_mask=attention_mask)  # sequence_output, pooled_output, (hidden_states), (attentions)
@@ -26,8 +28,11 @@ class JointBERT(BertPreTrainedModel):
             for i in range(len(active_slot)):
                 result['logits'].append(slot_logits[i][active_slot[i]])
             if torch.any(intent_label_ids >= 0):
-                # Slot
-                slot_loss = nn.CrossEntropyLoss()(slot_logits[active_slot], intent_label_ids[active_slot])
+                if self.args.crf:
+                    slot_loss = self.crf(slot_logits, intent_label_ids, mask=attention_mask.byte(), reduction='mean')
+                    slot_loss = -1 * slot_loss  # negative log-likelihood
+                else:
+                    slot_loss = nn.CrossEntropyLoss()(slot_logits[active_slot], intent_label_ids[active_slot])
                 result['acc'] = (torch.argmax(slot_logits[active_slot], dim=1) == intent_label_ids[active_slot]).float().mean()
                 result['total_loss'] = slot_loss
         else:

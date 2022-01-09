@@ -133,6 +133,7 @@ def get_args():
     parser.add_argument("--device", default="cuda:0", help="Run device, default is cuda:0")
     parser.add_argument("--do_load", action="store_true", help="Whether to load model.")
     parser.add_argument("--do_valid", action="store_true", help="Whether to validate model.")
+    parser.add_argument("--crf", action="store_true", help="Whether to use crf.")
 
     # model parameter
     parser.add_argument('--seed', type=int, default=1234, help="random seed for initialization")
