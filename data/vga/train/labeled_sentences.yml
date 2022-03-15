@@ -5854,7 +5854,7 @@
 
 -
   sentence: 被 错了 换成 背后 的 背
-  intent: add_sentence
+  intent: modify
   slot:
     - S-wrong-word
     - O

@@ -154,6 +154,7 @@ def get_args():
 
     # gui
     parser.add_argument("--gui", action="store_true", help="Whether to visualize audio. (recommended if it could be)")
+    parser.add_argument("--manual_input", action="store_true", help="Whether to manual input.")
 
     args = parser.parse_args()
     args.model_dir = args.task + "_model"

@@ -16,7 +16,6 @@ from utils import set_seed, get_args
 from trainer import Trainer
 from scipy.io import wavfile
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -60,8 +59,14 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
             sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), "gui"))
             from gui import run_FFT_analyzer
             self.gui_controller = run_FFT_analyzer.AudioController()
-            thread = threading.Thread(target=run_FFT_analyzer.run_FFT_analyzer, kwargs={"controller": self.gui_controller})
+            thread = threading.Thread(target=run_FFT_analyzer.run_FFT_analyzer,
+                                      kwargs={"controller": self.gui_controller})
             thread.start()
+        if self.args.manual_input:
+            while True:
+                self.predict_text = input("input sentence")
+                self.predict(end=True)
+
 
     def record_data(self):
         now = time.time()
@@ -87,14 +92,17 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
             result[model_name] = self.predictor.predict_sentence(space_cut_text, which_slot=model_name)
             if end:
                 if model_name == "slot":
-                    for word, slot_str, possibility in zip(space_cut_text.split(' '), result[model_name][0], result[model_name][1]):
-                        logging.info('predict {} as {} with possibility: {:.1f}%'.format(word, slot_str[0], possibility[0]))
+                    for word, slot_str, possibility in zip(space_cut_text.split(' '), result[model_name][0],
+                                                           result[model_name][1]):
+                        logging.info(
+                            'predict {} as {} with possibility: {:.1f}%'.format(word, slot_str[0], possibility[0]))
                 else:
                     logger.info('{} type(sorted): {}'.format(model_name, result[model_name][0]))
                     logger.info('{} possibility: {}'.format(model_name, result[model_name][1]))
             single_res = model_name + ": "
             if model_name == "slot":
-                for word, slot_str, possibility in zip(space_cut_text.split(' '), result[model_name][0], result[model_name][1]):
+                for word, slot_str, possibility in zip(space_cut_text.split(' '), result[model_name][0],
+                                                       result[model_name][1]):
                     single_res += '{}:{}({:.1f}%)'.format(word, slot_str[0], possibility[0] * 100)
             else:
                 for i in range(min(len(result[model_name][0]), 3)):
@@ -113,19 +121,23 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
             slot_str, slot_logit = result['slot']
             intent_str = intent_str[0]
             slot_str = [s[0] for s in slot_str]
+
             def get_sentence(slots, words):
                 sentence = ""
                 for word, s in zip(words, slots):
-                    if s.startswith("S-"):
-                        return words
-                    elif s.startswith("B-"):
-                        sentence = word
-                    elif s.startswith("M-"):
+                    if s.find("sentence") != -1:
                         sentence += word
-                    elif s.startswith("E-"):
-                        sentence += word
-                        return sentence
-                return "no E-!"
+                return sentence
+
+            def get_word(slots, words):
+                s_wrong_word, s_right_word = None, None
+                for word, s in zip(words, slots):
+                    if s == "S-wrong-word":
+                        s_wrong_word = word
+                    elif s == "S-right-word":
+                        s_right_word = word
+                return s_wrong_word, s_right_word
+
             if intent_str == "add_sentence":
                 sentence = get_sentence(slot_str, space_cut_text.split(" "))
                 if end:
@@ -134,6 +146,9 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
                 sentence = get_sentence(slot_str, space_cut_text.split(" "))
                 if end:
                     self.msg_sender.send_msg(intent_str, {"sentence": sentence})
+            elif intent_str == "modify":
+                wrong_word, right_word = get_word(slot_str, space_cut_text.split(" "))
+
 
         self.is_predicting = False
 
@@ -169,6 +184,8 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
         logger.info("%s|OnRecognitionSentenceBegin" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
     def on_recognition_result_change(self, response):
+        if self.args.manual_input:
+            return
         self.asr_res = ["ASR result: " + response['result']['voice_text_str']]
         self.emit_gui_res()
         self.lock.acquire()
@@ -182,17 +199,21 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
             self.last_update_asr_fps_time = datetime.now()
             self.asr_cnt = 0
         self.predict_text = response['result']['voice_text_str']
-        self.gui_controller.fps_msg = "ASR Fps: {} Predict Fps: {}".format(int(round(self.asr_fps)), int(round(self.prediction_fps)))
+        self.gui_controller.fps_msg = "ASR Fps: {} Predict Fps: {}".format(int(round(self.asr_fps)),
+                                                                           int(round(self.prediction_fps)))
         self.lock.release()
         self.predict(end=False)
 
     def on_sentence_end(self, response):
+        if self.args.manual_input:
+            return
         self.asr_res = ["ASR result: " + response['result']['voice_text_str']]
         logger.info("%s|OnRecognitionEnd\n" % (datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         self.record_data()
         self.lock.acquire()
         self.predict_text = response['result']['voice_text_str']
-        self.gui_controller.fps_msg = "ASR Fps: {} Predict Fps: {}".format(int(round(self.asr_fps)), int(round(self.prediction_fps)))
+        self.gui_controller.fps_msg = "ASR Fps: {} Predict Fps: {}".format(int(round(self.asr_fps)),
+                                                                           int(round(self.prediction_fps)))
         self.lock.release()
         self.predict(end=True)
         # if self.args.gui:
