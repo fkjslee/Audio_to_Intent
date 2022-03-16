@@ -16,64 +16,6 @@ import bisect
 logger = logging.getLogger(__name__)
 
 
-def augmentTrainData(texts, intents, slots):
-    """
-    augment data:
-    replace each slot with all examples
-    e.g.
-    moved_object=['a', 'b']
-    sentences = ["move x to y"]
-    after augment:
-    sentences = ["move x to y", "move a to y", "move b to y"]
-    """
-    try:
-        args = get_args()
-        f = open(os.path.join(args.data_dir, args.task, "slot_label.yml"), 'r', encoding='utf-8')
-        d = yaml.load(f.read(), yaml.FullLoader)
-    except FileNotFoundError:
-        assert False, logging.error("augment data failed!, check if data path:{} is correct!".format(os.path.join(args.data_dir, args.task, "slot_label.yml")))
-
-    def dfs(example, dep, augment_text, augment_intent, augment_slot, replace_words, all_texts, all_intents, all_slots):
-        if len(example) == dep:
-            all_texts.append(" ".join(augment_text))
-            all_intents.append(augment_intent)
-            all_slots.append(augment_slot)
-            return
-        if isinstance(replace_words[augment_slot[dep]], list):
-            for replace_word in replace_words[augment_slot[dep]]:
-                augment_text[dep] = replace_word
-                dfs(example, dep+1, augment_text, augment_intent, augment_slot, replace_words, all_texts, all_intents, all_slots)
-        else:
-            augment_text[dep] = example[dep]
-            dfs(example, dep+1, augment_text, augment_intent, augment_slot, replace_words, all_texts, all_intents, all_slots)
-
-    def balance_train_data(texts, intents, slots):
-        # sort by intent
-        idx = np.argsort(intents)
-        texts = [texts[i] for i in idx]
-        intents = [intents[i] for i in idx]
-        slots = [slots[i] for i in idx]
-
-        # randomly add 100 example every intent
-        unique_intents = np.unique(intents)
-        original_len = len(intents)
-        for intent in unique_intents:
-            for _ in range(100):
-                random_idx = random.randint(bisect.bisect_left(intents, intent, 0, original_len), bisect.bisect_right(intents, intent, 0, original_len) - 1)
-                texts.append(texts[random_idx])
-                intents.append(intents[random_idx])
-                slots.append(slots[random_idx])
-        return texts, intents, slots
-
-    store_texts = []
-    store_intents = []
-    store_slots = []
-    for text, intent, slot in zip(texts, intents, slots):
-        text = text.split(" ")
-        dfs(text, 0, text.copy(), intent, slot, d, store_texts, store_intents, store_slots)
-    return balance_train_data(store_texts, store_intents, store_slots)
-
-
 def init_logger():
     log_levels = {"debug": logging.DEBUG, "info": logging.INFO, "warning": logging.WARNING, "error": logging.ERROR, "critical": logging.CRITICAL}
     if not os.path.exists("./log"):
@@ -102,21 +44,18 @@ def compute_metrics(intent_preds, intent_labels, slot_preds, slot_labels):
     return results
 
 
-def get_data_from_path(data_path, augment=True):
+def get_data_from_path(data_path):
     try:
-        f = open(os.path.join(data_path, "labeled_sentences.yml"), 'r', encoding='utf-8')
-        d = yaml.load(f.read(), yaml.FullLoader)
-        space_cut_sentences = []
-        intents = []
-        slots = []
-        for key in d:
-            assert len(key['sentence'].split(' ')) == len(key['slot'])
-            space_cut_sentences.append(key['sentence'])
-            intents.append(key['intent'])
-            slots.append(key['slot'])
-        if augment:
-            space_cut_sentences, intents, slots = augmentTrainData(space_cut_sentences, intents, slots)
-        word_list_sentences = [sentence.split(' ') for sentence in space_cut_sentences]
+        with open(os.path.join(data_path, "intent.txt"), encoding="utf-8") as f_intent, \
+                open(os.path.join(data_path, "sentence.txt"), encoding="utf-8") as f_s, \
+                open(os.path.join(data_path, "slot.txt"), encoding="utf-8") as f_slot:
+            intents = f_intent.readlines()
+            word_list_sentences = f_s.readlines()
+            slots = f_slot.readlines()
+            for i in range(len(intents)):
+                intents[i] = intents[i].strip()
+                word_list_sentences[i] = word_list_sentences[i].strip().split(" ")
+                slots[i] = slots[i].strip().split(" ")
         return word_list_sentences, intents, slots
     except FileNotFoundError:
         assert False, logging.error("load data failed!, check if data path:{} is correct!".format(data_path))

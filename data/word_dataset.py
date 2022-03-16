@@ -121,8 +121,8 @@ class WordDataset(Dataset):
 
         input_id = config["tokenizer"].convert_tokens_to_ids(tokens)
         if len(tokens) > config["feature_length"] - 2:
-            attention_mask = [1] * config.feature_length
-            slot_label_ids = [-2] + slot_label_ids[0: WordDataset.feature_length - 2] + [-2]
+            attention_mask = [1] * config["feature_length"]
+            slot_label_ids = [-2] + slot_label_ids[0: config["feature_length"] - 2] + [-2]
             input_id = [config["tokenizer"].cls_token_id] + input_id[0: config["feature_length"] - 2] + [
                 config["tokenizer"].sep_token_id]
         else:

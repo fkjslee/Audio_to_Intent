@@ -50,7 +50,7 @@ class MsgSender:
 
 
     def __del__(self):
-        if self.client_socket is not None:
+        if hasattr(self, "client_socket") and self.client_socket is not None:
             self.client_socket.close()
 
 

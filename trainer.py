@@ -63,7 +63,7 @@ class Trainer(object):
         def generate_dataset(all_network_name):
             train_ratio = get_args().train_ratio
             assert 0 <= train_ratio <= 1.0
-            all_data = get_data_from_path(os.path.join(self.args.data_dir, self.args.task, "train"), augment=True)  # sentences, intents, slots
+            all_data = get_data_from_path(os.path.join(self.args.data_dir, self.args.task, "train"))  # sentences, intents, slots
             idx = [i for i in range(len(all_data[0]))]
             random.shuffle(idx)
             train_idx = idx[:int(len(idx) * train_ratio)]
