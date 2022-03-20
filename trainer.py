@@ -83,7 +83,7 @@ class Trainer(object):
         return all_model, all_dataset
 
     def train(self, model, train_dataset):
-        train_sampler = RandomSampler(train_dataset)
+        train_sampler = SequentialSampler(train_dataset)
         train_dataloader = DataLoader(train_dataset, sampler=train_sampler, batch_size=self.args.train_batch_size)
 
         no_decay = ['bias', 'LayerNorm.weight']
