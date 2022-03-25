@@ -148,6 +148,8 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
                     self.msg_sender.send_msg(intent_str, {"sentence": sentence})
             elif intent_str == "modify":
                 wrong_word, right_word = get_word(slot_str, space_cut_text.split(" "))
+                if end:
+                    self.msg_sender.send_msg(intent_str, {"S-wrong-word": wrong_word, "S-right-word": right_word})
 
 
         self.is_predicting = False

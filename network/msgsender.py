@@ -33,10 +33,13 @@ class MsgSender:
                 self.client_socket.send(builder.Output())
             except Exception:
                 logger.warning("Send message failed, message = {}".format(str({"intent": intent, "slot": entities})))
-        elif intent in ["add_sentence", "delete_sentence"]:
+        elif intent in ["add_sentence", "delete_sentence", "modify"]:
             try:
                 import json
-                msg = json.dumps({"intent": intent, "sentence": entities["sentence"]})
+                if intent == "modify":
+                    msg = json.dumps({"intent": intent, "S-wrong-word": entities["S-wrong-word"], "S-right-word": entities["S-right-word"]})
+                else:
+                    msg = json.dumps({"intent": intent, "sentence": entities["sentence"]})
                 logger.warning("Start to send message, message = {}".format(msg))
                 builder = flatbuffers.Builder(0)
                 operation = VoiceOperationCommandPacket(builder, msg, "time", "location", 'position')

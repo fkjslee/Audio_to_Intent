@@ -3,3 +3,5 @@ UNK: # unknown
 add_sentence:
 delete_sentence:
 modify:
+confirm:
+cancel:
