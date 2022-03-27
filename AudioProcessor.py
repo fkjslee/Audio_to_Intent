@@ -109,14 +109,7 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
                     single_res += '{}({:.1f}%) '.format(result[model_name][0][i], result[model_name][1][i] * 100)
             self.pred_res.append(single_res)
             self.emit_gui_res()
-        if self.args.task == 'qiyuan':
-            intent_str, intent_logit = result['intent']
-            moved_object_str, moved_object_logit = result['B-moved_object']
-            moved_position_str, moved_position_logit = result['B-moved_position']
-            slot_map = {'B-moved_object': moved_object_str[0], 'B-moved_position': moved_position_str[0]}
-            if end:
-                self.msg_sender.send_msg(intent_str[0], slot_map)
-        elif self.args.task == "VGA":
+        if self.args.task == "VGA":
             intent_str, intent_logit = result['intent']
             slot_str, slot_logit = result['slot']
             intent_str = intent_str[0]
@@ -138,18 +131,16 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
                         s_right_word = word
                 return s_wrong_word, s_right_word
 
-            if intent_str == "add_sentence":
+            if intent_str in ["delete_sentence", "add_sentence"]:
                 sentence = get_sentence(slot_str, space_cut_text.split(" "))
+                msg = json.dumps({"intent": intent_str, "sentence": sentence})
                 if end:
-                    self.msg_sender.send_msg(intent_str, {"sentence": sentence})
-            elif intent_str == "delete_sentence":
-                sentence = get_sentence(slot_str, space_cut_text.split(" "))
-                if end:
-                    self.msg_sender.send_msg(intent_str, {"sentence": sentence})
+                    self.msg_sender.send_msg(msg)
             elif intent_str == "modify":
                 wrong_word, right_word = get_word(slot_str, space_cut_text.split(" "))
+                msg = json.dumps({"intent": intent_str, "S-wrong-word": wrong_word, "S-right-word": right_word})
                 if end:
-                    self.msg_sender.send_msg(intent_str, {"S-wrong-word": wrong_word, "S-right-word": right_word})
+                    self.msg_sender.send_msg(msg)
 
 
         self.is_predicting = False

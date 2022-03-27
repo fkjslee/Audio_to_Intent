@@ -16,40 +16,23 @@ class MsgSender:
         self.port = port
 
 
-    def send_msg(self, intent: str, entities: dict):
+    def send_msg(self, msg: str):
         if self.addr is not None:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.client_socket.connect((self.addr, self.port))
         else:
             return
-        if intent == "move_object" and 'B-moved_object' in entities.keys() and 'B-moved_position' in entities.keys():
-            try:
-                logger.warning("Start to send message, message = {}".format(str({"intent": intent, "slot": entities})))
-                builder = flatbuffers.Builder(0)
-                operation = VoiceOperationCommandPacket(builder, entities['B-moved_object'], "time", "location", entities['B-moved_position'])
-                voicecommand = VoiceCommandPacket(builder, "command",
-                                                  UnionCommand.UnionCommand().VoiceOperationCommand, operation)
-                builder.Finish(voicecommand, b"asr2")
-                self.client_socket.send(builder.Output())
-            except Exception:
-                logger.warning("Send message failed, message = {}".format(str({"intent": intent, "slot": entities})))
-        elif intent in ["add_sentence", "delete_sentence", "modify"]:
-            try:
-                import json
-                if intent == "modify":
-                    msg = json.dumps({"intent": intent, "S-wrong-word": entities["S-wrong-word"], "S-right-word": entities["S-right-word"]})
-                else:
-                    msg = json.dumps({"intent": intent, "sentence": entities["sentence"]})
-                logger.warning("Start to send message, message = {}".format(msg))
-                builder = flatbuffers.Builder(0)
-                operation = VoiceOperationCommandPacket(builder, msg, "time", "location", 'position')
-                voicecommand = VoiceCommandPacket(builder, "command",
-                                                  UnionCommand.UnionCommand().VoiceOperationCommand, operation)
-                builder.Finish(voicecommand, b"asr2")
-                self.client_socket.send(builder.Output())
-            except Exception as e:
-                logger.warning(e)
-                logger.warning("Send message failed, message = {}".format(str({"intent": intent, "slot": entities})))
+        try:
+            logger.warning("Start to send message, message = {}".format(msg))
+            builder = flatbuffers.Builder(0)
+            operation = VoiceOperationCommandPacket(builder, msg, "time", "location", 'position')
+            voicecommand = VoiceCommandPacket(builder, "command",
+                                              UnionCommand.UnionCommand().VoiceOperationCommand, operation)
+            builder.Finish(voicecommand, b"asr2")
+            self.client_socket.send(builder.Output())
+        except Exception as e:
+            logger.warning(e)
+            logger.warning("Send message failed, message = {}".format(str({"intent": intent, "slot": entities})))
 
 
     def __del__(self):
