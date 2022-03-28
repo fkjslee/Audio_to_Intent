@@ -1,6 +1,7 @@
 import os
 import sys
 import socket
+import json
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../python'))
 
@@ -30,7 +31,8 @@ class MsgSender:
                                               UnionCommand.UnionCommand().VoiceOperationCommand, operation)
             builder.Finish(voicecommand, b"asr2")
             self.client_socket.send(builder.Output())
-            buffer = self.client_socket.recv(1024)
+            buffer = self.client_socket.recv(1024).decode("utf-8")
+            buffer = json.loads(buffer)
             print("receive message:", buffer)
             return buffer
         except Exception as e:

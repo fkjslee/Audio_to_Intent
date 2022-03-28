@@ -15,6 +15,7 @@ from network.msgsender import MsgSender
 from utils import set_seed, get_args
 from trainer import Trainer
 from scipy.io import wavfile
+import pyttsx3
 
 logger = logging.getLogger(__name__)
 
@@ -135,12 +136,20 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
                 sentence = get_sentence(slot_str, space_cut_text.split(" "))
                 msg = json.dumps({"intent": intent_str, "sentence": sentence, "confidence": str(intent_logit[0])})
                 if end:
-                    self.msg_sender.send_msg(msg)
+                    result = self.msg_sender.send_msg(msg)
+                    if result['status'].find("need confirm") != -1:
+                        engine = pyttsx3.init()
+                        say_content = "确认" + ("删除" if intent_str == "delete_sentence" else "添加") + sentence
+                        engine.say(say_content)
             elif intent_str == "modify":
                 wrong_word, right_word = get_word(slot_str, space_cut_text.split(" "))
                 msg = json.dumps({"intent": intent_str, "S-wrong-word": wrong_word, "S-right-word": right_word, "confidence": str(intent_logit[0])})
                 if end:
-                    self.msg_sender.send_msg(msg)
+                    result = self.msg_sender.send_msg(msg)
+                    if result['status'].find("need confirm") != -1:
+                        engine = pyttsx3.init()
+                        say_content = "确认" + "把" + wrong_word + "改成" + right_word + "吗"
+                        engine.say(say_content)
 
 
         self.is_predicting = False
