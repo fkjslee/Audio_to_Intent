@@ -10,11 +10,11 @@ from network.VoiceCommand import ASRCommand, VoiceOperationCommand, UnionCommand
 
 logger = logging.getLogger(__name__)
 
+
 class MsgSender:
     def __init__(self, addr=None, port=None):
         self.addr = addr
         self.port = port
-
 
     def send_msg(self, msg: str):
         if self.addr is not None:
@@ -30,13 +30,17 @@ class MsgSender:
                                               UnionCommand.UnionCommand().VoiceOperationCommand, operation)
             builder.Finish(voicecommand, b"asr2")
             self.client_socket.send(builder.Output())
+            buffer = self.client_socket.recv(1024)
+            print("receive message:", buffer)
+            return buffer
         except Exception as e:
             logger.warning(e)
-            logger.warning("Send message failed, message = {}".format(str({"intent": intent, "slot": entities})))
+            logger.warning("Send message failed, message = {}".format(msg))
 
 
     def __del__(self):
         if hasattr(self, "client_socket") and self.client_socket is not None:
+            self.client_socket.shutdown(2)
             self.client_socket.close()
 
 
@@ -65,4 +69,4 @@ def VoiceOperationCommandPacket(builder, object, time, location, action):
 
 if __name__ == "__main__":
     msgsender = MsgSender(addr="127.0.0.1", port=9001)
-    msgsender.send_msg("move_object", {"moved_object": "fly1", "moved_position": "pos1"})
+    msgsender.send_msg("move_object33")

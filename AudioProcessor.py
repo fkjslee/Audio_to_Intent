@@ -133,12 +133,12 @@ class AudioListener(speech_recognizer.SpeechRecognitionListener):
 
             if intent_str in ["delete_sentence", "add_sentence"]:
                 sentence = get_sentence(slot_str, space_cut_text.split(" "))
-                msg = json.dumps({"intent": intent_str, "sentence": sentence})
+                msg = json.dumps({"intent": intent_str, "sentence": sentence, "confidence": str(intent_logit[0])})
                 if end:
                     self.msg_sender.send_msg(msg)
             elif intent_str == "modify":
                 wrong_word, right_word = get_word(slot_str, space_cut_text.split(" "))
-                msg = json.dumps({"intent": intent_str, "S-wrong-word": wrong_word, "S-right-word": right_word})
+                msg = json.dumps({"intent": intent_str, "S-wrong-word": wrong_word, "S-right-word": right_word, "confidence": str(intent_logit[0])})
                 if end:
                     self.msg_sender.send_msg(msg)
 
