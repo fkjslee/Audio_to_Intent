@@ -15,7 +15,6 @@ from transformers import BertTokenizer
 from model import JointBERT
 from data import WordDataset, Vocabulary
 from typing import Tuple, List
-from torch.utils.tensorboard import SummaryWriter
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +93,6 @@ class Trainer(object):
             {'params': [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)],
              'weight_decay': 0.0}
         ]
-        writer = SummaryWriter(log_dir="board/" + train_dataset.which_dataset + "/train")
         step = 0
         optimizer = AdamW(optimizer_grouped_parameters, lr=1e-5)
         scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=self.args.warmup_steps,
@@ -109,7 +107,6 @@ class Trainer(object):
                 batch = tuple(t.to(self.device) for t in batch)
                 result = model(input_ids=batch[0], attention_mask=batch[1], intent_label_ids=batch[2])
                 loss = result['total_loss']
-                writer.add_scalar("loss", loss.item(), global_step=step)
                 step += 1
                 epoch_iterator.set_postfix(loss=loss.item())
                 model.zero_grad()

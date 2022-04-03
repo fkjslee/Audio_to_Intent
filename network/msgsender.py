@@ -2,6 +2,7 @@ import os
 import sys
 import socket
 import json
+import time
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '../python'))
 
@@ -23,26 +24,26 @@ class MsgSender:
             self.client_socket.connect((self.addr, self.port))
         else:
             return
-        try:
-            logger.warning("Start to send message, message = {}".format(msg))
-            builder = flatbuffers.Builder(0)
-            operation = VoiceOperationCommandPacket(builder, msg, "time", "location", 'position')
-            voicecommand = VoiceCommandPacket(builder, "command",
-                                              UnionCommand.UnionCommand().VoiceOperationCommand, operation)
-            builder.Finish(voicecommand, b"asr2")
-            self.client_socket.send(builder.Output())
-            buffer = self.client_socket.recv(1024).decode("utf-8")
-            buffer = json.loads(buffer)
-            print("receive message:", buffer)
-            return buffer
-        except Exception as e:
-            logger.warning(e)
-            logger.warning("Send message failed, message = {}".format(msg))
+        for _ in range(1):
+            try:
+                logger.warning("Start to send message, message = {}".format(msg))
+                builder = flatbuffers.Builder(0)
+                operation = VoiceOperationCommandPacket(builder, msg, "time", "location", 'position')
+                voicecommand = VoiceCommandPacket(builder, "command",
+                                                  UnionCommand.UnionCommand().VoiceOperationCommand, operation)
+                builder.Finish(voicecommand, b"asr2")
+                self.client_socket.send(builder.Output())
+                buffer = self.client_socket.recv(1024)
+                buffer = buffer.decode("utf-8")
+                return buffer
+            except Exception as e:
+                logger.warning(e)
+                logger.warning("Send message failed, message = {}".format(msg))
+                time.sleep(0.25)
 
 
     def __del__(self):
         if hasattr(self, "client_socket") and self.client_socket is not None:
-            self.client_socket.shutdown(2)
             self.client_socket.close()
 
 
@@ -70,5 +71,8 @@ def VoiceOperationCommandPacket(builder, object, time, location, action):
 
 
 if __name__ == "__main__":
-    msgsender = MsgSender(addr="127.0.0.1", port=9001)
-    msgsender.send_msg("move_object33")
+    msgsender = MsgSender(addr="127.0.0.1", port=9010)
+    print("start to send")
+    msgsender.send_msg("输 入 不 太 好")
+    # import json
+    # msgsender.send_msg(json.dumps({"sentence1": "你 好", "sentence2": "早 上 好"}))

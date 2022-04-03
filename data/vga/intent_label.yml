@@ -2,6 +2,8 @@
 UNK: # unknown
 add_sentence:
 delete_sentence:
-modify:
+modify_word:
+modify_char:
 confirm:
 cancel:
+append_word:
